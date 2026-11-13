@@ -1,0 +1,601 @@
+/* ==========================================================================
+   POS Deep Teal Edition — dark high-density theme (tanpa Tailwind).
+   Scope: hanya di dalam .pos-shell agar modul lain tidak ikut berubah.
+   Logika bisnis / isolasi gudang tidak disentuh — murni visual.
+   Palet: bg #0b0f19 (slate-950), panel #0f172a/#111c33 (slate-900),
+   border #1e293b (slate-800), aksen teal #14b8a6 / #0d9488.
+   Angka & kode: ui-monospace / JetBrains Mono fallback.
+   ========================================================================== */
+
+.pos-shell {
+  --teal-50: #f0fdfa;
+  --teal-100: #ccfbf1;
+  --teal-400: #2dd4bf;
+  --teal-500: #14b8a6;
+  --teal-600: #0d9488;
+  --teal-700: #0f766e;
+  --teal-900: #134e4a;
+  --slate-950: #0b0f19;
+  --slate-900: #0f172a;
+  --slate-850: #151f32;
+  --slate-800: #1e293b;
+  --slate-700: #334155;
+  --slate-400: #94a3b8;
+  --slate-300: #cbd5e1;
+  --slate-200: #e2e8f0;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: var(--slate-950);
+  color: var(--slate-200);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* --- Top bar: padat, 1 baris, gelap --- */
+.pos-shell .pos-kepala {
+  background: var(--slate-900);
+  border-bottom: 1px solid var(--slate-800);
+  color: var(--slate-200);
+  padding: 0.375rem 0.75rem;
+  min-height: 3rem;
+  gap: 0.75rem;
+}
+.pos-shell .pos-kepala__judul {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+  color: var(--teal-400);
+}
+.pos-shell .pos-jejak { color: var(--teal-400); }
+.pos-shell .pos-pemisah { color: var(--slate-700); }
+.pos-shell .pos-toko { color: var(--slate-400); font-weight: 500; text-transform: none; }
+.pos-shell .pos-kepala__tengah { gap: 0.5rem; }
+.pos-shell .pos-shift {
+  background: var(--slate-850);
+  border: 1px solid var(--slate-800);
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--slate-300);
+}
+.pos-shell .pos-shift b { color: var(--teal-400); font-family: var(--mono); }
+.pos-shell .pos-kepala__kanan .tombol,
+.pos-shell .pos-tombol-keluar {
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-200);
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+.pos-shell .pos-kepala__kanan .tombol:hover,
+.pos-shell .pos-tombol-keluar:hover {
+  background: var(--teal-600);
+  border-color: var(--teal-600);
+  color: #fff;
+}
+.pos-shell .pos-datetime {
+  background: var(--slate-950);
+  border: 1px solid var(--slate-800);
+  color: var(--slate-200);
+  border-radius: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+.pos-shell .pos-datetime svg { color: var(--teal-400); }
+.pos-shell .pos-fullscreen-btn {
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-300);
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.625rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+.pos-shell .pos-fullscreen-btn:hover {
+  background: var(--slate-700);
+  color: #fff;
+}
+
+/* --- Badan 2 kolom: kiri 65% katalog, kanan 360–420px cart --- */
+.pos-shell .pos-badan {
+  background: var(--slate-950);
+  gap: 0;
+}
+.pos-shell .pos-kiri {
+  flex: 1 1 65%;
+  min-width: 0;
+  background: var(--slate-900);
+  border-right: 1px solid var(--slate-800);
+}
+.pos-shell .pos-kanan {
+  width: clamp(22.5rem, 35%, 26.25rem);
+  flex: none;
+  background: var(--slate-900);
+  border-left: 1px solid var(--slate-800);
+}
+
+/* --- Kontrol atas kiri: search + switcher mode + pills --- */
+.pos-shell .pos-filter {
+  background: var(--slate-900);
+  border-bottom: 1px solid var(--slate-800);
+  padding: 0.625rem;
+  gap: 0.5rem;
+}
+.pos-shell .pos-cari input {
+  background: var(--slate-950);
+  border: 1px solid var(--slate-700);
+  color: #f1f5f9;
+  border-radius: 0.5rem;
+  font-family: var(--mono);
+  letter-spacing: 0.01em;
+}
+.pos-shell .pos-cari input::placeholder { color: var(--slate-400); }
+.pos-shell .pos-cari input:focus {
+  border-color: var(--teal-500);
+  box-shadow: 0 0 0 1px var(--teal-500);
+  outline: none;
+}
+.pos-shell .pos-cari__ikon { color: var(--teal-400); }
+.pos-shell .pos-kbd {
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-300);
+  border-radius: 0.375rem;
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  padding: 0.0625rem 0.375rem;
+}
+
+/* Dual mode switcher Foto / Teks */
+.pos-shell .pos-mode-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  background: var(--slate-950);
+  border: 1px solid var(--slate-800);
+  border-radius: 0.5rem;
+  padding: 0.125rem;
+  flex: none;
+}
+.pos-shell .pos-mode-switch button {
+  border: 0;
+  background: transparent;
+  color: var(--slate-400);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+}
+.pos-shell .pos-mode-switch button:hover { color: var(--slate-200); }
+.pos-shell .pos-mode-switch button.aktif {
+  background: var(--teal-600);
+  color: #fff;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 0.4);
+}
+
+/* Category pills: satu baris, scroll horizontal halus tanpa scrollbar tebal */
+.pos-shell .pos-kategori {
+  display: flex;
+  gap: 0.375rem;
+  overflow-x: auto;
+  padding: 0.5rem 0.625rem;
+  background: var(--slate-900);
+  border-bottom: 1px solid var(--slate-800);
+  scrollbar-width: none;
+}
+.pos-shell .pos-kategori::-webkit-scrollbar { display: none; }
+.pos-shell .pos-kategori button {
+  flex: none;
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-300);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+}
+.pos-shell .pos-kategori button:hover { border-color: var(--teal-600); color: #fff; }
+.pos-shell .pos-kategori button.aktif {
+  background: rgb(13 148 136 / 0.18);
+  border-color: var(--teal-500);
+  color: var(--teal-100);
+}
+
+/* Chip gudang tetap terlihat di tema gelap (isolasi gudang tidak berubah) */
+.pos-shell .pos-chip {
+  background: var(--slate-950);
+  border: 1px solid var(--slate-800);
+  color: var(--slate-200);
+}
+.pos-shell .pos-chip__teks { color: var(--slate-200); }
+.pos-shell .pos-chip select {
+  background: var(--slate-950);
+  color: var(--slate-200);
+  border: 0;
+}
+
+/* --- Kontainer produk --- */
+.pos-shell .pos-grid {
+  background: var(--slate-950);
+  align-content: start;
+}
+.pos-shell .pos-grid__kosong { color: var(--slate-400); }
+.pos-shell .pos-kartu {
+  background: var(--slate-900);
+  border: 1px solid var(--slate-800);
+  color: var(--slate-200);
+  border-radius: 0.625rem;
+  overflow: hidden;
+}
+.pos-shell .pos-kartu:hover { border-color: var(--teal-700); }
+.pos-shell .pos-kartu.terpilih {
+  background: rgb(19 78 74 / 0.6);
+  border-color: var(--teal-400);
+  box-shadow: 0 0 0 1px var(--teal-400);
+  color: #fff;
+}
+/* Sorotan navigasi keyboard tabel teks: hijau teal pekat + ring. */
+.pos-shell .pos-tabel-cepat tbody tr.aktif {
+  background: rgb(19 78 74 / 0.6);
+  box-shadow: inset 0 0 0 1px var(--teal-400);
+  color: #fff;
+}
+.pos-shell .pos-kartu__nama { color: var(--slate-200); }
+.pos-shell .pos-kartu__sku { color: var(--slate-400); font-family: var(--mono); }
+.pos-shell .pos-kartu__harga { color: var(--teal-400); font-family: var(--mono); font-weight: 700; }
+.pos-shell .pos-kartu__stok { font-family: var(--mono); font-size: 0.6875rem; }
+.pos-shell .pos-kartu__stok--ada { background: rgb(16 185 129 / 0.12); color: #6ee7b7; border: 1px solid rgb(16 185 129 / 0.25); }
+.pos-shell .pos-kartu__stok--menipis { background: rgb(245 158 11 / 0.12); color: #fcd34d; border: 1px solid rgb(245 158 11 / 0.3); }
+.pos-shell .pos-kartu__stok--habis { background: rgb(239 68 68 / 0.12); color: #fca5a5; border: 1px solid rgb(239 68 68 / 0.3); }
+.pos-shell .pos-kartu__kosong { background: var(--slate-850); color: var(--slate-300); }
+.pos-shell .pos-tombol-lebih {
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-200);
+}
+
+/* Tampilan 2 — tabel teks katalog (in-place, #pos-view-table). Memakai ulang
+   gaya tabel cepat agar konsisten dengan tema. */
+.pos-shell .pos-tabel-mode {
+  background: var(--slate-950);
+  border-radius: 0.625rem;
+  overflow-x: auto;
+}
+.pos-shell .pos-tabel-mode .pos-tabel-cepat {
+  width: 100%;
+  background: var(--slate-950);
+}
+.pos-shell .pos-tabel-tambah {
+  background: rgb(13 148 136 / 0.16);
+  border: 1px solid var(--teal-600);
+  color: var(--teal-100);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pos-shell .pos-tabel-tambah:hover {
+  background: var(--teal-600);
+  color: #fff;
+}
+
+/* Proporsi kolom tabel katalog teks (tanpa Tailwind, table-layout fixed):
+   # 3% · Barcode 15% · Nama auto (~45%) · Stok 12% · Harga 15% · Aksi 10%. */
+#pos-view-table .pos-tabel-cepat { table-layout: fixed; }
+#pos-view-table col.pos-kol-no { width: 3%; min-width: 2.5rem; }
+#pos-view-table col.pos-kol-barcode { width: 15%; }
+#pos-view-table col.pos-kol-nama { width: auto; }
+#pos-view-table col.pos-kol-stok { width: 12%; }
+#pos-view-table col.pos-kol-harga { width: 15%; }
+#pos-view-table col.pos-kol-aksi { width: 10%; min-width: 6.5rem; }
+#pos-view-table .pos-th-no,
+#pos-view-table .pos-td-no { text-align: center; }
+#pos-view-table .pos-th-aksi { text-align: center; }
+#pos-view-table td:last-child { text-align: center; }
+.pos-shell .pos-td-no {
+  color: var(--slate-400);
+  font-family: var(--mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pos-shell .pos-td-barcode {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--teal-400);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pos-shell #pos-view-table .pos-td-total { color: #6ee7b7; }
+.pos-shell #pos-view-table .pos-saran__stok { font-weight: 700; }
+
+/* Tabel teks high-speed */
+.pos-shell .pos-tabel-cepat thead {
+  background: var(--slate-900);
+  color: var(--slate-400);
+}
+.pos-shell .pos-tabel-cepat thead th { border-bottom: 1px solid var(--slate-800); }
+.pos-shell .pos-tabel-cepat tbody tr { border-bottom: 1px solid rgb(30 41 59 / 0.6); }
+.pos-shell .pos-tabel-cepat tbody tr:hover { background: var(--slate-850); }
+.pos-shell .pos-tabel-cepat tbody tr.aktif { background: rgb(13 148 136 / 0.12); }
+/* Sorotan tabel katalog teks: teal pekat + ring (pos.css memberi bg pada
+   td.aktif, jadi td dibuat transparan agar bg baris terlihat). */
+#pos-view-table .pos-tabel-cepat tbody tr.aktif {
+  background: rgb(19 78 74 / 0.6);
+  box-shadow: inset 0 0 0 1px var(--teal-400);
+  color: #fff;
+}
+#pos-view-table .pos-tabel-cepat tbody tr.aktif td { background: transparent; }
+:root:not([data-theme="dark"]) #pos-view-table .pos-tabel-cepat tbody tr.aktif {
+  background: #f0fdfa;
+  color: inherit;
+}
+.pos-shell .pos-tabel-cepat { color: var(--slate-300); font-family: var(--mono); }
+.pos-shell .pos-td-nama { font-family: Inter, system-ui, sans-serif; color: var(--slate-200); }
+.pos-shell .pos-sel-input {
+  background: var(--slate-950);
+  border: 1px solid var(--slate-800);
+  color: var(--slate-200);
+  font-family: var(--mono);
+}
+.pos-shell .pos-sel-input.fokus { border-color: var(--teal-500); box-shadow: 0 0 0 1px var(--teal-500); }
+
+/* Saran autocomplete */
+.pos-shell .pos-saran {
+  background: var(--slate-900);
+  border: 1px solid var(--slate-700);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.5);
+}
+.pos-shell .pos-saran__baris { border-bottom: 1px solid rgb(30 41 59 / 0.6); }
+.pos-shell .pos-saran__baris.aktif {
+  background: rgb(13 148 136 / 0.18);
+  box-shadow: inset 0 0 0 1px rgb(45 212 191 / 0.55);
+}
+.pos-shell .pos-saran__nama { color: var(--slate-200); }
+.pos-shell .pos-saran__sku-kecil { color: var(--slate-400); font-family: var(--mono); }
+.pos-shell .pos-saran__kosong { color: var(--slate-400); }
+
+/* --- Panel kanan: keranjang + ringkasan + bayar --- */
+.pos-shell .pos-keranjang { background: var(--slate-950); }
+.pos-shell .pos-keranjang__kosong,
+.pos-shell .pos-kosong-sebaris { color: var(--slate-400); }
+.pos-shell .pos-baris {
+  background: var(--slate-900);
+  border: 1px solid var(--slate-800);
+  border-radius: 0.625rem;
+}
+.pos-shell .pos-baris.terpilih { border-color: var(--teal-500); }
+.pos-shell .pos-baris__nama { color: var(--slate-200); }
+.pos-shell .pos-baris__sku { color: var(--slate-400); font-family: var(--mono); }
+.pos-shell .pos-baris__jumlah { color: var(--slate-200); font-family: var(--mono); }
+.pos-shell .pos-baris__harga { color: var(--slate-400); font-family: var(--mono); }
+.pos-shell .pos-baris__kontrol button {
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-200);
+}
+.pos-shell .pos-baris__kontrol button:hover { background: var(--teal-600); border-color: var(--teal-600); color: #fff; }
+.pos-shell .pos-baris__qty { color: var(--slate-200); font-family: var(--mono); }
+
+.pos-shell .pos-ringkas { background: var(--slate-900); border-top: 1px solid var(--slate-800); }
+.pos-shell .pos-sheet { background: transparent; }
+.pos-shell .pos-total { color: var(--slate-200); }
+.pos-shell .pos-total b { font-family: var(--mono); }
+.pos-shell .pos-sheet__isi .r { color: var(--slate-400); font-size: 0.75rem; }
+.pos-shell .pos-sheet__isi .r span:last-child { color: var(--slate-200); font-family: var(--mono); }
+.pos-shell .pos-sheet__isi input {
+  background: var(--slate-950);
+  border: 1px solid var(--slate-800);
+  color: var(--slate-200);
+  font-family: var(--mono);
+}
+.pos-shell .pos-rincian-btn {
+  background: transparent;
+  border: 1px solid var(--slate-800);
+  color: var(--slate-400);
+}
+
+/* Grand total banner */
+.pos-shell .pos-grandtotal {
+  background: var(--slate-950);
+  border: 1px solid rgb(20 184 166 / 0.3);
+  border-radius: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0.5rem 0.625rem 0;
+}
+.pos-shell .pos-grandtotal__label {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--slate-400);
+}
+.pos-shell .pos-grandtotal__nilai {
+  font-family: var(--mono);
+  font-weight: 800;
+  font-size: 1.375rem;
+  line-height: 1.1;
+  color: var(--teal-400);
+}
+.pos-shell .pos-grandtotal__siap {
+  background: rgb(16 185 129 / 0.1);
+  border: 1px solid rgb(16 185 129 / 0.25);
+  color: #6ee7b7;
+  font-size: 0.625rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  white-space: nowrap;
+}
+
+/* Fast cash presets: PAS 10k 20k 50k 100k */
+.pos-shell .pos-fastcash {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.25rem;
+  padding: 0.5rem 0.625rem 0;
+}
+.pos-shell .pos-fastcash button {
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-300);
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0;
+  cursor: pointer;
+}
+.pos-shell .pos-fastcash button:hover {
+  background: var(--teal-600);
+  border-color: var(--teal-600);
+  color: #fff;
+}
+
+/* Tombol bayar gradien teal + hint ENTER */
+.pos-shell .pos-aksi { gap: 0.5rem; }
+.pos-shell .pos-aksi__ikon {
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-300);
+}
+.pos-shell .pos-bayar,
+.pos-shell .pos-aksi-bayar {
+  background: linear-gradient(135deg, var(--teal-600), #14b8a6);
+  border: 0;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 0.625rem;
+  box-shadow: 0 6px 18px rgb(13 148 136 / 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.pos-shell .pos-bayar:hover:not(:disabled),
+.pos-shell .pos-aksi-bayar:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.pos-shell .pos-bayar:disabled,
+.pos-shell .pos-aksi-bayar:disabled { opacity: 0.45; box-shadow: none; }
+.pos-shell .pos-bayar__kbd {
+  background: rgb(0 0 0 / 0.25);
+  border: 1px solid rgb(255 255 255 / 0.25);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  border-radius: 0.375rem;
+  padding: 0.0625rem 0.375rem;
+}
+
+/* Dialog bayar / struk / bantuan di atas tema gelap */
+.pos-shell .pos-dialog { color: var(--slate-200); }
+.pos-shell .pos-dialog input,
+.pos-shell .pos-dialog select {
+  background: var(--slate-950);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-200);
+  font-family: var(--mono);
+}
+.pos-shell .pos-bayar-cepat button {
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-300);
+  font-family: var(--mono);
+}
+.pos-shell .pos-bayar-cepat button:hover {
+  background: var(--teal-600);
+  border-color: var(--teal-600);
+  color: #fff;
+}
+/* "Uang Pas" — chip pertama ditekankan teal. */
+.pos-shell .pos-bayar-cepat button.pos-bayar-cepat__pas {
+  background: rgb(13 148 136 / 0.28);
+  border-color: var(--teal-500, #14b8a6);
+  color: #ccfbf1;
+  font-weight: 700;
+}
+.pos-shell .pos-kembalian b.cukup { color: #6ee7b7; }
+.pos-shell .pos-kembalian b.kurang { color: #fca5a5; }
+.pos-shell .pos-bantuan__panel {
+  background: var(--slate-900);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-200);
+  box-shadow: 0 16px 40px rgb(0 0 0 / 0.55);
+}
+.pos-shell .pos-bantuan__panel dt {
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-200);
+  font-family: var(--mono);
+}
+.pos-shell .pos-bantuan__panel dd { color: var(--slate-300); }
+.pos-shell .pos-pop {
+  background: var(--slate-900);
+  border: 1px solid var(--slate-700);
+  color: var(--slate-200);
+  box-shadow: 0 16px 40px rgb(0 0 0 / 0.55);
+}
+.pos-shell .pos-pop__menu button { color: var(--slate-200); }
+.pos-shell .pos-pop__menu button:hover { background: var(--slate-850); }
+
+/* Scrollbar ramping */
+.pos-shell ::-webkit-scrollbar { width: 10px; height: 10px; }
+.pos-shell ::-webkit-scrollbar-thumb { background: var(--slate-700); border-radius: 8px; border: 2px solid var(--slate-950); }
+.pos-shell ::-webkit-scrollbar-track { background: transparent; }
+
+/* Responsif: kanan jadi laci bawah di layar sempit (pakai mekanisme lama) */
+@media (max-width: 1023px) {
+  .pos-shell .pos-kanan { width: 100%; }
+}
+
+/* ==========================================================================
+   TEMA SIANG — mengikuti sakelar global (<html data-theme>, tanpa reload).
+   Selama html TIDAK bertanda data-theme="dark", skala slate dibalik ke
+   permukaan terang; semua aturan di atas yang memakai var() ikut terang
+   otomatis. Hanya warna hardcode yang perlu override eksplisit di bawah.
+   ========================================================================== */
+:root:not([data-theme="dark"]) .pos-shell {
+  --teal-400: #0f766e;
+  --slate-950: #eef2f7;
+  --slate-900: #ffffff;
+  --slate-850: #f8fafc;
+  --slate-800: #e2e8f0;
+  --slate-700: #cbd5e1;
+  --slate-400: #64748b;
+  --slate-300: #334155;
+  --slate-200: #0f172a;
+}
+:root:not([data-theme="dark"]) .pos-shell .pos-cari input { color: #0f172a; }
+:root:not([data-theme="dark"]) .pos-shell #pos-view-table .pos-td-total { color: #047857; }
+:root:not([data-theme="dark"]) .pos-shell .pos-tabel-tambah { color: #0f766e; }
+:root:not([data-theme="dark"]) .pos-shell .pos-grandtotal__siap { color: #047857; }
+:root:not([data-theme="dark"]) .pos-shell .pos-kembalian b.cukup { color: #047857; }
+:root:not([data-theme="dark"]) .pos-shell .pos-kembalian b.kurang { color: #dc2626; }
+:root:not([data-theme="dark"]) .pos-shell .pos-saran__stok--ada { color: #047857; }
+:root:not([data-theme="dark"]) .pos-shell .pos-saran__stok--menipis { color: #b45309; }
+:root:not([data-theme="dark"]) .pos-shell .pos-saran__stok--habis { color: #dc2626; }
+:root:not([data-theme="dark"]) .pos-shell .pos-kartu__stok--ada { color: #047857; }
+:root:not([data-theme="dark"]) .pos-shell .pos-kartu__stok--menipis { color: #b45309; }
+:root:not([data-theme="dark"]) .pos-shell .pos-kartu__stok--habis { color: #dc2626; }
+:root:not([data-theme="dark"]) .pos-shell .pos-kartu.terpilih {
+  background: #f0fdfa;
+  color: inherit;
+}
+:root:not([data-theme="dark"]) .pos-shell .pos-tabel-cepat tbody tr.aktif {
+  background: #f0fdfa;
+  color: inherit;
+}

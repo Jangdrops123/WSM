@@ -1,0 +1,10 @@
+import { db } from '../server/db.ts';
+db.prepare(`DELETE FROM suppliers WHERE nama = 'PT Maju Jaya'`).run();
+db.prepare(`INSERT INTO suppliers (nama, telepon) VALUES ('PT Maju Jaya', '081399988877')`).run();
+const sup = db.prepare(`SELECT id FROM suppliers WHERE nama = 'PT Maju Jaya'`).get() as any;
+const w = db.prepare(`SELECT id FROM warehouses ORDER BY id LIMIT 1`).get() as any;
+db.prepare(`DELETE FROM payables WHERE purchase_id IN (SELECT id FROM purchases WHERE no_dokumen = 'PB-DEMO-2')`).run();
+db.prepare(`DELETE FROM purchases WHERE no_dokumen = 'PB-DEMO-2'`).run();
+const pb = Number(db.prepare(`INSERT INTO purchases (no_dokumen, supplier_id, warehouse_id, total, status) VALUES ('PB-DEMO-2', ?, ?, 180000, 'disahkan')`).run(sup.id, w.id).lastInsertRowid);
+db.prepare(`INSERT INTO payables (purchase_id, supplier_id, jatuh_tempo, total, terbayar, status) VALUES (?, ?, '2026-10-10', 180000, 0, 'belum')`).run(pb, sup.id);
+console.log('hutang demo siap');

@@ -1,0 +1,73 @@
+/* Gaya halaman Pengaturan (di samping crud.css & faktur.css). */
+
+.pengaturan-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pengaturan-nav a {
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--teks);
+  font-size: 13.5px;
+  text-decoration: none;
+}
+
+.pengaturan-nav a:hover {
+  border-color: var(--primer);
+}
+
+.pengaturan-nav a.aktif,
+.pengaturan-nav a[aria-current='page'] {
+  background: var(--primer);
+  border-color: var(--primer);
+  color: #fff;
+}
+
+/* Aturan per kodi */
+.aturan-tabel {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.aturan-tabel th,
+.aturan-tabel td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.aturan-tabel input {
+  width: 110px;
+  font: inherit;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.aturan-ubah {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.aturan-ringkas {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.aturan-ringkas--salah {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}

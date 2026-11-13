@@ -1,0 +1,385 @@
+/* ==========================================================================
+   Dashboard — kartu KPI, Pengingat faktur, panel "Atur tampilan".
+   Warna mengikuti token tema (styles.css / theme-gelap.css).
+   ========================================================================== */
+
+/* --- Tombol "Atur tampilan" di kartu sapaan ------------------------------ */
+
+.sapaan-atur {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sapaan-atur:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+/* --- Grid KPI (baris atas) ------------------------------------------------ */
+
+.dash-kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+.kartu-kpi {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--bayangan);
+  padding: 16px 18px;
+  color: var(--teks);
+  font: inherit;
+  cursor: default;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.kartu-kpi[href] {
+  cursor: pointer;
+}
+
+.kartu-kpi[href]:hover {
+  border-color: var(--primer);
+}
+
+.kartu-kpi__ikon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+}
+
+.kartu-kpi--bahaya .kartu-kpi__ikon {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--waspada);
+}
+
+.kartu-kpi--bahaya {
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.kartu-kpi__teks {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.kartu-kpi__teks small {
+  color: var(--teks-redup);
+  font-size: 12px;
+}
+
+.kartu-kpi__teks strong {
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- Grafik ringkas ------------------------------------------------------- */
+
+.dash-grafik {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 14px;
+}
+
+.dash-grafik .kartu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.dash-grafik h4 {
+  font-size: 14px;
+}
+
+.dash-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--teks-redup);
+}
+
+.dash-legenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dash-legenda i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+/* --- Tabel ringkas -------------------------------------------------------- */
+
+.dash-tabel-wrap {
+  overflow-x: auto;
+}
+
+.dash-tabel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.dash-tabel th,
+.dash-tabel td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.dash-tabel th {
+  color: var(--teks-redup);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.dash-tabel td.kanan,
+.dash-tabel th.kanan {
+  text-align: right;
+}
+
+.dash-tabel tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* --- Kartu Pengingat faktur ---------------------------------------------- */
+
+.pengingat__alat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.pengingat-tab {
+  display: inline-flex;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.pengingat-tab button {
+  border: 0;
+  background: transparent;
+  color: var(--teks-redup);
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.pengingat-tab button.aktif {
+  background: var(--primer);
+  color: #fff;
+  font-weight: 600;
+}
+
+.pengingat__setelan {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--teks-redup);
+  flex-wrap: wrap;
+}
+
+.pengingat__setelan select {
+  background: var(--panel-padat);
+  color: var(--teks);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 8px;
+  font: inherit;
+  font-size: 13px;
+}
+
+.pengingat__setelan label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.urgensi {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.urgensi--terlambat {
+  background: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+}
+
+.urgensi--dekat {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--waspada);
+}
+
+.urgensi--aman {
+  background: rgba(59, 130, 246, 0.14);
+  color: #60a5fa;
+}
+
+.dash-tabel .pengingat-baris--terlambat td:first-child {
+  box-shadow: inset 3px 0 0 #ef4444;
+}
+
+.dash-tabel .pengingat-baris--dekat td:first-child {
+  box-shadow: inset 3px 0 0 var(--waspada);
+}
+
+.pengingat-tanda {
+  color: var(--waspada);
+  vertical-align: -2px;
+}
+
+.pengingat-kosong {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--teks-redup);
+  padding: 18px 4px;
+  font-size: 13px;
+}
+
+.pengingat-kosong svg {
+  color: var(--sukses);
+}
+
+/* --- Panel "Atur tampilan" ------------------------------------------------ */
+
+.tampilan-grup {
+  margin-bottom: 16px;
+}
+
+.tampilan-grup h4 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teks-redup);
+  margin-bottom: 8px;
+}
+
+.tampilan-baris {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tampilan-baris:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tampilan-baris input {
+  accent-color: var(--primer);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.tampilan-bawaan {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--teks-redup);
+}
+
+.tampilan-bawaan select {
+  background: var(--panel-padat);
+  color: var(--teks);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 8px;
+  font: inherit;
+  font-size: 13px;
+}
+
+/* --- Dialog pembayaran ---------------------------------------------------- */
+
+.bayar-ringkas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+.bayar-ringkas strong {
+  font-size: 15px;
+}
+
+.bayar-metode {
+  display: flex;
+  gap: 8px;
+}
+
+.bayar-metode label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.bayar-metode label.aktif {
+  border-color: var(--primer);
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+}
+
+.bayar-metode input {
+  display: none;
+}

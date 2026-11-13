@@ -1,0 +1,232 @@
+/* ============================================================================
+   MODUL AKUNTANSI — kerapian tata letak (flex, spacing, tipografi tabel).
+   Hanya tampilan: tidak ada perubahan pada perhitungan saldo, umur piutang,
+   maupun data transaksi.
+   ============================================================================ */
+
+.halaman.akuntansi {
+  --akuntansi-aksen: #0f766e;
+  --akuntansi-garis: var(--border, #e5e7eb);
+  --akuntansi-lembut: var(--surface-2, #f8fafc);
+}
+
+/* --- Kepala kartu: judul kiri, ringkasan + aksi sejajar kanan ------------ */
+
+.akuntansi .kepala-kartu,
+.akuntansi .kartu__kepala {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.akuntansi__kepala-kanan {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.akuntansi__total-kepala {
+  white-space: nowrap;
+  font-size: 0.8125rem;
+}
+.akuntansi__total-kepala strong {
+  color: var(--akuntansi-aksen);
+}
+
+/* --- Bilah di atas daftar rekening --------------------------------------- */
+
+.akuntansi__alat-rekening {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.akuntansi__alat-rekening .teks-kecil {
+  margin-left: 0;
+  white-space: nowrap;
+}
+.akuntansi__alat-rekening strong {
+  color: var(--akuntansi-aksen);
+}
+
+/* --- Daftar rekening kas/bank sebagai kartu terpisah --------------------- */
+
+.akuntansi-rekening {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.akuntansi-rekening__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  margin-top: 0;
+  border: 1px solid var(--akuntansi-garis);
+  border-radius: 8px;
+  background: var(--surface, #fff);
+}
+.akuntansi-rekening__item--nonaktif {
+  opacity: 0.6;
+}
+
+.akuntansi-rekening__identitas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.akuntansi-rekening__nama {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.akuntansi-rekening__kode {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--teks-redup, #6b7280);
+}
+.akuntansi-rekening__lencana {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 2px 8px;
+  border: 1px solid var(--akuntansi-garis);
+  border-radius: 999px;
+  background: var(--akuntansi-lembut);
+  font-size: 0.6875rem;
+  color: var(--teks-redup, #6b7280);
+  white-space: nowrap;
+}
+.akuntansi-rekening__lencana--mati {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.akuntansi-rekening__saldo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+.akuntansi-rekening__label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--teks-redup, #6b7280);
+}
+.akuntansi-rekening__saldo strong {
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--akuntansi-aksen);
+  white-space: nowrap;
+}
+
+.akuntansi-rekening__aksi {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.akuntansi-rekening__aksi .tombol {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .akuntansi-rekening__item {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .akuntansi-rekening__saldo {
+    align-items: flex-start;
+    width: 100%;
+  }
+  .akuntansi-rekening__aksi {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* --- Filter umur piutang/hutang (pill terpisah) -------------------------- */
+
+.akuntansi-aging {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.akuntansi-aging__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--akuntansi-garis);
+  border-radius: 20px;
+  background: var(--akuntansi-lembut);
+  font-size: 0.8125rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+.akuntansi-aging__label {
+  color: var(--teks-redup, #6b7280);
+}
+.akuntansi-aging__nilai {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Tabel: header kontras, tinggi presisi, sel sejajar ------------------ */
+
+.akuntansi .tabel-bungkus {
+  margin-top: 16px;
+}
+
+@media (min-width: 768px) {
+  .akuntansi .tabel thead th {
+    height: 40px;
+    padding: 0 12px;
+    background: var(--akuntansi-lembut);
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--teks-redup, #6b7280);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .akuntansi .tabel tbody td {
+    padding: 10px 12px;
+    vertical-align: middle;
+  }
+}
+
+.akuntansi .tabel tbody td.rata-kanan,
+.akuntansi .tabel thead th.rata-kanan {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.akuntansi .tabel-kosong,
+.akuntansi-kosong {
+  padding: 32px 0;
+  text-align: center;
+  color: #9ca3af;
+}
+.akuntansi-kosong {
+  margin: 0;
+}

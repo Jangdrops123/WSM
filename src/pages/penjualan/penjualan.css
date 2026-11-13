@@ -1,0 +1,269 @@
+/* Halaman Penjualan (/penjualan, /penjualan/retur, /penjualan/piutang) —
+   di samping crud.css (gaya tabel, kartu, tombol global). */
+
+/* Z1 — ribon tab "Riwayat | Retur | Piutang" DIHAPUS: ketiganya kini rute
+   mandiri dari sidebar (/penjualan, /penjualan/retur, /penjualan/piutang). */
+
+/* Token Switcher modul (topbar + .token-grup) memakai gaya global crud.css. */
+
+/* Keadaan kosong (M3): tombol POS di tengah + teks petunjuk. */
+.penjualan-kosong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 2.875rem 1rem;
+  text-align: center;
+  color: var(--teks-redup, #64748b);
+}
+
+.penjualan-kosong p {
+  font-size: 0.9375rem;
+}
+/* ------------------------- Split tombol POS (M3) ------------------------- */
+.pos-split {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.pos-split--tengah {
+  justify-content: center;
+}
+.pos-split__utama {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.pos-split__panah {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.4);
+}
+.pos-split__menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  right: 0;
+  z-index: 30;
+  min-width: 11.875rem;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 0.625rem;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+  overflow: hidden;
+}
+
+.pos-split__menu button {
+  appearance: none;
+  background: none;
+  border: 0;
+  text-align: left;
+  padding: 0.5625rem 0.75rem;
+  font-size: 0.8438rem;
+  color: var(--teks, #0f172a);
+  cursor: pointer;
+}
+.pos-split__menu button:hover,
+.pos-split__menu button:focus-visible {
+  background: var(--surface-2);
+  outline: none;
+}
+
+/* --------------------------- Dialog "Lihat" ----------------------------- */
+.penjualan-detail__info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+.penjualan-detail__info div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.penjualan-detail__info span {
+  font-size: 0.75rem;
+  color: var(--teks-redup, #64748b);
+}
+.penjualan-detail__sub {
+  margin: 1.125rem 0 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* ---------------- Detail penjualan: penanda retur (DB-14/DB-15) ---------- */
+/* Nama produk + lencana "Diretur"/"Full Retur" di bawahnya. */
+.penjualan-nama-produk {
+  display: block;
+}
+
+.penjualan-retur-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.1875rem;
+  padding: 0.0625rem 0.4375rem;
+  border: 1px solid var(--warning-border, #e7c98a);
+  border-radius: 999px;
+  background: var(--warning-soft, #fff0df);
+  color: var(--warning-text, #8a5218);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.penjualan-retur-badge--penuh {
+  border-color: var(--danger-border, #f0cdc7);
+  background: var(--danger-soft, #fde9e6);
+  color: var(--danger-text, #a4473e);
+}
+
+/* Baris yang seluruh qty-nya diretur: teks dicoret halus + diredupkan. */
+.penjualan-baris--retur-penuh .penjualan-nama-produk {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  opacity: 0.8;
+}
+.penjualan-baris--retur-penuh td {
+  opacity: 0.9;
+}
+
+/* Ringkasan nilai retur: pengurangan (-) dan Total Bersih. */
+.penjualan-nilai-retur {
+  color: var(--danger-text, #a4473e);
+}
+.penjualan-retur-dok {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--teks-redup, #64748b);
+}
+.penjualan-nilai-net {
+  color: var(--success-text, #1e6247);
+}
+
+/* Akumulasi Qty di ringkasan modal detail: Awal · Retur · Net berdampingan,
+   sejajar dengan Subtotal/Total di atas tabel item. */
+.penjualan-qty {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.penjualan-qty__kotak {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 0.5rem;
+  background: var(--surface-2, #f8fafc);
+  min-width: 0;
+}
+.penjualan-qty__kotak > span {
+  font-size: 0.7188rem;
+  font-weight: 600;
+  color: var(--teks-redup, #64748b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.penjualan-qty__kotak > b {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+}
+.penjualan-qty__kotak > b > small {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--teks-redup, #64748b);
+}
+/* Retur: merah/oranye bila ada, redup bila nol. */
+.penjualan-qty__kotak--retur {
+  border-color: var(--danger-border, #f0cdc7);
+  background: var(--danger-soft, #fde9e6);
+}
+.penjualan-qty__kotak--retur > b {
+  color: var(--danger-text, #a4473e);
+}
+.penjualan-qty__kotak--kosong > b {
+  color: var(--teks-redup, #64748b);
+}
+.penjualan-qty__kotak--net {
+  border-color: var(--success-border, #bfe3cd);
+  background: var(--success-soft, #e8f7ee);
+}
+.penjualan-qty__kotak--net > b {
+  color: var(--success-text, #1e6247);
+}
+@media (max-width: 560px) {
+  .penjualan-qty {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+[data-theme='dark'] .penjualan-retur-badge {
+  border-color: rgba(240, 192, 138, 0.45);
+  background: rgba(240, 192, 138, 0.14);
+  color: #f2c894;
+}
+[data-theme='dark'] .penjualan-retur-badge--penuh {
+  border-color: rgba(240, 167, 156, 0.45);
+  background: rgba(240, 167, 156, 0.14);
+  color: #f3b3a9;
+}
+[data-theme='dark'] .penjualan-nilai-retur {
+  color: #f3b3a9;
+}
+[data-theme='dark'] .penjualan-nilai-net {
+  color: #a9e0ba;
+}
+[data-theme='dark'] .penjualan-qty__kotak--retur {
+  border-color: rgba(240, 167, 156, 0.45);
+  background: rgba(240, 167, 156, 0.14);
+}
+[data-theme='dark'] .penjualan-qty__kotak--retur > b {
+  color: #f3b3a9;
+}
+[data-theme='dark'] .penjualan-qty__kotak--net {
+  border-color: rgba(169, 224, 186, 0.4);
+  background: rgba(169, 224, 186, 0.12);
+}
+[data-theme='dark'] .penjualan-qty__kotak--net > b {
+  color: #a9e0ba;
+}
+
+/* Pembeda visual Riwayat vs Dokumen pindah ke crud.css (dipakai bersama
+   Penjualan & Pembelian). */
+
+/* R2 — tautan nomor faktur di baris riwayat: melompat ke Dokumen bawah. */
+.tautan-faktur {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--primer-teks, #7dd3fc);
+  font: inherit;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tautan-faktur:hover {
+  color: var(--primer, #2563eb);
+}

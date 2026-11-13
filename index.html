@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Ponsel: tanpa zoom otomatis saat kolom input disentuh; viewport-fit
+         memberi ruang aman untuk notch & bilah gestur. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="description" content="Aplikasi terpadu POS, WMS, dan Akuntansi untuk usaha retail Indonesia" />
+    <!-- PWA / "Tambahkan ke Layar Utama": manifest, warna tema, dan meta Apple. -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#267454" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#171d19" media="(prefers-color-scheme: dark)" />
+    <meta name="application-name" content="NusaSuite" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="NusaSuite" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/ikon-180.png" />
+    <!-- Favicon bawaan sengaja netral (tanpa huruf merek); identitas aplikasi
+         menggantinya lewat skrip di bawah begitu identitas diketahui. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>NusaSuite</title>
+    <style>
+      /* AI3 — Gaya layar muat: sengaja mandiri (tanpa CSS eksternal) agar
+         tampil sebelum bundel dimuat. Semua warna lewat token tema + aksen. */
+      html {
+        background: #f4f2e9;
+      }
+      html[data-theme='dark'] {
+        background: #171d19;
+      }
+      .layar-muat {
+        --lm-latar: #f4f2e9;
+        --lm-teks: #202a24;
+        --lm-redup: #6b756d;
+        --lm-aksen: #267454;
+        --lm-aksen-2: #a9c46a;
+        /* Ukuran logo layar muat (px) — diatur Pengaturan ▸ Identitas Aplikasi.
+           Bawaan 120px, tanpa batas atas; dimuat dari localStorage di <head>. */
+        --lm-logo-size: 120px;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.875rem;
+        padding: 1.5rem;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        background: var(--lm-latar);
+        color: var(--lm-teks);
+        opacity: 1;
+        transition: opacity 200ms ease;
+      }
+      html[data-theme='dark'] .layar-muat {
+        --lm-latar: #171d19;
+        --lm-teks: #edf2ed;
+        --lm-redup: #9ba99f;
+      }
+      /* Tema dari salinan terakhir / pratinjau "Putar layar muat" boleh
+         memaksa tema tertentu (spesifisitas disamakan dengan aturan di atas). */
+      html .layar-muat[data-tema='siang'] {
+        --lm-latar: #f4f2e9;
+        --lm-teks: #202a24;
+        --lm-redup: #6b756d;
+      }
+      html .layar-muat[data-tema='malam'] {
+        --lm-latar: #171d19;
+        --lm-teks: #edf2ed;
+        --lm-redup: #9ba99f;
+      }
+      .layar-muat--pudar {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .layar-muat__logo {
+        display: grid;
+        place-items: center;
+        width: var(--lm-logo-size);
+        height: var(--lm-logo-size);
+        border-radius: calc(var(--lm-logo-size) * 0.25);
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--lm-aksen), var(--lm-aksen-2));
+        box-shadow: 0 10px 28px -14px rgba(15, 23, 42, 0.55);
+        color: #fff;
+        font-size: calc(var(--lm-logo-size) * 0.47);
+        font-weight: 800;
+        line-height: 1;
+        transition: width 0.3s ease, height 0.3s ease, border-radius 0.3s ease, font-size 0.3s ease;
+      }
+      /* Logo diisi penuh kotaknya agar SVG/gambar resolusi tinggi tetap tajam
+         pada ukuran berapa pun (tanpa batas atas). */
+      .layar-muat__logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+      .layar-muat__logo--gambar {
+        background: transparent;
+        box-shadow: none;
+      }
+      .layar-muat__isi {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        max-width: min(78vw, 24rem);
+      }
+      .layar-muat__nama {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: max(14px, calc(var(--lm-logo-size) * 0.16));
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        transition: font-size 0.3s ease;
+      }
+      .layar-muat__tagline {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.8125rem;
+        color: var(--lm-redup);
+      }
+      .layar-muat__bilah {
+        width: max(100px, calc(var(--lm-logo-size) * 1.5));
+        height: 4px;
+        transition: width 0.3s ease;
+        border-radius: 999px;
+        background: linear-gradient(90deg, transparent, var(--lm-aksen), transparent);
+        background-size: 200% 100%;
+        animation: lm-geser 1.1s ease-in-out infinite;
+      }
+      @keyframes lm-geser {
+        to {
+          background-position: -200% 0;
+        }
+      }
+      .layar-muat [hidden] {
+        display: none !important;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .layar-muat__bilah {
+          animation: none;
+          background: var(--lm-aksen);
+          opacity: 0.65;
+        }
+        .layar-muat {
+          transition: none;
+        }
+      }
+    </style>
+    <!-- Terapkan tema SEBELUM render (tanpa kedip) — preferensi dari localStorage.
+         Nilai default: Ikuti Sistem. Skrip ini pelengkap src/lib/tema.ts. -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('nusapos.tema') || 'sistem';
+          var gelap = t === 'gelap' || (t === 'sistem' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var html = document.documentElement;
+          html.dataset.theme = gelap ? 'dark' : 'light';
+          var aksen = localStorage.getItem('nusapos.aksen');
+          if (aksen) html.dataset.aksen = aksen;
+          html.dataset.sidebar = localStorage.getItem('nusapos.sidebar') || 'gelap';
+          html.style.colorScheme = gelap ? 'dark' : 'light';
+          /* AH2c — Ukuran Font & Kepadatan diterapkan SEBELUM render (tanpa kedip). */
+          var tb = localStorage.getItem('nusapos.tampilanBaru');
+          if (tb) {
+            var j = JSON.parse(tb);
+            var p = j.ukuran_font === 'kustom' ? Number(j.ukuran_font_kustom) : Number(j.ukuran_font);
+            if (!isFinite(p)) p = 100;
+            html.style.setProperty('--font-scale', String(Math.min(150, Math.max(75, p)) / 100));
+            if (j.kepadatan) html.dataset.kepadatan = j.kepadatan;
+            html.dataset.sidebarCiut = j.sidebar_ciut ? 'ya' : 'tidak';
+          }
+          /* Ukuran logo layar muat — diterapkan sebelum splash tampil (tanpa
+             kedip). Minimal 40px, bawaan 120px, tanpa batas atas. */
+          var lm = Math.round(Number(localStorage.getItem('loading_logo_size')));
+          if (!isFinite(lm) || lm < 40) lm = 120;
+          html.style.setProperty('--lm-logo-size', lm + 'px');
+          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+            if ((localStorage.getItem('nusapos.tema') || 'sistem') === 'sistem') {
+              document.documentElement.dataset.theme = e.matches ? 'dark' : 'light';
+              document.documentElement.style.colorScheme = e.matches ? 'dark' : 'light';
+            }
+          });
+        } catch (e) {
+          /* localStorage nonaktif — pakai bawaan terang */
+        }
+      })();
+    </script>
+    <!-- BOOT-SAFE — pemulihan layar blank: tersedia sebelum bundel React.
+         Gaya mandiri (tanpa CSS eksternal) agar tetap tampil walau bundel
+         gaya pun gagal dimuat. Pesan disisipkan via textContent (anti-XSS). -->
+    <script>
+      (function () {
+        window.__muatUlangAplikasi = function () {
+          window.location.reload();
+        };
+        window.__pulihkanAplikasi = function () {
+          try {
+            localStorage.clear();
+          } catch (e) {}
+          try {
+            sessionStorage.clear();
+          } catch (e) {}
+          function muatUlang() {
+            window.location.reload();
+          }
+          try {
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker
+                .getRegistrations()
+                .then(function (daftar) {
+                  for (var i = 0; i < daftar.length; i++) daftar[i].unregister();
+                })
+                .catch(function () {})
+                .then(muatUlang, muatUlang);
+              return;
+            }
+          } catch (e) {}
+          muatUlang();
+        };
+        /** Tampilkan layar pemulihan di dalam wadah layar muat (idempoten). */
+        window.__tampilkanGalatBoot = function (pesan) {
+          if (document.getElementById('layar-galat')) return;
+          var wadah = document.getElementById('layar-muat');
+          if (!wadah) return;
+          wadah.classList.remove('layar-muat--pudar');
+          wadah.setAttribute('aria-busy', 'false');
+          wadah.textContent = '';
+          function el(tag, gaya, teks) {
+            var n = document.createElement(tag);
+            n.setAttribute('style', gaya);
+            if (teks != null) n.textContent = teks;
+            return n;
+          }
+          wadah.appendChild(el('div', 'font-size:40px;line-height:1', '⚠️'));
+          var box = el(
+            'div',
+            'display:flex;flex-direction:column;align-items:center;gap:4px;max-width:min(78vw,24rem)'
+          );
+          box.appendChild(el('div', 'font-size:18px;font-weight:800', 'Aplikasi Gagal Dimuat'));
+          box.appendChild(el('div', 'font-size:13px;color:var(--lm-redup)', String(pesan || 'Terjadi kesalahan saat memuat aplikasi.')));
+          wadah.appendChild(box);
+          var baris = el('div', 'display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px');
+          var b1 = el(
+            'button',
+            'background:var(--lm-aksen);color:#fff;border:0;padding:10px 18px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer',
+            'Muat Ulang Aplikasi'
+          );
+          b1.type = 'button';
+          b1.addEventListener('click', window.__muatUlangAplikasi);
+          var b2 = el(
+            'button',
+            'background:transparent;border:1px solid var(--lm-redup);color:var(--lm-teks);padding:10px 18px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer',
+            'Hapus Data Lokal & Muat Ulang'
+          );
+          b2.type = 'button';
+          b2.addEventListener('click', window.__pulihkanAplikasi);
+          baris.appendChild(b1);
+          baris.appendChild(b2);
+          wadah.appendChild(baris);
+          var penanda = el('div', 'display:none', '');
+          penanda.id = 'layar-galat';
+          wadah.appendChild(penanda);
+        };
+        /* Jalur cepat: bundel/gaya gagal diunduh (jaringan putus, server mati)
+           — hanya pra-boot agar galat runtime tak menimpa aplikasi jalan. */
+        window.addEventListener(
+          'error',
+          function (e) {
+            if (window.__aplikasiSiap) return;
+            var t = e.target;
+            if (t instanceof HTMLScriptElement || t instanceof HTMLLinkElement) {
+              window.__tampilkanGalatBoot('Gagal memuat berkas aplikasi. Periksa koneksi ke server lalu muat ulang.');
+            }
+          },
+          true
+        );
+      })();
+    </script>
+    <!-- AI1/AI2 — Salinan identitas perangkat. Skrip mini ini berjalan paling
+         awal (sebelum bundel) supaya judul tab, favicon, dan layar muat tidak
+         pernah menampilkan merek bawaan. Semua nilai diperlakukan sebagai teks
+         (textContent) dan URL divalidasi agar aman dari XSS. -->
+    <script>
+      (function () {
+        var AKSEN = {
+          '': ['#267454', '#a9c46a', '#8fd6a8', '#c9e6a3'],
+          teal: ['#147a75', '#5bb8ad', '#5ccabc', '#9adfd4'],
+          biru: ['#3f6f9e', '#8fb6dc', '#8fb6dc', '#c3ddf4'],
+          indigo: ['#5b5aa6', '#a5a4e8', '#a5a4e8', '#cfcef5'],
+          hijau: ['#3f8a4e', '#9ccf6a', '#9adfa6', '#cbe89a'],
+          oranye: ['#b76a23', '#f0a96a', '#f0a96a', '#f7cf9a']
+        };
+        var mulai = Date.now();
+        var salinan = bacaSalinan();
+
+        function bacaJson(kunci) {
+          try {
+            var s = localStorage.getItem(kunci);
+            return s ? JSON.parse(s) : null;
+          } catch (e) {
+            return null;
+          }
+        }
+
+        function bacaSalinan() {
+          var aktif = '';
+          try {
+            aktif = localStorage.getItem('app_identity_active') || '';
+          } catch (e) {
+            return null;
+          }
+          var daftar = aktif ? ['app_identity:' + aktif, 'app_identity'] : ['app_identity'];
+          for (var i = 0; i < daftar.length; i++) {
+            var j = bacaJson(daftar[i]);
+            if (j && j.v === 1 && typeof j.nama === 'string' && j.nama.replace(/\s/g, '') !== '') return j;
+          }
+          return null;
+        }
+
+        /** Hanya data URL gambar dan path internal yang boleh dipakai. */
+        function amanUrl(u) {
+          if (typeof u !== 'string') return '';
+          u = u.trim();
+          if (!u) return '';
+          /* Ikon kecil boleh data URL gambar (maks ~64 KB) — bukan skrip. */
+          if (/^data:image\/(png|jpe?g|webp|gif|svg\+xml);base64,/i.test(u)) return u.length <= 100000 ? u : '';
+          if (u.length > 4096) return '';
+          if (u.charAt(0) === '/' && u.charAt(1) !== '/' && u.charAt(1) !== '\\') return u;
+          return '';
+        }
+
+        function namaBersih(n) {
+          return String(n == null ? '' : n).replace(/\s+/g, ' ').trim().slice(0, 60);
+        }
+
+        function inisial(n) {
+          var b = namaBersih(n);
+          return b ? b.charAt(0).toUpperCase() : '';
+        }
+
+        function temaAwal() {
+          var d = document.documentElement.dataset.theme;
+          if (d === 'dark') return 'malam';
+          if (d === 'light') return 'siang';
+          try {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'malam' : 'siang';
+          } catch (e) {
+            return 'siang';
+          }
+        }
+
+        function palet(nilai, tema) {
+          var kunci = typeof nilai === 'string' && AKSEN[nilai] ? nilai : '';
+          var p = AKSEN[kunci];
+          return { kunci: kunci, utama: tema === 'malam' ? p[2] : p[0], kedua: tema === 'malam' ? p[3] : p[1] };
+        }
+
+        function esc(s) {
+          return String(s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+          });
+        }
+
+        /** Favicon dari huruf awal + aksen (bukan merek bawaan). */
+        function faviconInisial(nama, warna) {
+          var huruf = inisial(nama);
+          if (!huruf) return '';
+          var svg =
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
+            '<rect width="64" height="64" rx="16" fill="' + warna + '"/>' +
+            '<text x="32" y="43" text-anchor="middle" font-family="system-ui,sans-serif" ' +
+            'font-size="32" font-weight="700" fill="#ffffff">' + esc(huruf) + '</text></svg>';
+          return 'data:image/svg+xml,' + encodeURIComponent(svg);
+        }
+
+        function setFavicon(href) {
+          if (!href) return;
+          var link = document.querySelector('link[rel="icon"]');
+          if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.head.appendChild(link);
+          }
+          if (link.getAttribute('href') !== href) link.setAttribute('href', href);
+        }
+
+        /** Tema & aksen yang dipakai layar muat. */
+        var tema = salinan && (salinan.tema === 'siang' || salinan.tema === 'malam') ? salinan.tema : temaAwal();
+        var aksenTersimpan = '';
+        try {
+          aksenTersimpan = localStorage.getItem('nusapos.aksen') || '';
+        } catch (e) {}
+        var aksen = palet(aksenTersimpan || (salinan ? salinan.aksen : ''), tema);
+
+        /* Judul tab & favicon awal — hanya bila identitas sudah diketahui. */
+        if (salinan) {
+          var nama = namaBersih(salinan.nama);
+          var judul = namaBersih(salinan.judulTab) || nama;
+          if (judul) document.title = judul;
+          setFavicon(
+            amanUrl(salinan.favicon) ||
+              amanUrl(salinan.ikonData) ||
+              amanUrl(salinan.ikon) ||
+              faviconInisial(nama, aksen.utama) ||
+              '/favicon.svg'
+          );
+        }
+
+        /** Simpan salinan dari endpoint publik (AI4) — bentuknya sama dengan AI1. */
+        function simpanPublik(d) {
+          if (!d || typeof d !== 'object') return;
+          var nm = namaBersih(d.nama);
+          if (!nm) return;
+          var db = typeof d.toko === 'string' ? d.toko.trim() : '';
+          if (!db) {
+            try {
+              db = (localStorage.getItem('nusapos.tokoAktif') || '').trim();
+            } catch (e) {}
+          }
+          var isi = {
+            v: 1,
+            nama: nm,
+            tagline: namaBersih(d.tagline),
+            judulTab: namaBersih(d.judulTab),
+            favicon: amanUrl(d.favicon),
+            logoSiang: amanUrl(d.logoSiang),
+            logoMalam: amanUrl(d.logoMalam),
+            ikon: amanUrl(d.ikon),
+            ikonData: '',
+            aksen: palet(d.aksen, tema).kunci,
+            tema: tema,
+            db: db || 'utama',
+            waktu: Date.now()
+          };
+          var teks = JSON.stringify(isi);
+          try {
+            localStorage.setItem('app_identity:' + isi.db, teks);
+            localStorage.setItem('app_identity_active', isi.db);
+            localStorage.setItem('app_identity', teks);
+          } catch (e) {
+            /* kuota penuh / mode privat — layar muat tetap jalan */
+          }
+        }
+
+        window.__identitasAwal = {
+          mulai: mulai,
+          salinan: salinan,
+          tema: tema,
+          aksen: aksen,
+          amanUrl: amanUrl,
+          namaBersih: namaBersih,
+          inisial: inisial,
+          palet: palet,
+          faviconInisial: faviconInisial,
+          setFavicon: setFavicon,
+          simpanPublik: simpanPublik
+        };
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- AI2/AI4 — Layar muat netral: tidak ada nama merek sebelum identitas
+         diketahui. Diisi oleh skrip di bawah (salinan perangkat) atau endpoint
+         identitas publik, lalu memudar 200 ms setelah aplikasi siap. -->
+    <div id="layar-muat" class="layar-muat" role="status" aria-live="polite" aria-busy="true">
+      <div class="layar-muat__logo" id="lm-logo" hidden></div>
+      <div class="layar-muat__isi" id="lm-isi" hidden>
+        <div class="layar-muat__nama" id="lm-nama"></div>
+        <div class="layar-muat__tagline" id="lm-tagline" hidden></div>
+      </div>
+      <div class="layar-muat__bilah" aria-hidden="true"></div>
+    </div>
+    <div id="root"></div>
+    <script>
+      (function () {
+        var m = window.__identitasAwal || {};
+        var wadah = document.getElementById('layar-muat');
+        if (!wadah) return;
+        var elLogo = document.getElementById('lm-logo');
+        var elIsi = document.getElementById('lm-isi');
+        var elNama = document.getElementById('lm-nama');
+        var elTagline = document.getElementById('lm-tagline');
+        var mulai = typeof m.mulai === 'number' ? m.mulai : Date.now();
+        var MIN_TAMPIL = 400;
+        var aplikasiSiap = false;
+        var identitasSiap = !!m.salinan;
+        var ambilPublik = !m.salinan;
+        var sudahPudar = false;
+
+        wadah.setAttribute('data-tema', m.tema === 'malam' ? 'malam' : 'siang');
+        if (m.aksen) {
+          wadah.style.setProperty('--lm-aksen', m.aksen.utama);
+          wadah.style.setProperty('--lm-aksen-2', m.aksen.kedua);
+        }
+
+        function pasangLogo(url, nama) {
+          var aman = m.amanUrl(url);
+          var huruf = m.inisial(nama);
+          elLogo.textContent = '';
+          elLogo.classList.remove('layar-muat__logo--gambar');
+          if (aman) {
+            var img = document.createElement('img');
+            img.alt = '';
+            img.addEventListener('error', function () {
+              img.remove();
+              elLogo.classList.remove('layar-muat__logo--gambar');
+              elLogo.textContent = huruf;
+              elLogo.hidden = !huruf;
+            });
+            img.src = aman;
+            elLogo.appendChild(img);
+            elLogo.classList.add('layar-muat__logo--gambar');
+            elLogo.hidden = false;
+            return;
+          }
+          elLogo.textContent = huruf;
+          elLogo.hidden = !huruf;
+        }
+
+        /** Isi layar muat dari data identitas (AI3). */
+        function isi(d) {
+          if (!d) return;
+          var nama = m.namaBersih(d.nama);
+          if (!nama) return;
+          var tagline = m.namaBersih(d.tagline);
+          var tema = d.tema === 'malam' || d.tema === 'siang' ? d.tema : m.tema;
+          var aksenTersimpan = '';
+          try {
+            aksenTersimpan = localStorage.getItem('nusapos.aksen') || '';
+          } catch (e) {}
+          var aksen = m.palet(aksenTersimpan || d.aksen, tema);
+          wadah.setAttribute('data-tema', tema);
+          wadah.style.setProperty('--lm-aksen', aksen.utama);
+          wadah.style.setProperty('--lm-aksen-2', aksen.kedua);
+
+          var logo =
+            tema === 'malam'
+              ? m.amanUrl(d.logoMalam) || m.amanUrl(d.logoSiang)
+              : m.amanUrl(d.logoSiang) || m.amanUrl(d.logoMalam);
+          pasangLogo(m.amanUrl(d.ikonData) || m.amanUrl(d.ikon) || logo, nama);
+
+          elNama.textContent = nama;
+          elNama.title = nama;
+          elTagline.textContent = tagline;
+          elTagline.title = tagline;
+          elTagline.hidden = !tagline;
+          elIsi.hidden = false;
+
+          var judul = m.namaBersih(d.judulTab) || nama;
+          if (judul) document.title = judul;
+          m.setFavicon(
+            m.amanUrl(d.favicon) || m.amanUrl(d.ikonData) || m.amanUrl(d.ikon) || m.faviconInisial(nama, aksen.utama) || '/favicon.svg'
+          );
+        }
+
+        /** Sembunyikan layar muat: minimal 400 ms tampil, lalu fade 200 ms. */
+        function cobaSelesai() {
+          if (sudahPudar || !aplikasiSiap || !identitasSiap) return;
+          sudahPudar = true;
+          var sisa = Math.max(0, MIN_TAMPIL - (Date.now() - mulai));
+          window.setTimeout(function () {
+            wadah.classList.add('layar-muat--pudar');
+            wadah.setAttribute('aria-busy', 'false');
+            window.setTimeout(function () {
+              if (wadah.parentNode) wadah.parentNode.removeChild(wadah);
+            }, 240);
+          }, sisa);
+        }
+
+        /** AI4 — identitas publik tanpa login, batas waktu 1,5 detik. */
+        function ambilIdentitasPublik() {
+          var toko = '';
+          try {
+            toko = (localStorage.getItem('nusapos.tokoAktif') || '').trim();
+          } catch (e) {}
+          var url = '/api/tampilan/identitas-publik' + (toko ? '?toko=' + encodeURIComponent(toko) : '');
+          var kendali = typeof AbortController !== 'undefined' ? new AbortController() : null;
+          var batas = window.setTimeout(function () {
+            if (kendali) kendali.abort();
+          }, 1500);
+          fetch(url, { signal: kendali ? kendali.signal : undefined, headers: { accept: 'application/json' } })
+            .then(function (r) {
+              return r.ok ? r.json() : null;
+            })
+            .then(function (j) {
+              window.clearTimeout(batas);
+              if (j && j.nama) {
+                isi(j);
+                m.simpanPublik(j);
+              }
+            })
+            .catch(function () {
+              window.clearTimeout(batas);
+            })
+            .then(function () {
+              identitasSiap = true;
+              cobaSelesai();
+            });
+        }
+
+        if (m.salinan) {
+          isi(m.salinan);
+        } else if (ambilPublik) {
+          // Kunjungan pertama / perangkat baru: layar muat netral sambil menunggu.
+          ambilIdentitasPublik();
+        }
+
+        /** Dipanggil main.tsx setelah React merender tampilan pertama. */
+        window.__layarMuatSelesai = function () {
+          aplikasiSiap = true;
+          cobaSelesai();
+        };
+
+        /* Pengaman boot: bila React tak kunjung siap (bundel gagal / crash
+           inisialisasi), JANGAN memudarkan splash menjadi blank — tampilkan
+           layar pemulihan. */
+        window.setTimeout(function () {
+          if (window.__aplikasiSiap) {
+            aplikasiSiap = true;
+            identitasSiap = true;
+            cobaSelesai();
+            return;
+          }
+          if (window.__tampilkanGalatBoot) {
+            window.__tampilkanGalatBoot(
+              'Aplikasi tidak merespons dalam 12 detik. Periksa koneksi ke server, atau hapus data lokal lalu muat ulang.'
+            );
+          }
+        }, 12000);
+      })();
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,1416 @@
+/* Modul Purchase — memakai token global (warna, radius, bayangan sama seperti aplikasi). */
+
+.po-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 720px) {
+  .po-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* PO susulan — banner muat sisa & tautan referensi di header Detail PO. */
+.po-susulan-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-top: 12px;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--aksen, #267454);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.po-tautan-susulan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.375rem;
+}
+
+.po-tautan-susulan__pil {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 62.4375rem;
+  background: var(--surface-2);
+  color: var(--teks-redup);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.po-tautan-susulan__pil:hover {
+  color: var(--teks);
+  border-color: var(--primer);
+}
+
+.po-kartu-angka {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-3) var(--sp-4);
+  min-width: 0;
+}
+.po-kartu-angka strong {
+  display: block;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+.po-kartu-angka small {
+  color: var(--teks-redup);
+  font-size: 0.75rem;
+}
+
+.po-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: end;
+}
+.po-filter .bidang {
+  min-width: 9rem;
+  flex: 1 1 9rem;
+}
+/* Baris filter Daftar PO + tombol aksi: [Cari 2x][Status][Pemasok][+Buat PO]. */
+.po-filter--dengan-aksi .bidang--cari { flex: 2 1 12rem; }
+.po-filter--dengan-aksi .bidang--sempit { flex: 1 1 8rem; }
+.po-filter__aksi {
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+}
+.po-filter__aksi .hub-btn {
+  height: 36px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.po-kodi {
+  display: inline-flex;
+  gap: var(--sp-1);
+  align-items: center;
+}
+.po-kodi input {
+  width: 4.5rem;
+  text-align: right;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  font: inherit;
+  background: var(--surface);
+  color: var(--teks);
+}
+.po-kepala {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.po-pengaturan-grup {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.po-pengaturan {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--teks);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.375rem 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.po-saklar {
+  position: relative;
+  display: inline-flex;
+  width: 2.25rem;
+  height: 1.25rem;
+}
+.po-saklar input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.po-saklar__rel {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background 0.15s ease;
+}
+.po-saklar__rel::after {
+  content: '';
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease;
+}
+.po-saklar input:checked + .po-saklar__rel {
+  background: var(--primer);
+}
+.po-saklar input:checked + .po-saklar__rel::after {
+  transform: translateX(1rem);
+}
+.po-saklar input:focus-visible + .po-saklar__rel {
+  outline: 2px solid var(--primer-lembut);
+  outline-offset: 2px;
+}
+.po-kodi input:focus {
+  outline: 2px solid var(--primer-lembut);
+  border-color: var(--primer);
+}
+/* Tabel 2 Barang Datang — selaras Buat PO: layout fixed + kolom proporsional
+   (total 100%) supaya tidak ada teks/input terpotong. */
+.po-tabel--terima { table-layout: fixed; width: 100%; }
+.po-tabel--terima td { overflow-wrap: break-word; vertical-align: middle; }
+.po-tabel--terima .c-barang { width: 24%; }
+.po-tabel--terima .c-sisa { width: 10%; }
+.po-tabel--terima .c-pcs { width: 13%; }
+.po-tabel--terima .c-konv { width: 9%; }
+.po-tabel--terima .c-harga { width: 12%; }
+.po-tabel--terima .c-ket { width: 12%; }
+.po-tabel--terima .c-sub { width: 13%; }
+.po-tabel--terima .c-aksi { width: 7%; }
+/* Input qty utama diketik langsung — tanpa tombol panah Up/Down bawaan. */
+.po-tabel input[type='number']::-webkit-outer-spin-button,
+.po-tabel input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.po-tabel input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.po-footer-sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  background: var(--surface);
+  border-top: 2px solid var(--border);
+  padding: var(--sp-2) var(--sp-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-4);
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+  padding-bottom: calc(var(--sp-2) + var(--kb, 0px));
+}
+/* Buat PO (halaman penuh): toggle kanan atas, grid 4 kolom, keranjang solid. */
+.po-buat-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+.po-buat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-2);
+  align-items: end;
+}
+.po-buat-grid .bidang {
+  min-width: 0;
+  flex: none;
+}
+.po-buat-grid .bidang--penuh {
+  grid-column: 1 / -1;
+}
+@media (max-width: 900px) {
+  .po-buat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .po-buat-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.po-buat-keranjang {
+  margin-top: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+
+.po-footer-sticky .po-total {
+  margin-left: auto;
+  display: flex;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.po-cart-baris-aktif > td {
+  background: var(--row-selected-solid);
+}
+.po-cart-baris-aktif > td:first-child {
+  box-shadow: inset 3px 0 0 var(--primer);
+}
+
+.po-kosong {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+.po-kosong .po-kosong-ikon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+.po-kosong p {
+  margin: 0.5rem auto;
+  max-width: 28rem;
+}
+
+.po-skeleton {
+  border-radius: var(--radius);
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: poKilau 1.2s infinite;
+  min-height: 3rem;
+}
+@keyframes poKilau {
+  to { background-position: -200% 0; }
+}
+
+.po-terima-lebih > td {
+  background: var(--row-warning);
+}
+/* Baris barang luar PO — tint oranye lembut (versi gelap di bawah). */
+.po-terima-luar > td {
+  background: #fffbeb;
+}
+:root[data-theme='dark'] .po-terima-luar > td {
+  background: rgba(251, 146, 60, 0.12);
+}
+/* Barang Datang — penanda baris aktif: seluruh <tr> ikut tersorot saat salah
+   satu field-nya (Datang Hari Ini) menerima fokus, plus garis tebal di kiri
+   nama barang. Garis memakai inset box-shadow agar lebar kolom tidak bergeser
+   (border-left pada <td> bisa mengubah layout tabel). */
+.po-tabel--datang tbody tr:focus-within > td {
+  background-color: rgba(13, 148, 136, 0.12);
+}
+.po-tabel--datang tbody tr:focus-within > td:first-child {
+  box-shadow: inset 4px 0 0 #0d9488;
+}
+:root[data-theme='dark'] .po-tabel--datang tbody tr:focus-within > td {
+  background-color: rgba(13, 148, 136, 0.22);
+}
+/* Lencana "Luar PO" — oranye terang, kontras di tema terang & malam. */
+.lencana--luar {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+  font-weight: 700;
+}
+:root[data-theme='dark'] .lencana--luar {
+  background: rgba(251, 146, 60, 0.18);
+  color: #fdba74;
+  border-color: rgba(253, 186, 116, 0.45);
+}
+/* Tambah barang luar PO: tombol di bawah tabel + picker master produk. */
+.po-luar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.po-luar__tombol {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-style: dashed;
+  font-weight: 600;
+}
+.po-luar__cari {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+.po-luar__cari .cari-barang__input {
+  padding: 0.4375rem 0.625rem;
+  font-size: 0.8125rem;
+}
+.po-luar__cari .cari-barang__hint {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+}
+/* Dropdown barang luar PO — compact (12–13px) agar seragam dengan input item. */
+.po-luar__dropdown .cari-barang__baris {
+  padding: 0.375rem 0.625rem;
+  gap: 0.375rem;
+}
+.po-luar__dropdown .cari-barang__baris-utama {
+  gap: 0.0625rem;
+}
+.po-luar__dropdown .cari-barang__kode {
+  font-size: 0.75rem;
+}
+.po-luar__dropdown .cari-barang__nama {
+  font-size: 0.8125rem;
+}
+.po-luar__dropdown .cari-barang__meta {
+  font-size: 0.75rem;
+}
+.po-luar__sudah {
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-size: 0.6875rem;
+  padding: 0.0625rem 0.375rem;
+}
+.po-luar__hapus {
+  margin-left: 4px;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: #b45309;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.po-luar__hapus:hover { color: #7c2d12; }
+.po-terima-kurang > td {
+  background: var(--row-danger);
+}
+
+.po-template-grid {
+  display: grid;
+  /* 5 pilihan template sejajar di desktop; 2 kolom di tablet, 1 di ponsel. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-2);
+}
+@media (min-width: 40rem) {
+  .po-template-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 64rem) {
+  .po-template-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+.po-template-opsi {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: var(--sp-3);
+  cursor: pointer;
+  font: inherit;
+  color: var(--teks);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.po-template-opsi:hover {
+  border-color: var(--kartu-hover-border);
+  background: var(--kartu-hover-bg);
+}
+.po-template-opsi--aktif {
+  border-color: var(--primer);
+  box-shadow: 0 0 0 2px var(--primer-lembut);
+}
+
+/* Faktur PO resmi — dipakai di modal Detail, layar, dan kertas. */
+.po-faktur {
+  background: #fff;
+  color: #111;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.po-faktur__kop { text-align: center; margin-bottom: 0.75rem; }
+.po-faktur__toko { font-size: 1.25rem; font-weight: 800; }
+.po-faktur__sub { color: #444; font-size: 0.75rem; }
+.po-faktur__judul {
+  font-size: 1rem; font-weight: 800; letter-spacing: 0.02em; margin-top: 0.5rem;
+  color: #1e3a8a; border-top: 2px solid #1e3a8a; border-bottom: 1px solid #1e3a8a;
+  padding: 0.375rem 0;
+}
+@media (max-width: 30rem) {
+  .po-faktur__meta { grid-template-columns: 1fr; }
+}
+.po-faktur__meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.125rem 1rem;
+  border-top: 2px solid #111;
+  border-bottom: 1px solid #999;
+  padding: 0.5rem 0;
+  margin-bottom: 0.75rem;
+}
+.po-faktur__meta > div { display: flex; gap: 0.5rem; }
+.po-faktur__meta span { color: #555; min-width: 4.5rem; }
+.po-faktur__gulir { overflow-x: auto; box-sizing: border-box; max-width: 100%; }
+/* Tabel pas 100% area kertas: layout fixed + lebar 7 kolom proporsional —
+   total tepat 100% sehingga Subtotal tidak terpotong di kanan. */
+.po-faktur__tabel { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
+.po-faktur__tabel th, .po-faktur__tabel td {
+  border: 1px solid #999;
+  padding: 4px 6px;
+  vertical-align: top;
+  word-break: normal;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+}
+/* Kepala boleh membungkus (kolom sempit seperti Subtotal) — anti luber.
+   anywhere memecah kata tunggal hanya bila benar-benar sempit (pratinjau
+   kecil); di A4 penuh header tetap sebaris. */
+.po-faktur__tabel thead th { white-space: normal; overflow-wrap: anywhere; }
+/* Proporsi 7 kolom (total 100%, tanpa Diskon): No 5% | Kode 12% | Nama 36% |
+   Jumlah 16% | Satuan 8% | Harga Satuan 13% | Subtotal 10%. */
+.po-faktur__tabel th:nth-child(1), .po-faktur__tabel td:nth-child(1) {
+  width: 5%; text-align: center;
+}
+.po-faktur__tabel td:nth-child(1) { white-space: nowrap; }
+.po-faktur__tabel th:nth-child(2), .po-faktur__tabel td:nth-child(2) {
+  width: 12%; text-align: center;
+}
+.po-faktur__tabel th:nth-child(3), .po-faktur__tabel td:nth-child(3) {
+  width: 36%;
+}
+.po-faktur__tabel th:nth-child(4), .po-faktur__tabel td:nth-child(4) {
+  width: 16%; text-align: center;
+}
+.po-faktur__tabel th:nth-child(5), .po-faktur__tabel td:nth-child(5) {
+  width: 8%; text-align: center;
+}
+.po-faktur__tabel td:nth-child(5) { white-space: nowrap; }
+.po-faktur__tabel th:nth-child(6), .po-faktur__tabel td:nth-child(6) {
+  width: 13%; text-align: right;
+}
+.po-faktur__tabel th:nth-child(7), .po-faktur__tabel td:nth-child(7) {
+  width: 10%; text-align: right;
+}
+/* Nominal Subtotal 10px: jutaan ("Rp 4.900.000" ≈ 62px) tetap sebaris dalam
+   10% lebar A4 (±72px); pengaman anywhere hanya aktif bila benar-benar
+   sempit (pratinjau kecil) agar tidak berdarah melewati tepi tabel. */
+.po-faktur__tabel td:nth-child(7) {
+  font-size: 10px; white-space: normal; overflow-wrap: anywhere;
+}
+/* Nama barang + badge selisih inline horizontal (badge 8pt hemat ruang).
+   Badge boleh membungkus di pratinjau sempit agar tidak meluber ke kolom
+   Jumlah; di kertas A4 penuh tetap sebaris. */
+.po-faktur__nama-sel .lencana { display: inline-block; white-space: normal; overflow-wrap: anywhere; font-size: 8pt; }
+/* Sel Jumlah boleh membungkus di spasi ("1 Kodi" / "(20 Psg)") agar di
+   pratinjau sempit tidak menutupi kolom Satuan; di A4 penuh tetap sebaris. */
+.po-faktur__jumlah { white-space: normal; overflow-wrap: break-word; }
+/* Pratinjau ramping 80mm (layar saja). */
+.po-faktur--t80 { max-width: 19rem; margin-inline: auto; font-size: 0.75rem; }
+/* Label + select sebaris untuk toolbar kertas & status. */
+.po-sebaris { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.8125rem; }
+.po-sebaris > span { color: var(--teks-redup, #666); white-space: nowrap; }
+.po-sebaris > select, .po-sebaris > input { max-width: 11rem; }
+/* Footer modal "Rincian barang PO": status di kiri, Tutup + Buka Detail di
+   kanan. Tinggi dropdown & tombol seragam 34px agar satu baris sejajar. */
+.po-modal-kaki {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+.po-modal-kaki .po-sebaris {
+  margin: 0;
+  gap: 8px;
+}
+/* Tinggi seragam 34px (px, bukan rem — tidak ikut skala font pengguna). */
+.po-modal-kaki .po-sebaris > select,
+.po-modal-kaki .tombol {
+  height: 34px;
+  min-height: 34px;
+  padding-block: 0;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+.po-modal-kaki .po-sebaris > select {
+  padding-inline: 8px;
+  background: var(--input-bg);
+  color: var(--teks);
+  border-color: var(--input-border);
+}
+.po-modal-kaki__kanan {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Baris AKSI Daftar PO: +Terima & dropdown flex row, gap 6px, vertikal tengah. */
+.po-aksi { display: inline-flex; align-items: center; gap: 6px; justify-content: center; }
+.po-aksi .tombol--kecil { min-height: 30px; }
+/* Tombol utama Terima: solid emerald, teks putih, compact. */
+.po-aksi__terima {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 12px;
+  background: #10b981;
+  color: #fff;
+  border: 1px solid #10b981;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+.po-aksi__terima:hover { background: #0da271; border-color: #0da271; color: #fff; }
+/* Dropdown status kustom: tombol halus + menu popover. */
+.po-aksi__menu { position: relative; display: inline-flex; }
+.po-aksi__tombol {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.po-aksi__tombol:hover:not(:disabled) { border-color: #147a75; }
+.po-aksi__tombol:focus-visible { outline: 2px solid rgba(20, 122, 117, 0.4); outline-offset: 1px; border-color: #147a75; }
+.po-aksi__tombol:disabled { opacity: 0.55; cursor: default; }
+.po-aksi__tombol svg { flex-shrink: 0; color: #6b7280; }
+.po-aksi__label { overflow: hidden; text-overflow: ellipsis; max-width: 9rem; }
+.po-aksi__daftar {
+  position: absolute;
+  top: calc(100% + 4px);
+  inset-inline-end: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 13rem;
+  padding: 4px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+.po-aksi__opsi {
+  display: block;
+  width: 100%;
+  padding: 7px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  text-align: start;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.po-aksi__opsi:hover { background: #f0fdf4; color: #0f766e; }
+.po-aksi__opsi--bahaya { color: #b91c1c; }
+.po-aksi__opsi--bahaya:hover { background: #fef2f2; color: #991b1b; }
+:root[data-theme='dark'] .po-aksi__tombol {
+  background: var(--surface, #222a24);
+  border-color: var(--border, #39443c);
+  color: var(--text, #edf2ed);
+}
+:root[data-theme='dark'] .po-aksi__tombol:hover:not(:disabled) { border-color: #5ccabc; }
+/* Kunci status: PO Selesai menjadi badge statis read-only (tanpa dropdown). */
+.po-aksi__kunci {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  background: var(--surface-2, #f3f4f6);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--teks-redup, #6b7280);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: default;
+}
+:root[data-theme='dark'] .po-aksi__kunci {
+  background: var(--surface-2, #222a24);
+  border-color: var(--border, #39443c);
+  color: var(--text-muted, #9ba99f);
+}
+:root[data-theme='dark'] .po-aksi__tombol svg { color: var(--text-muted, #9ba99f); }
+:root[data-theme='dark'] .po-aksi__opsi { color: var(--text, #edf2ed); }
+:root[data-theme='dark'] .po-aksi__opsi:hover { background: rgba(92, 202, 188, 0.14); color: #7adfd3; }
+:root[data-theme='dark'] .po-aksi__opsi--bahaya { color: #fca5a5; }
+:root[data-theme='dark'] .po-aksi__opsi--bahaya:hover { background: rgba(248, 113, 113, 0.14); color: #fecaca; }
+/* Baris judul modul ramping pengganti kartu banner: judul kiri, aksi kanan. */
+.po-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+}
+.po-bar h2 {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.po-bar__aksi { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.po-bar__sub { margin: -8px 0 0; }
+
+/* Tombol emerald solid (Simpan & Update Stok). */
+.tombol--emerald {
+  background: #10b981;
+  border: 1px solid #10b981;
+  color: #fff;
+}
+.tombol--emerald:hover:not(:disabled) { background: #0da271; border-color: #0da271; color: #fff; }
+:root[data-theme='dark'] .tombol--emerald { background: #10b981; border-color: #10b981; color: #fff; }
+:root[data-theme='dark'] .tombol--emerald:hover:not(:disabled) { background: #0da271; border-color: #0da271; }
+
+/* Kartu info PO di Barang Datang: 4 stat + badge status. */
+.po-terima-kartu {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: 8px 16px;
+  align-items: center;
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius, 8px);
+  padding: 10px 14px;
+}
+.po-terima-kartu__item { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.po-terima-kartu__item > span { font-size: 11px; font-weight: 500; color: var(--teks-redup, #6b7280); }
+.po-terima-kartu__item > strong { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.po-terima-kartu__status { justify-self: end; }
+@media (max-width: 900px) {
+  .po-terima-kartu { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .po-terima-kartu__status { justify-self: start; }
+}
+
+/* Input Datang Hari Ini: angka compact 34px. */
+.po-terima-qty { display: inline-flex; align-items: center; gap: 6px; }
+.po-terima-qty input {
+  width: 6rem;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  background: var(--surface, #fff);
+}
+.po-terima-qty input:focus { outline: 2px solid rgba(20, 122, 117, 0.4); outline-offset: 0; border-color: #147a75; }
+
+/* Baris aksi faktur PO: dropdown ukuran kertas + Print/PDF & WhatsApp sejajar
+   mendatar dengan jarak 8px dan tinggi tombol yang seragam. */
+.po-aksi-faktur {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.po-aksi-faktur__tombol {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+.po-aksi-faktur .po-sebaris,
+.po-aksi-faktur .tombol {
+  min-height: 36px;
+  height: 36px;
+  box-sizing: border-box;
+}
+.po-aksi-faktur .po-sebaris > select {
+  height: 36px;
+  min-height: 36px;
+  background: var(--input-bg);
+  color: var(--teks);
+  border: 1px solid var(--input-border);
+  border-radius: 0.5rem;
+  padding-inline: 8px;
+}
+.po-aksi-faktur .tombol {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Tombol WhatsApp — solid hijau aksen WhatsApp. Selector sengaja menyertakan
+   :not() varian lain agar menang atas aturan tema gelap ".tombol generik". */
+.tombol.tombol--wa {
+  background: #1da851;
+  border-color: #1da851;
+  color: #fff;
+}
+.tombol.tombol--wa:hover:not(:disabled) {
+  background: #178f44;
+  border-color: #178f44;
+}
+:root[data-theme='dark'] .tombol.tombol--wa:not(.tombol--primer):not(.tombol--netral):not(.tombol--bahaya):not(.tombol--sukses) {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #08210f;
+}
+:root[data-theme='dark'] .tombol.tombol--wa:not(.tombol--primer):not(.tombol--netral):not(.tombol--bahaya):not(.tombol--sukses):hover:not(:disabled) {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #08210f;
+}
+
+/* Stepper siklus PO manual. */
+.po-siklus { display: flex; align-items: center; gap: 0; margin: 8px 0 0; flex-wrap: wrap; }
+.po-siklus__tahap {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  font-size: 0.75rem; color: var(--teks-redup, #666);
+  padding: 0.125rem 0.5rem; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface-2, #f6f6f6);
+}
+.po-siklus__tahap--aktif { color: var(--teks); border-color: var(--accent); font-weight: 700; background: var(--accent-soft); }
+.po-siklus__tahap--lewat { color: var(--success-text, #1a7f37); border-color: var(--success-border, #1a7f37); }
+.po-siklus__garis { width: 1.25rem; height: 1px; background: var(--border); }
+.po-faktur__tabel thead th { background: #f0f0f0; }
+.po-faktur__ringkas {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+.po-faktur__terbilang { flex: 1 1 16rem; min-width: 0; }
+.po-faktur__terbilang > span:first-child { color: #555; font-size: 0.75rem; display: block; }
+.po-faktur__terbilang em { font-style: italic; }
+.po-faktur__totalqty { display: block; margin-top: 0.25rem; color: #555; font-size: 0.75rem; }
+.po-faktur__total { min-width: 14rem; }
+.po-faktur__total > div { display: flex; justify-content: space-between; gap: 1rem; padding: 0.125rem 0; }
+.po-faktur__grand { border-top: 2px solid #111; margin-top: 0.25rem; padding-top: 0.375rem !important; font-size: 1rem; }
+.po-faktur__catatan { margin-top: 0.5rem; font-size: 0.75rem; color: #333; }
+.po-faktur__ttd {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+.po-faktur__ttd > div { display: flex; flex-direction: column; gap: 3rem; min-width: 10rem; }
+.po-faktur__nama { font-weight: 700; }
+
+/* Cetak PO — hanya area .po-cetak yang keluar di kertas. */
+.po-cetak { display: none; }
+.po-cetak .po-faktur { border: 0; border-radius: 0; padding: 0; }
+.po-cetak .po-faktur__judul { color: #000; border-color: #000; }
+.po-cetak .po-faktur__gulir { overflow: hidden; }
+.po-cetak .po-faktur { overflow: hidden; }
+.po-cetak .po-faktur__tabel { table-layout: fixed; }
+.po-cetak .po-faktur__tabel tr { page-break-inside: avoid; }
+.po-cetak .po-faktur__tabel thead { display: table-header-group; }
+.po-cetak .lencana { border: 1px solid #666; }
+.po-cetak .po-faktur__ttd > div { gap: 2.5rem; }
+@media print {
+  body * { visibility: hidden; }
+  .po-cetak, .po-cetak * { visibility: visible; }
+  .po-cetak {
+    display: block;
+    position: absolute;
+    left: 0; top: 0; right: 0;
+    padding: 16px;
+    color: #000;
+    background: #fff;
+  }
+  .po-cetak table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
+  .po-cetak th, .po-cetak td { border: 1px solid #999; padding: 4px 6px; }
+  .po-cetak h2 { margin: 0 0 4px; font-size: 18px; text-align: center; }
+  .po-cetak .po-cetak-meta { margin: 8px 0; font-size: 12px; }
+}
+
+/* Barang Datang — tata letak padat: satu alur vertikal tanpa jeda kosong. */
+.po-terima-padat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+.po-terima-padat > .kartu__kepala {
+  margin-bottom: 0;
+}
+.po-terima-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.po-terima-topbar .cari-barang {
+  flex: 1 1 18rem;
+}
+.po-terima-aksi {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.po-terima-meta {
+  display: flex;
+  align-items: end;
+  gap: 4px 12px;
+  flex-wrap: wrap;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+.po-terima-info {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+.po-terima-info strong {
+  font-size: 1.1rem;
+}
+.po-terima-meta .bidang {
+  flex: 1 1 8rem;
+  min-width: 8rem;
+  margin: 0;
+}
+
+/* Scan barcode Barang Datang (F2) — input lebar + badge shortcut + kilat
+   hijau (berhasil) / merah (kode tidak ada di PO). */
+.po-scan {
+  display: flex;
+  align-items: end;
+  gap: 4px 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.po-scan__bidang {
+  flex: 1 1 26rem;
+  min-width: 16rem;
+  margin: 0;
+}
+.po-scan__input {
+  position: relative;
+  display: block;
+}
+.po-scan__input input {
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 52px 0 12px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  color: var(--teks);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.po-scan__input input:focus {
+  outline: none;
+  border-color: #147a75;
+  box-shadow: 0 0 0 3px rgba(20, 122, 117, 0.18);
+}
+.po-scan__kbd,
+.po-scan__kbd-inline {
+  display: inline-block;
+  padding: 2px 7px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--teks-redup);
+}
+.po-scan__kbd {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.po-scan__kbd-inline {
+  margin: 0 4px;
+  font-size: 10px;
+  padding: 1px 5px;
+}
+.po-scan__petunjuk {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 11px;
+  color: var(--teks-redup, #6b7280);
+}
+.po-scan__input--ok input {
+  animation: po-scan-ok 0.7s ease-out;
+}
+.po-scan__input--gagal input {
+  animation: po-scan-gagal 0.7s ease-out;
+}
+@keyframes po-scan-ok {
+  0% {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.35);
+  }
+  100% {
+    border-color: var(--border);
+    background: var(--surface, #fff);
+    box-shadow: none;
+  }
+}
+@keyframes po-scan-gagal {
+  0% {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.35);
+  }
+  100% {
+    border-color: var(--border);
+    background: var(--surface, #fff);
+    box-shadow: none;
+  }
+}
+.po-terima-blok {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+/* CariBarang di dalam alur kolom: jangan pakai basis flex 320px (itu untuk
+   konteks baris) — kalau ikut, wadah jadi setinggi ±320px dan dropdown
+   absolute (top: 100%) terdorong jauh ke bawah meninggalkan gap putih. */
+.po-terima-blok .cari-barang {
+  flex: none;
+}
+.po-terima-padat .po-kosong {
+  padding: 1rem;
+}
+.po-terima-padat .po-kosong .po-kosong-ikon {
+  font-size: 1.75rem;
+}
+
+/* Tabel jadi kartu di layar kecil (konsisten dengan pola aplikasi). */
+@media (max-width: 760px) {
+  .po-tabel thead { display: none; }
+  .po-tabel tbody tr {
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: 0.625rem;
+    margin-bottom: 0.625rem;
+    padding: 0.5rem 0.625rem;
+    background: var(--surface);
+  }
+  .po-tabel td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.625rem;
+    border: 0;
+    padding: 0.1875rem 0;
+  }
+  .po-tabel td::before {
+    content: attr(data-label);
+    font-size: 0.75rem;
+    color: var(--teks-redup);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+}
+
+/* --- Dropdown cari barang: SALINAN PERIS dari pembelian.css -----------------
+ * Halaman PO memakai komponen CariBarang yang sama dengan Modul Pembelian,
+ * jadi blok gaya ini disalin 1:1 agar tampilannya 100% identik.
+ * Kalau gaya dropdown di pembelian.css diubah, salin lagi ke sini.
+ * (Sumber: src/pages/pembelian/pembelian.css → "Mode Biasa: kolom cari") --- */
+.cari-barang {
+  position: relative;
+  flex: 1 1 320px;
+  min-width: 0;
+}
+.cari-barang__input {
+  width: 100%;
+  padding: 0.6875rem 0.875rem;
+  border: 1.5px solid var(--primer);
+  border-radius: 0.5rem;
+  font: inherit;
+  font-size: 0.875rem;
+  background: var(--surface);
+}
+.cari-barang__input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primer-lembut);
+}
+.cari-barang__input:disabled {
+  border-color: var(--border);
+  background: var(--surface-2);
+  cursor: not-allowed;
+}
+.cari-barang__hint {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: var(--waspada);
+}
+.cari-barang__status {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+.cari-barang__dropdown {
+  position: absolute;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  top: calc(100% + 0.25rem);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  box-shadow: 0 14px 32px rgba(16, 24, 40, 0.14);
+  max-height: 23.75rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.cari-barang__baris {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+.cari-barang__baris:hover:not(.terpilih) {
+  background: color-mix(in srgb, #10b981 7%, transparent);
+}
+/* Baris terpilih: highlight emerald + panah penunjuk + badge Enter. */
+.cari-barang__baris.terpilih {
+  background: color-mix(in srgb, #10b981 16%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #10b981 55%, transparent);
+  padding-left: 1.9rem;
+  padding-right: 5rem;
+}
+.cari-barang__baris.terpilih::before {
+  content: '\279C';
+  position: absolute;
+  left: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--success);
+}
+.cari-barang__baris.terpilih::after {
+  content: 'Enter \21B5';
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.0625rem 0.375rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, #10b981 45%, transparent);
+  background: color-mix(in srgb, #10b981 14%, transparent);
+  color: var(--success);
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.cari-barang__baris-utama {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+  flex: 1;
+}
+.cari-barang__kode {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primer-teks);
+  font-family: ui-monospace, monospace;
+}
+.cari-barang__nama {
+  font-size: 0.875rem;
+}
+.cari-barang__meta {
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+.cari-barang__baris mark {
+  background: var(--warning-soft);
+  color: inherit;
+  padding: 0 0.0625rem;
+  border-radius: 0.125rem;
+}
+.cari-barang__kaki,
+.cari-barang__kosong {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-2);
+}
+
+/* Harga satuan dua baris: per psg + per kodi. Boleh membungkus (spasi
+   sebagai titik wrap) agar di pratinjau sempit tidak menutupi kolom lain;
+   di kertas A4 penuh tetap satu baris per baris. */
+.po-faktur__harga span { display: block; }
+.po-faktur__harga small {
+  display: block; color: #444; font-size: 9px;
+  white-space: normal; overflow-wrap: anywhere;
+}
+/* Baris Net Payment: total tagihan bersih berbasis qty DITERIMA. */
+.po-faktur__net {
+  border-top: 1px dashed #666;
+  margin-top: 0.125rem;
+  padding-top: 0.25rem !important;
+}
+.po-faktur__net strong { color: #1e3a8a; }
+
+/* Monitoring per pemasok: kartu + bar progress pengiriman. */
+.po-sup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: 12px;
+  margin-top: 12px;
+  align-items: stretch;
+}
+.po-sup-kartu {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-3) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+.po-sup-kartu__kepala {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.po-sup-kartu__kepala strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.po-sup-bar {
+  height: 0.625rem;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+.po-sup-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--primer);
+  transition: width 0.25s ease;
+}
+.po-sup-bar--penuh > span { background: var(--sukses, #1a7f37); }
+.po-sup-bar--lebih > span { background: var(--waspada, #b45309); }
+.po-sup-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+  font-variant-numeric: tabular-nums;
+}
+.po-sup-aksi {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  flex-wrap: wrap;
+}
+/* Modal tambah barang: daftar hasil cari produk. */
+.po-tambah-hasil {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 12rem;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.25rem;
+}
+.po-tambah-hasil button {
+  text-align: left;
+  font: inherit;
+  color: var(--teks);
+  background: var(--surface);
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  cursor: pointer;
+}
+.po-tambah-hasil button:hover { border-color: var(--primer); background: var(--surface-2); }
+/* Baris hasil terpilih (panah ↑/↓): highlight emerald + badge Enter. */
+.po-tambah-hasil button.terpilih {
+  position: relative;
+  border-color: color-mix(in srgb, #10b981 55%, transparent);
+  background: color-mix(in srgb, #10b981 16%, var(--surface));
+  padding-left: 1.9rem;
+  padding-right: 5rem;
+}
+.po-tambah-hasil button.terpilih::before {
+  content: '\279C';
+  position: absolute;
+  left: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--success);
+}
+.po-tambah-hasil button.terpilih::after {
+  content: 'Enter \21B5';
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.0625rem 0.375rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, #10b981 45%, transparent);
+  background: color-mix(in srgb, #10b981 14%, transparent);
+  color: var(--success);
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.po-tambah-pilih {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.625rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Baris form 2 kolom 50:50 — Tenggat (kiri) & Catatan (kanan) pada satu baris
+   agar sisa ruang dipakai tabel item, bukan field catatan selebar penuh. */
+.po-buat-grid > .po-baris-dua {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+  align-items: end;
+}
+.po-buat-grid > .po-baris-dua > .bidang {
+  min-width: 0;
+}
+@media (max-width: 560px) {
+  .po-buat-grid > .po-baris-dua {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Kolom cari/scan dibuat ringkas: proporsi, padding, dan ukuran huruf mengikuti
+   kolom pencarian modul Item Masuk/POS — tidak lagi memenuhi lebar & tinggi
+   kartu keranjang. */
+.po-buat-keranjang .cari-barang {
+  max-width: 34rem;
+}
+.po-buat-keranjang .cari-barang__input {
+  padding: 0.4375rem 0.75rem;
+  border-width: 1px;
+  border-radius: 0.625rem;
+  font-size: 0.8125rem;
+}
+.po-buat-keranjang .cari-barang__hint {
+  font-size: 0.7188rem;
+}
+
+/* ==========================================================================
+   TABEL PURCHASE — tampilan maksimal 10 baris + scroll internal
+   --------------------------------------------------------------------------
+   Dipakai oleh Buat/Edit PO, Barang Datang (GRN), Detail PO, Daftar PO dan
+   Laporan PO. Hanya tampilan: tinggi area tabel dibatasi (~10 baris × 48–52px),
+   header kolom menempel di atas, dan baris yang sedang difokus ditandai toska.
+   Footer ringkasan di bawah tabel tidak ikut terdorong keluar layar.
+   ========================================================================== */
+.tabel-bungkus.po-tabel-gulir.po-tabel-gulir {
+  max-height: 520px;
+  overflow-y: auto;
+  overflow-x: auto;
+  /* auto = rantai gulir ke halaman saat tabel mencapai batas atas/bawah. */
+  overscroll-behavior: auto;
+  scroll-behavior: smooth;
+}
+
+/* Header lengket di puncak area gulir (menutupi baris yang lewat di bawahnya). */
+.tabel-bungkus.po-tabel-gulir.po-tabel-gulir > .tabel thead th {
+  top: 0;
+  z-index: 10;
+  background: var(--surface-2);
+  box-shadow: inset 0 -1px 0 var(--border);
+}
+
+/* Baris aktif (ada fokus di salah satu input/tombol baris) — aksen toska. */
+.tabel-bungkus.po-tabel-gulir.po-tabel-gulir > .tabel tbody > tr:focus-within {
+  background-color: rgba(13, 148, 136, 0.12);
+}
+
+.tabel-bungkus.po-tabel-gulir.po-tabel-gulir > .tabel tbody > tr:focus-within > td:first-child {
+  box-shadow: inset 4px 0 0 #0d9488;
+}
+
+/* Ponsel: tabel berubah menjadi kartu bertumpuk — biarkan halaman menggulir. */
+@media (max-width: 767.98px) {
+  .tabel-bungkus.po-tabel-gulir.po-tabel-gulir {
+    max-height: none;
+    overflow-y: visible;
+  }
+}

@@ -1,0 +1,36 @@
+# Dependencies and generated output
+node_modules
+dist
+coverage
+.vite
+
+# Secrets and local environment files
+.env
+.env.*
+
+# Source control and development tooling
+.git
+.vscode
+.idea
+.preview-pid
+.pratinjau-http.cjs
+
+# Runtime state, local databases, backups, and archives
+data
+backups
+_archiv
+_arsip
+.freebuff
+.cloud-attachments
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.dump
+*.sql.gz
+*.tar
+
+# Logs and OS metadata
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,295 @@
+/* ============================================================================
+   TAHAP 1 & 2 — Layar Log In, Lupa/Reset Password, Wajib Ganti Password.
+   Sepenuhnya memakai variabel tema (terang/gelap) yang sudah ada.
+   ========================================================================== */
+
+.login-layar {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.5rem 1rem;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, var(--primer-lembut), transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, var(--primer-lembut), transparent 55%),
+    var(--surface-2);
+}
+
+.login-kartu {
+  width: 100%;
+  max-width: 25rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--bayangan);
+  padding: 1.75rem 1.625rem 1.375rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+
+.login-merek {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  text-align: center;
+}
+
+.login-logo {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+}
+
+.login-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.login-merek h1 {
+  margin: 0.375rem 0 0;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+}
+
+.login-tagline {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--teks-redup);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.login-sandi-kotak {
+  position: relative;
+  display: flex;
+}
+
+.login-sandi-kotak input {
+  width: 100%;
+  padding-right: 2.625rem;
+}
+
+.login-mata {
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: var(--teks-redup);
+  padding: 0.375rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.login-mata:hover,
+.login-mata:focus-visible {
+  color: var(--primer-teks);
+  background: var(--primer-lembut);
+}
+
+.login-ingat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8438rem;
+  color: var(--teks);
+  cursor: pointer;
+  user-select: none;
+}
+
+.login-ingat input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--primer);
+  cursor: pointer;
+}
+
+.login-pesan {
+  margin: 0;
+  font-size: 0.8125rem;
+  padding: 0.5625rem 0.75rem;
+  border-radius: 0.625rem;
+  line-height: 1.45;
+}
+
+.login-pesan--galat {
+  background: var(--danger-soft, rgba(239, 68, 68, 0.12));
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+
+.login-pesan--sukses {
+  background: var(--sukses-soft, rgba(16, 185, 129, 0.12));
+  color: var(--sukses);
+  border: 1px solid var(--sukses);
+}
+
+.login-pesan--info {
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+  border: 1px solid var(--primer);
+}
+
+.login-masuk {
+  width: 100%;
+  justify-content: center;
+  padding: 0.625rem 1rem;
+  font-weight: 600;
+}
+
+.login-kaki {
+  text-align: center;
+  font-size: 0.8438rem;
+}
+
+.login-kaki a {
+  color: var(--primer-teks);
+}
+
+.login-kaki-bawah {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+  text-align: center;
+  max-width: 26.25rem;
+}
+
+/* Layar lebar (lupa/reset/wajib ganti) memakai kartu yang sama ------------- */
+.login-layar .login-kartu--lebar {
+  max-width: 28.75rem;
+}
+
+.login-aksi {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.login-aksi--kanan {
+  justify-content: flex-end;
+}
+
+.login-kode-daftar {
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  word-break: break-all;
+  columns: 2;
+  column-gap: 1.125rem;
+}
+
+.login-rincian {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--teks-redup);
+  line-height: 1.55;
+}
+
+.login-blok {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  background: var(--surface-2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.login-blok h3 {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* ----------------------- indikator kekuatan password --------------------- */
+.sandi-indikator {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.sandi-indikator__bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.3125rem;
+}
+
+.sandi-indikator__bar span {
+  height: 0.3125rem;
+  border-radius: 62.4375rem;
+  background: var(--border);
+  transition: background 0.15s ease;
+}
+
+.sandi-indikator__bar[data-skor='1'] span.aktif {
+  background: var(--danger);
+}
+.sandi-indikator__bar[data-skor='2'] span.aktif {
+  background: var(--waspada, #f59e0b);
+}
+.sandi-indikator__bar[data-skor='3'] span.aktif,
+.sandi-indikator__bar[data-skor='4'] span.aktif {
+  background: var(--sukses);
+}
+
+.sandi-indikator__teks {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+
+.sandi-indikator__syarat {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sandi-indikator__syarat span {
+  color: var(--teks-redup);
+}
+
+.sandi-indikator__syarat span.ok {
+  color: var(--sukses);
+}
+
+.sandi-indikator__syarat i {
+  font-style: normal;
+  opacity: 0.5;
+  margin-right: 0.375rem;
+}
+
+@media (max-width: 420px) {
+  .login-kartu {
+    padding: 1.375rem 1.125rem 1.125rem;
+  }
+
+  .login-kode-daftar {
+    columns: 1;
+  }
+}

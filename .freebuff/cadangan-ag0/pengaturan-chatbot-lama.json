@@ -1,0 +1,16 @@
+{
+  "diekspor_pada": "2026-10-16T05:54:02.667Z",
+  "pengaturan_chatbot_lama": [
+    {
+      "kunci": "aturan_kodi",
+      "nilai": "{\"per_kodi\":20,\"normal\":{\"39\":4,\"40\":4,\"41\":4,\"42\":4,\"43\":4}}",
+      "keterangan": "Aturan per kodi untuk parser Chatbot: jumlah pasang per kodi & jatah per size"
+    },
+    {
+      "kunci": "size_profile_default",
+      "nilai": "sepatu-pria",
+      "keterangan": "Profil size default untuk chatbot (kode profil)"
+    }
+  ],
+  "jumlah_riwayat_chat_lama": 26
+}

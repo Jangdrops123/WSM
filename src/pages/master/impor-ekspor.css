@@ -1,0 +1,860 @@
+/* ==========================================================================
+   Impor Excel (wizard 4 langkah) & Ekspor Excel / PDF — modul Master ▸ Produk
+   ========================================================================== */
+
+/* Dialog wizard lebih lebar dari modal--lebar bawaan (1020px). */
+.modal--sangat {
+  max-width: 77.5rem;
+}
+
+/* --- Wizard bersama (impor & ekspor) ------------------------------------- */
+
+.wiz-langkah {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.wiz-langkah__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  padding: 0.375rem 0.8125rem;
+  border-radius: 62.4375rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--teks-redup);
+  font-size: 0.7813rem;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.wiz-langkah__item b {
+  display: inline-grid;
+  place-items: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--teks-redup);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+.wiz-langkah__item--aktif {
+  border-color: var(--primer);
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+}
+
+.wiz-langkah__item--aktif b {
+  background: var(--primer);
+  color: var(--accent-contrast, #fff);
+}
+.wiz-langkah__item--selesai {
+  border-color: var(--success-soft);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.wiz-langkah__item--selesai b {
+  background: var(--success-fill);
+  color: #fff;
+}
+.wiz-langkah__pipa {
+  width: 1.125rem;
+  height: 0.0625rem;
+  background: var(--border);
+  flex: 0 0 auto;
+}
+
+/* Dua kolom: isi utama + panel kanan (info file, opsi, hasil pengecekan). */
+.wiz-badan {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 306px;
+  gap: 1.125rem;
+  align-items: start;
+}
+.wiz-utama {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wiz-panel {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface-2);
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  position: sticky;
+  top: 0;
+  /* AB4 — panel pengecekan tetap satu layar: gulir internal bila panjang. */
+  max-height: min(72vh, 48.75rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.wiz-panel__blok h5 {
+  margin: 0 0 0.5rem;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teks-redup);
+  font-weight: 650;
+}
+
+.wiz-panel__baris {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.625rem;
+  font-size: 0.7813rem;
+  padding: 0.1875rem 0;
+}
+.wiz-panel__baris span:first-child {
+  color: var(--teks-redup);
+}
+
+.wiz-panel__baris span:last-child {
+  text-align: right;
+  word-break: break-word;
+}
+.wiz-opsi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5625rem;
+}
+
+.wiz-opsi label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.7813rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.wiz-opsi input {
+  margin-top: 0.125rem;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  accent-color: var(--primer);
+  flex: 0 0 auto;
+}
+
+/* --- Langkah 1: unggah file ---------------------------------------------- */
+
+.wiz-unggah {
+  border: 2px dashed var(--border);
+  border-radius: 0.875rem;
+  background: var(--surface-2);
+  padding: 2.875rem 1.375rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+.wiz-unggah:hover,
+.wiz-unggah:focus-visible {
+  border-color: var(--primer);
+  background: var(--primer-lembut);
+  outline: none;
+}
+
+.wiz-unggah--aktif {
+  border-color: var(--primer);
+  background: var(--primer-lembut);
+}
+.wiz-unggah__ikon {
+  display: grid;
+  place-items: center;
+  width: 3.375rem;
+  height: 3.375rem;
+  margin: 0 auto 0.75rem;
+  border-radius: 50%;
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+}
+
+.wiz-unggah h4 {
+  margin: 0 0 0.375rem;
+  font-size: 0.9375rem;
+}
+.wiz-unggah p {
+  margin: 0;
+  color: var(--teks-redup);
+  font-size: 0.8125rem;
+}
+
+.wiz-unggah__file {
+  margin-top: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4375rem 0.8125rem;
+  border-radius: 62.4375rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.7813rem;
+  font-family: ui-monospace, "Courier New", monospace;
+}
+/* --- Langkah 2: cocokkan kolom ------------------------------------------- */
+
+.wiz-pemetaan {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.wiz-pemetaan th,
+.wiz-pemetaan td {
+  padding: 0.5rem 0.625rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+.wiz-pemetaan thead th {
+  font-size: 0.7188rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--teks-redup);
+  font-weight: 650;
+  background: var(--surface-2);
+  position: sticky;
+  top: 0;
+}
+
+.wiz-pemetaan select {
+  width: 100%;
+  min-width: 10.625rem;
+  padding: 0.4375rem 0.5625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--teks);
+  font: inherit;
+  font-size: 0.7813rem;
+}
+.wiz-pemetaan select:focus {
+  outline: 2px solid var(--primer-lembut);
+  border-color: var(--primer);
+}
+
+.wiz-pemetaan__nama {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.wiz-pemetaan__ket {
+  color: var(--teks-redup);
+  font-size: 0.7188rem;
+  margin-top: 0.125rem;
+  white-space: normal;
+  max-width: 20rem;
+}
+
+.wiz-pemetaan__contoh {
+  font-family: ui-monospace, "Courier New", monospace;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+  word-break: break-all;
+  max-width: 13.75rem;
+}
+.wiz-pemetaan__baris--kosong td {
+  background: var(--warning-soft);
+}
+
+/* --- Hasil pengecekan (panel kanan) -------------------------------------- */
+
+.hasil-cek {
+  display: grid;
+  gap: 0.4375rem;
+}
+.hasil-cek__baris {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.625rem;
+  padding: 0.5rem 0.6875rem;
+  border-radius: 0.5625rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.7813rem;
+}
+
+.hasil-cek__baris b {
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+.hasil-cek__baris--valid {
+  border-color: var(--success-soft);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.hasil-cek__baris--peringatan {
+  border-color: var(--warning-soft);
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+.hasil-cek__baris--error {
+  border-color: var(--danger-soft);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* --- Banner peringatan / info dalam wizard -------------------------------- */
+
+.wiz-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5625rem;
+  padding: 0.625rem 0.8125rem;
+  border-radius: 0.625rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  border: 1px solid var(--border);
+}
+/* Banner ringkas di panel kanan (alasan terbanyak) — tanpa ikon besar. */
+.wiz-banner--rapat {
+  margin-top: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  font-size: 0.7813rem;
+  align-items: center;
+}
+
+.wiz-banner--rapat svg {
+  flex: 0 0 auto;
+}
+.wiz-banner--peringatan {
+  background: var(--warning-soft);
+  border-color: var(--warning-fill);
+  color: var(--warning);
+}
+
+.wiz-banner--galat {
+  background: var(--danger-soft);
+  border-color: var(--danger-fill);
+  color: var(--danger);
+}
+.wiz-banner--sukses {
+  background: var(--success-soft);
+  border-color: var(--success-fill);
+  color: var(--success);
+}
+
+/* --- Langkah 3: pratinjau & langkah 4: selesai ---------------------------- */
+
+.wiz-tabel-bungkus {
+  max-height: 46vh;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+}
+/* --- AB1: alat filter + tabel detail error ------------------------------- */
+
+.wiz-error-alat {
+  display: flex;
+  align-items: center;
+  gap: 0.5625rem;
+  flex-wrap: wrap;
+  margin: 0 0 0.5rem;
+}
+
+.wiz-error-alat input {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 0.4375rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--teks);
+  font-size: 0.7813rem;
+}
+/* Tabel error: kolom Alasan lebar tapi teks tetap membungkus (tanpa overflow). */
+.wiz-tabel-error th,
+.wiz-tabel-error td {
+  padding: 0.4375rem 0.625rem;
+  font-size: 0.7813rem;
+  vertical-align: top;
+}
+
+.wiz-tabel-error th:nth-child(1),
+.wiz-tabel-error td:nth-child(1) {
+  width: 4.625rem;
+  white-space: nowrap;
+}
+.wiz-tabel-error th:nth-child(2),
+.wiz-tabel-error td:nth-child(2) {
+  width: 7.5rem;
+}
+
+.wiz-tabel-error td:nth-child(3) {
+  max-width: 11.25rem;
+  overflow-wrap: anywhere;
+  color: var(--teks-redup);
+}
+.wiz-tabel-error td:nth-child(4) {
+  min-width: 15rem;
+  overflow-wrap: anywhere;
+}
+
+/* --- AB3: progres indeterminatif saat konfirmasi impor ------------------- */
+
+.wiz-progres {
+  height: 0.4375rem;
+  margin: 0.625rem 0 0.75rem;
+  border-radius: 62.4375rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.wiz-progres span {
+  display: block;
+  height: 100%;
+  width: 38%;
+  border-radius: 62.4375rem;
+  background: var(--primer);
+  animation: wiz-progres-geser 1.1s ease-in-out infinite;
+}
+
+@keyframes wiz-progres-geser {0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {.wiz-progres span {
+    animation: none;
+    width: 100%;
+    opacity: 0.65;
+  }
+}
+.wiz-selesai {
+  text-align: center;
+  padding: 1.625rem 0.75rem 0.625rem;
+}
+
+.wiz-selesai__ikon {
+  display: grid;
+  place-items: center;
+  width: 4.125rem;
+  height: 4.125rem;
+  margin: 0 auto 0.875rem;
+  border-radius: 50%;
+  background: var(--success-soft);
+  color: var(--success);
+}
+.wiz-selesai__ikon--peringatan {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.wiz-selesai__ikon--galat {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.wiz-selesai h4 {
+  margin: 0 0 0.375rem;
+  font-size: 1rem;
+}
+
+.wiz-selesai p {
+  margin: 0;
+  color: var(--teks-redup);
+  font-size: 0.8125rem;
+}
+.wiz-selesai__angka {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.625rem;
+  margin: 1.125rem 0 0.375rem;
+}
+
+.wiz-selesai__angka > div {
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  padding: 0.75rem;
+  background: var(--surface-2);
+}
+.wiz-selesai__angka strong {
+  display: block;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.wiz-selesai__angka span {
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+/* ==========================================================================
+   Ekspor Excel
+   ========================================================================== */
+
+.ekspor-badan {
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr);
+  gap: 1.125rem;
+  align-items: start;
+}
+
+.ekspor-kiri {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface-2);
+  padding: 0.875rem;
+  max-height: 68vh;
+  overflow-y: auto;
+}
+.ekspor-kiri h5 {
+  margin: 0 0 0.5rem;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teks-redup);
+  font-weight: 650;
+}
+
+.ekspor-kolom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+.ekspor-kolom__baris {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.4375rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.ekspor-kolom__baris:hover {
+  background: var(--surface);
+}
+.ekspor-kolom__baris input {
+  width: 0.9375rem;
+  height: 0.9375rem;
+  accent-color: var(--primer);
+  flex: 0 0 auto;
+}
+
+.ekspor-kolom__baris small {
+  margin-left: auto;
+  color: var(--teks-redup);
+  font-size: 0.6875rem;
+}
+.ekspor-kolom__alat {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.ekspor-pilih {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.ekspor-pilih label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+
+.ekspor-pilih select,
+.ekspor-pilih input[type="text"] {
+  padding: 0.4375rem 0.5625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--teks);
+  font: inherit;
+  font-size: 0.7813rem;
+}
+.ekspor-centang {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7813rem;
+  color: var(--teks);
+  cursor: pointer;
+}
+
+.ekspor-centang input {
+  width: 0.9375rem;
+  height: 0.9375rem;
+  accent-color: var(--primer);
+}
+
+/* Pratinjau lembar Excel. */
+.excel {
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  overflow: hidden;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.excel__kepala {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+.excel__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.6875rem;
+  border-radius: 0.4375rem 0.4375rem 0 0;
+  background: var(--success-soft);
+  color: var(--success);
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.excel__gulir {
+  overflow: auto;
+  max-height: 52vh;
+}
+.excel__tabel {
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  min-width: 100%;
+}
+
+.excel__tabel th,
+.excel__tabel td {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 0.25rem 0.5rem;
+  white-space: nowrap;
+  max-width: 14.375rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.excel__tabel thead th {
+  background: var(--success-soft);
+  color: var(--success);
+  font-weight: 700;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border-bottom: 1px solid var(--success-fill);
+}
+
+.excel__tabel .excel__nomor {
+  background: var(--surface-2);
+  color: var(--teks-redup);
+  text-align: center;
+  font-weight: 600;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 2.375rem;
+}
+.excel__tabel thead .excel__nomor {
+  z-index: 3;
+  background: var(--success-soft);
+}
+
+.excel__tabel td.excel--angka {
+  text-align: right;
+}
+.excel__tabel tbody tr:nth-child(even) td {
+  background: var(--row-hover);
+}
+
+.excel__kaki {
+  padding: 0.4375rem 0.75rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+  background: var(--surface-2);
+}
+
+/* ==========================================================================
+   Ekspor PDF — panel pengaturan + pratinjau kertas A4
+   ========================================================================== */
+
+.pdf-badan {
+  display: grid;
+  grid-template-columns: 296px minmax(0, 1fr);
+  gap: 1.125rem;
+  align-items: start;
+}
+
+.pdf-kiri {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface-2);
+  padding: 0.875rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.pdf-kiri h5 {
+  margin: 0 0 0.5rem;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teks-redup);
+  font-weight: 650;
+}
+
+.pdf-segmen {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5625rem;
+  padding: 0.1875rem;
+}
+.pdf-segmen button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--teks-redup);
+  font: inherit;
+  font-size: 0.7813rem;
+  font-weight: 600;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.4375rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pdf-segmen button.aktif {
+  background: var(--primer);
+  color: var(--accent-contrast, #fff);
+}
+.pdf-centang {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5625rem;
+}
+
+.pdf-centang label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.7813rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.pdf-centang input {
+  margin-top: 0.125rem;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  accent-color: var(--primer);
+  flex: 0 0 auto;
+}
+
+.pdf-baris {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.pdf-baris > span {
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+
+.pdf-baris select {
+  padding: 0.4375rem 0.5625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--teks);
+  font: inherit;
+  font-size: 0.7813rem;
+}
+/* --- Wadah kertas (diskalakan agar muat di panel) ------------------------- */
+
+.pdf-wadah {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: repeating-linear-gradient(45deg, #eef1f6, #eef1f6 12px, #e8ecf3 12px, #e8ecf3 24px);
+  padding: 1.125rem 0.75rem;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.pdf-kertas-wadah {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.pdf-kertas {
+  position: absolute;
+  inset: 0 auto auto 0;
+  transform-origin: top left;
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.22);
+}
+
+/* Garis pemisah halaman — pratinjau menampilkan SEMUA halaman, bukan satu
+   lembar yang dipotong, supaya jumlah halaman cetak terlihat jujur. */
+.pdf-halaman-garis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed #94a3b8;
+  pointer-events: none;
+}
+.pdf-halaman-garis::after {
+  content: attr(data-hal);
+  position: absolute;
+  right: 0.25rem;
+  top: 0.125rem;
+  font-size: 0.5625rem;
+  color: #94a3b8;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.pdf-halaman-ket {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+  margin: 0 0 0.625rem;
+}
+
+/* --- Responsif ------------------------------------------------------------ */
+
+@media (max-width: 900px) {.wiz-badan,
+  .ekspor-badan,
+  .pdf-badan {
+    grid-template-columns: 1fr;
+  }
+
+  .wiz-panel,
+  .ekspor-kiri,
+  .pdf-kiri {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}

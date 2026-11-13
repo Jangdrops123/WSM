@@ -1,0 +1,2813 @@
+/* ==========================================================================
+   NusaSuite — gaya dasar aplikasi (bersih, ramping, responsif)
+   ========================================================================== */
+
+/* ==========================================================================
+   DESIGN TOKENS — dua tema penuh.
+   :root                = tema TERANG (default bila sistem terang)
+   [data-theme="dark"]  = tema GELAP (navy + aksen indigo)
+   [data-aksen=…]        = varian aksen (biru/indigo/hijau/oranye)
+   [data-sidebar="terang"] = sidebar terang opsional
+   Skrip kecil di <head> (index.html) menyetel atribut ini sebelum render
+   agar tidak berkedip; pilihan disimpan di localStorage + tabel settings.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+  accent-color: var(--accent);
+
+  /* --- Tema TERANG (bawaan) --- */
+  --bg: #f4f6fa;
+  --bg-grad: radial-gradient(circle at top left, #e3ebfa, #f4f6fa 45%) fixed;
+  --surface: #ffffff;
+  /* Siang: abu sangat muda (AH1) — dipakai kotak kosong, kartu total,
+     header tabel; Malam memakai nilai gelap dari blok [data-theme="dark"]. */
+  --surface-2: #f3f5f9;
+  --surface-solid: #ffffff;
+  --border: #e5e7eb;
+  --text: #111827;
+  /* Sedikit lebih gelap dari #6B7280 agar tetap ≥4.5:1 di atas baris
+     terpilih (--row-selected) yang bertint biru (P5). */
+  --text-muted: #626b7d;
+
+  --accent: #2563eb;
+  --accent-fill: #2563eb;
+  --accent-contrast: #ffffff;
+  --accent-hover: #1d4ed8;
+  --accent-soft: rgba(37, 99, 235, 0.1);
+  --accent-text: #1d4ed8;
+  --link: #1d4ed8;
+
+  --row-hover: #f3f6fc;
+  --row-hover-solid: #f3f6fc;
+  --row-selected: rgba(37, 99, 235, 0.08);
+  --row-selected-solid: #eff4fc;
+  /* Sel sticky (kolom Aksi) harus OPAK agar isi tak tembus — warnanya
+     meniru hasil gabung baris biasa/hover/terpilih di belakangnya. */
+  --sticky-bg: #ffffff;
+  --sticky-bg-head: #f8fafd;
+  --sticky-bg-hover: #f3f6fc;
+
+  /* Latar bar aksi massal — selalu PADAT agar teks baris tak tembus (Q3). */
+  --bar-bg: #f8fafc;
+
+  --banner-bg: #dbeafe;
+  --banner-text: #1e3a8a;
+  --banner-border: #bfdbfe;
+
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+  --focus-ring: rgba(37, 99, 235, 0.45);
+
+  --success: #166534;
+  --success-soft: #dcfce7;
+  --success-fill: #15803d;
+  /* Border status (tombol bahaya/sukses, kartu ringkas) — AH1d. */
+  --danger-border: #f3c2c2;
+  --danger-border-hover: #ef9a9a;
+  --success-border: #b7e6c6;
+  --success-border-hover: #7fd3a0;
+  --warning: #92400e;
+  --warning-soft: #fef3c7;
+  --warning-fill: #b45309;
+  --danger: #b91c1c;
+  --danger-soft: #fee2e2;
+  --danger-fill: #dc2626;
+  /* W2 — pasangan status lengkap (info) + varian teks untuk badge. */
+  --info: #1e40af;
+  --info-soft: #dbeafe;
+  --success-text: #166534;
+  --warning-text: #92400e;
+  --danger-text: #b91c1c;
+  --info-text: #1e40af;
+
+  /* W2 — token tabel (semua tint halus, bukan warna solid). */
+  --table-bg: var(--surface);
+  --table-header-bg: var(--surface-2);
+  --table-border: var(--border);
+  --row-warning: rgba(245, 158, 11, 0.1);
+  --row-success: rgba(16, 185, 129, 0.1);
+  --row-danger: rgba(239, 68, 68, 0.1);
+
+  /* W1/W2 — badge SKU/lokasi & penanda status kecil. */
+  --badge-bg: #f1f5f9;
+  --badge-text: #475569;
+
+  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+
+  /* Sidebar navy di kedua tema (boleh juga [data-sidebar="terang"]). */
+  --sidebar-bg: #0f172a;
+  --sidebar-text: #cbd5e1;
+  --sidebar-active: #4f46e5;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-hover: rgba(255, 255, 255, 0.06);
+  --sidebar-hover-teks: #ffffff;
+  --sidebar-heading: #ffffff;
+  --sidebar-sub: #94a3b8;
+  --sidebar-label: rgba(255, 255, 255, 0.5);
+  --sidebar-active-teks: #ffffff;
+  /* Status di atas latar sidebar navy (header POS, chip shift). */
+  --sidebar-sukses: #4ade80;
+  --sidebar-waspada: #fbbf24;
+
+  /* --- Palet grafik (terang) --- */
+  --chart-1: #2563eb;
+  --chart-2: #16a34a;
+  --chart-3: #f59e0b;
+  --chart-4: #dc2626;
+  --chart-5: #7c3aed;
+  --chart-6: #0891b2;
+  --chart-7: #db2777;
+  --chart-8: #65a30d;
+  --chart-grid: #e5e7eb;
+  --chart-label: #6b7280;
+
+  /* --- Tampilan kartu & keadaan (turunan token di atas) --- */
+  --kartu-hover-border: rgba(37, 99, 235, 0.5);
+  --kartu-hover-bg: rgba(37, 99, 235, 0.07);
+  --kartu-hover-shadow: 0 6px 18px rgba(37, 99, 235, 0.16);
+  --pita-bg: #f8fafc;
+  --pita-border: #d1d5db;
+  --tooltip-bg: #111827;
+  --tooltip-teks: #f8fafc;
+  --chip-ikon-bg: rgba(37, 99, 235, 0.1);
+  --chip-ikon-teks: #1d4ed8;
+
+  /* --- Alias lama (dipakai seluruh CSS modul) --- */
+  --panel: var(--surface);
+  --panel-padat: var(--surface-2);
+  --teks: var(--text);
+  --teks-redup: var(--text-muted);
+  --primer: var(--accent-fill);
+  --primer-lembut: var(--accent-soft);
+  --primer-teks: var(--accent-text);
+  --sukses: var(--success-fill);
+  --waspada: var(--warning-fill);
+  --sidebar-teks: var(--sidebar-text);
+  --sidebar-aktif: var(--sidebar-active);
+  --bayangan: var(--shadow);
+  --radius: 0.875rem;
+
+  /* U1 — sidebar dirampingkan: 240px expanded, 64px collapsed (hanya ikon). */
+  --sidebar-lebar: 15rem;
+  --sidebar-ciut: 4rem;
+
+  /* U2 — skala jarak tunggal (4, 8, 12, 16, 24, 32 px) dalam rem agar
+     ikut Ukuran Font (AH2). */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+
+  /* AH2 — skala font tunggal (Pengaturan ▸ Tampilan ▸ Ukuran Font).
+     0.75–1.50; diatur di <html> oleh skrip <head> (tanpa kedip) & tampilanBaru.ts. */
+  --font-scale: 1;
+
+  /* U2 — ritme jarak & tipografi (diubah oleh html[data-kepadatan]). */
+  --font-dasar: 0.875rem;
+  --tinggi-baris: 2.75rem;
+  /* BAGIAN AT — token tata letak (sumber: halaman Produk, skala Normal).
+     Kepadatan HANYA mengalikan jarak/padding lewat --jarak-skala:
+     Padat 0.8x, Nyaman 1x, Longgar 1.15x. Tinggi header tidak ikut skala. */
+  --header-h: 4.5rem;
+  --page-gap-top: 1rem;
+  --page-gap-left: 1.625rem;
+  --page-gap-right: 1.5rem;
+  --page-gap-bottom: 1.25rem;
+  --card-pad-x: 2.125rem;
+  --card-pad-y: 1.5rem;
+  --card-radius: 1rem;
+  --jarak-skala: 1;
+  --padding-kartu: calc(var(--card-pad-y) * var(--jarak-skala)) calc(var(--card-pad-x) * var(--jarak-skala));
+  --gap-kartu: calc(1rem * var(--jarak-skala));
+  /* Alias lama: mengikuti token AT. */
+  --header-tinggi: var(--header-h);
+  --konten-padding: 1.5rem;
+}
+
+/* U2 — Kepadatan tampilan (Pengaturan ▸ Tampilan).
+   HANYA jarak: tinggi baris, padding kartu, jarak antar blok (AH2f).
+   Ukuran font tidak lagi diubah kepadatan — urusan --font-scale. */
+html[data-kepadatan="padat"] {
+  --tinggi-baris: 2.25rem;
+  --jarak-skala: 0.8;
+}
+html[data-kepadatan="ringkas"] {
+  /* Nilai lama — dipetakan ke padat agar tampilan tetap seragam. */
+  --tinggi-baris: 2.25rem;
+  --jarak-skala: 0.8;
+}
+
+html[data-kepadatan="longgar"] {
+  --tinggi-baris: 3.25rem;
+  --jarak-skala: 1.15;
+}
+
+/* AT4 — responsif: 768–1279px merapatkan sisi & kartu, header 64px;
+   ponsel (<768px) memakai nilai ringkas + safe-area pada header. */
+@media (min-width: 768px) and (max-width: 1279.98px) {
+  :root {
+    --header-h: 4rem;
+    --page-gap-left: 1rem;
+    --page-gap-right: 1rem;
+    --card-pad-x: 1.5rem;
+  }
+}
+@media (max-width: 767.98px) {
+  :root {
+    --header-h: calc(3.25rem + env(safe-area-inset-top, 0px));
+    --page-gap-top: 0.5rem;
+    --page-gap-left: 0.5rem;
+    --page-gap-right: 0.5rem;
+    --page-gap-bottom: 0.5rem;
+    --card-pad-x: 0.75rem;
+    --card-pad-y: 0.75rem;
+    --card-radius: 0.75rem;
+  }
+}
+/* AH2 — akar 16px × skala Ukuran Font: SELURUH rem di aplikasi ikut skala
+   (teks, padding, tinggi baris, ikon, radius). Breakpoint tetap px. */
+html {
+  font-size: calc(16px * var(--font-scale, 1));
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* AH2b — Cetak/PDF (faktur, struk, laporan, opname) TIDAK dipengaruhi
+   pilihan Ukuran Font: kembali ke basis 16px murni saat dicetak. */
+@media print {
+  :root {
+    --font-scale: 1 !important;
+  }
+  /* Tombol aksi modal (Cetak, Tutup, Kirim WA, dsb.) tidak ikut tercetak. */
+  .no-print {
+    display: none !important;
+  }
+}
+
+body {
+  font-variant-numeric: tabular-nums;
+}
+/* ------------------------- Tema GELAP ---------------------------------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #020617;
+  --bg-grad: radial-gradient(circle at top left, #1e1b4b, #0f172a 45%, #020617) fixed;
+  /* OPAK agar aman untuk sel sticky & kontrol kecil; kartu besar tetap kaca
+     lewat aturan kurasi theme-gelap.css yang menimpa .kartu/.topbar/.sidebar. */
+  --surface: #131c2e;
+  --surface-2: #131c2e;
+  --surface-solid: rgba(15, 23, 42, 0.55);
+  --border: rgba(255, 255, 255, 0.1);
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+
+  --accent: #818cf8;
+  --accent-fill: #4f46e5;
+  --accent-contrast: #ffffff;
+  --accent-hover: #818cf8;
+  --accent-soft: rgba(99, 102, 241, 0.18);
+  --accent-text: #a5b4fc;
+  --link: #a5b4fc;
+
+  --row-hover: rgba(148, 163, 184, 0.08);
+  --row-hover-solid: #1d2739;
+  --row-selected: rgba(99, 102, 241, 0.16);
+  --row-selected-solid: #1c2345;
+  --sticky-bg: #131c2e;
+  --sticky-bg-head: #111a2c;
+  --sticky-bg-hover: #1d2739;
+
+  /* Latar bar aksi massal — PADAT di kedua varian tema (Q3). */
+  --bar-bg: #1e293b;
+
+  --banner-bg: rgba(30, 58, 138, 0.42);
+  --banner-text: #bfdbfe;
+  --banner-border: rgba(96, 165, 250, 0.45);
+
+  --input-bg: rgba(2, 6, 23, 0.6);
+  --input-border: rgba(255, 255, 255, 0.14);
+  --focus-ring: rgba(129, 140, 248, 0.55);
+
+  --success: #34d399;
+  --success-soft: rgba(16, 185, 129, 0.14);
+  --success-fill: #047857;
+  --danger-border: rgba(244, 63, 94, 0.35);
+  --danger-border-hover: rgba(244, 63, 94, 0.6);
+  --success-border: rgba(16, 185, 129, 0.35);
+  --success-border-hover: rgba(16, 185, 129, 0.6);
+  --warning: #fbbf24;
+  --warning-soft: rgba(245, 158, 11, 0.14);
+  --warning-fill: #b45309;
+  --danger: #fb7185;
+  --danger-soft: rgba(244, 63, 94, 0.14);
+  --danger-fill: #e11d48;
+  /* W2 — pasangan status lengkap (info) + varian teks untuk badge. */
+  --info: #60a5fa;
+  --info-soft: rgba(59, 130, 246, 0.16);
+  --success-text: #34d399;
+  --warning-text: #fbbf24;
+  --danger-text: #fb7185;
+  --info-text: #60a5fa;
+
+  /* W2 — token tabel (semua tint halus, bukan warna solid). */
+  --table-bg: var(--surface);
+  --table-header-bg: var(--surface-2);
+  --table-border: var(--border);
+  --row-warning: rgba(245, 158, 11, 0.12);
+  --row-success: rgba(16, 185, 129, 0.12);
+  --row-danger: rgba(239, 68, 68, 0.12);
+
+  /* W1/W2 — badge SKU/lokasi & penanda status kecil. */
+  --badge-bg: rgba(148, 163, 184, 0.16);
+  --badge-text: #cbd5e1;
+
+  --shadow: 0 10px 30px rgba(2, 6, 23, 0.45);
+
+  --sidebar-bg: rgba(30, 41, 59, 0.7);
+  --sidebar-text: #cbd5e1;
+  --sidebar-active: #4f46e5;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-hover: rgba(255, 255, 255, 0.06);
+  --sidebar-hover-teks: #ffffff;
+  --sidebar-heading: #ffffff;
+  --sidebar-sub: #94a3b8;
+  --sidebar-label: rgba(255, 255, 255, 0.5);
+  --sidebar-active-teks: #ffffff;
+  --sidebar-sukses: #4ade80;
+  --sidebar-waspada: #fbbf24;
+
+  /* Palet grafik (gelap) — lebih terang agar terbaca di latar navy. */
+  --chart-1: #60a5fa;
+  --chart-2: #34d399;
+  --chart-3: #fbbf24;
+  --chart-4: #f87171;
+  --chart-5: #a78bfa;
+  --chart-6: #22d3ee;
+  --chart-7: #f472b6;
+  --chart-8: #a3e635;
+  --chart-grid: rgba(255, 255, 255, 0.12);
+  --chart-label: #94a3b8;
+
+  --kartu-hover-border: rgba(129, 140, 248, 0.5);
+  --kartu-hover-bg: rgba(99, 102, 241, 0.14);
+  --kartu-hover-shadow: 0 6px 18px rgba(99, 102, 241, 0.18);
+  --pita-bg: rgba(15, 23, 42, 0.55);
+  --pita-border: rgba(255, 255, 255, 0.16);
+  --tooltip-bg: #0f172a;
+  --tooltip-teks: #e2e8f0;
+  --chip-ikon-bg: rgba(15, 23, 42, 0.55);
+  --chip-ikon-teks: #e2e8f0;
+}
+
+/* ------------------- Varian aksen (P3 — Pengaturan ▸ Tampilan) --------- */
+/* Ditetapkan di <html data-aksen="…">; bila tidak ada, aksen bawaan
+   mengikuti tema (biru untuk terang, indigo untuk gelap). */
+:root[data-aksen="teal"] {
+  --accent: #147a75;
+  --accent-fill: #147a75;
+  --accent-hover: #0d5c58;
+  --accent-soft: rgba(20, 122, 117, 0.1);
+  --accent-text: #0f766e;
+  --link: #0f766e;
+  --sidebar-active: #0f766e;
+  --focus-ring: rgba(20, 122, 117, 0.45);
+  --primary-accent: #147a75;
+  --primary-accent-hover: #0d5c58;
+}
+:root[data-aksen="biru"] {
+  --accent: #2563eb;
+  --accent-fill: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-soft: rgba(37, 99, 235, 0.1);
+  --accent-text: #1d4ed8;
+  --link: #1d4ed8;
+  --sidebar-active: #2563eb;
+  --focus-ring: rgba(37, 99, 235, 0.45);
+}
+:root[data-aksen="indigo"] {
+  --accent: #4f46e5;
+  --accent-fill: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-soft: rgba(79, 70, 229, 0.12);
+  --accent-text: #4338ca;
+  --link: #4338ca;
+  --sidebar-active: #4f46e5;
+  --focus-ring: rgba(79, 70, 229, 0.45);
+}
+:root[data-aksen="hijau"] {
+  --accent: #16a34a;
+  --accent-fill: #15803d;
+  --accent-hover: #166534;
+  --accent-soft: rgba(22, 163, 74, 0.12);
+  --accent-text: #15803d;
+  --link: #15803d;
+  --sidebar-active: #15803d;
+  --focus-ring: rgba(22, 163, 74, 0.45);
+}
+:root[data-aksen="oranye"] {
+  --accent: #ea580c;
+  /* Fill lebih gelap agar teks putih kontras ≥4.5:1 (P5). */
+  --accent-fill: #c2410c;
+  --accent-hover: #9a3412;
+  --accent-soft: rgba(234, 88, 12, 0.12);
+  --accent-text: #c2410c;
+  --link: #c2410c;
+  --sidebar-active: #c2410c;
+  --focus-ring: rgba(234, 88, 12, 0.45);
+}
+/* Varian aksen versi tema gelap (harus terang di atas latar navy). */
+:root[data-theme="dark"][data-aksen="teal"] {
+  --accent: #5ccabc;
+  --accent-fill: #0f766e;
+  --accent-hover: #14a09a;
+  --accent-soft: rgba(92, 202, 188, 0.2);
+  --accent-text: #7adfd3;
+  --link: #7adfd3;
+  --sidebar-active: #0f766e;
+  --focus-ring: rgba(92, 202, 188, 0.5);
+  --primary-accent: #5ccabc;
+  --primary-accent-hover: #14a09a;
+}
+:root[data-theme="dark"][data-aksen="biru"] {
+  --accent: #60a5fa;
+  --accent-fill: #2563eb;
+  --accent-hover: #3b82f6;
+  --accent-soft: rgba(59, 130, 246, 0.2);
+  --accent-text: #93c5fd;
+  --link: #93c5fd;
+  --sidebar-active: #2563eb;
+  --focus-ring: rgba(96, 165, 250, 0.5);
+}
+:root[data-theme="dark"][data-aksen="indigo"] {
+  --accent: #818cf8;
+  --accent-fill: #4f46e5;
+  --accent-hover: #6366f1;
+  --accent-soft: rgba(99, 102, 241, 0.18);
+  --accent-text: #a5b4fc;
+  --link: #a5b4fc;
+  --sidebar-active: #4f46e5;
+  --focus-ring: rgba(129, 140, 248, 0.55);
+}
+:root[data-theme="dark"][data-aksen="hijau"] {
+  --accent: #34d399;
+  --accent-fill: #047857;
+  --accent-hover: #059669;
+  --accent-soft: rgba(16, 185, 129, 0.2);
+  --accent-text: #6ee7b7;
+  --link: #6ee7b7;
+  --sidebar-active: #047857;
+  --focus-ring: rgba(52, 211, 153, 0.5);
+}
+:root[data-theme="dark"][data-aksen="oranye"] {
+  --accent: #fb923c;
+  --accent-fill: #c2410c;
+  --accent-hover: #ea580c;
+  --accent-soft: rgba(249, 115, 22, 0.2);
+  --accent-text: #fdba74;
+  --link: #fdba74;
+  --sidebar-active: #c2410c;
+  --focus-ring: rgba(251, 146, 60, 0.5);
+}
+
+/* ------------------- Sidebar terang (opsional) -------------------------- */
+:root[data-sidebar="terang"] {
+  --sidebar-bg: #ffffff;
+  --sidebar-text: #374151;
+  --sidebar-border: #e5e7eb;
+  --sidebar-hover: rgba(17, 24, 39, 0.06);
+  --sidebar-hover-teks: #111827;
+  --sidebar-heading: #111827;
+  --sidebar-sub: #6b7280;
+  --sidebar-label: #6b7280;
+  --sidebar-active-teks: #111827;
+  /* Warna status di atas sidebar terang (lebih pekat agar kontras). */
+  --sidebar-sukses: #15803d;
+  --sidebar-waspada: #b45309;
+}
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  /* Gulir dokumen tetap boleh tumbuh; area gulir utama tetap .app-utama. */
+  min-height: 100vh;
+}
+html,
+body {
+  /* Jangan pernah mengunci gulir vertikal body secara permanen — hanya modal
+     (lewat document.body.style.overflow) yang menguncinya sementara. */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+body {
+  margin: 0;
+  font-family:
+    'Inter',
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--teks);
+  background: var(--bg-grad),
+    var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent-fill);
+  color: var(--accent-contrast);
+}
+/* Transisi warna halus 150 ms HANYA saat ganti tema (P3) — dipasang
+   sementara oleh src/lib/tema.ts → transisiTema(), agar hover biasa
+   tidak ikut diperlambat dan pindah halaman tidak berkedip. */
+html.ganti-tema *,
+html.ganti-tema *::before,
+html.ganti-tema *::after {
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    fill 0.15s ease,
+    stroke 0.15s ease !important;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--primer-teks);
+  text-decoration: none;
+}
+.teks-redup {
+  color: var(--teks-redup);
+}
+
+/* --- Kerangka utama ------------------------------------------------------ */
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+  height: 100dvh; /* R4 — tinggi peramban dinamis, tanpa lompatan bilah alamat */
+  position: relative;
+  /* U1 — HANYA .app-utama yang men-scroll; sidebar & header tetap di tempat. */
+  overflow: hidden;
+}
+.sidebar {
+  width: var(--sidebar-lebar);
+  flex-shrink: 0;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-teks);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 40;
+  overflow: hidden; /* R3 — lebar 0 saat tersembunyi, tidak ada sisa konten */
+  transition:
+    width 0.2s ease,
+    transform 0.2s ease;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* R3 — keadaan sidebar: expanded 260px / collapsed 72px / hidden 0. */
+.app-shell[data-sb="expanded"] .sidebar {
+  width: var(--sidebar-lebar);
+}
+.app-shell[data-sb="collapsed"] .sidebar {
+  width: var(--sidebar-ciut);
+}
+
+.app-shell[data-sb="hidden"] .sidebar {
+  width: 0;
+  visibility: hidden;
+}
+/* R3 — tampil sebagai panel melayang (hamburger / laci ponsel). */
+.app-shell[data-overlay="1"] .sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  visibility: visible;
+  z-index: 45;
+  box-shadow: 0 0 40px rgba(15, 23, 42, 0.3);
+}
+
+/* R4 — ponsel: sidebar menjadi laci geser dari kiri, konten tidak tersendat. */
+@media (max-width: 767.98px) {.app-shell .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%);
+    box-shadow: 0 0 40px rgba(15, 23, 42, 0.25);
+  }
+
+  .app-shell[data-overlay="1"] .sidebar {
+    transform: translateX(0);
+  }
+}
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 44;
+  border: 0;
+  padding: 0;
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--sidebar-border);
+  min-height: var(--header-tinggi);
+  box-sizing: border-box;
+}
+.sidebar__logo {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.625rem;
+  background: linear-gradient(135deg, #6366f1, #a855f7 55%, #ec4899);
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+}
+/* AY2 — logo sebagai tombol menu awal: tanpa bingkai tombol bawaan. */
+.sidebar__logo-tombol {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  border-radius: 0.625rem;
+}
+.sidebar__logo-tombol:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 2px;
+}
+
+.sidebar__brand-teks {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.sidebar__brand-teks strong {
+  color: var(--sidebar-heading);
+  font-size: 0.9375rem;
+}
+
+.sidebar__brand-teks small {
+  font-size: 0.6875rem;
+  color: var(--sidebar-sub);
+}
+.sidebar__tutup {
+  display: none;
+  margin-left: auto;
+  background: transparent;
+  border: 0;
+  color: var(--sidebar-teks);
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+/* R3 — tombol ikon di kepala sidebar: Ciutkan menu / Tampilkan menu. */
+.sidebar__ciut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  background: transparent;
+  border: 0;
+  border-radius: 0.5rem;
+  color: var(--sidebar-teks);
+  cursor: pointer;
+  padding: 0.375rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.sidebar__ciut:hover {
+  background: var(--sidebar-hover);
+  color: var(--sidebar-hover-teks);
+}
+
+.sidebar__ciut:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.sidebar__ciut.tombol-tip::after {
+  left: calc(100% + 0.5rem);
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Panel melayang (R3): hanya laci yang menampilkan tombol tutup. */
+.app-shell[data-overlay="1"] .sidebar__tutup {
+  display: inline-flex;
+}
+.app-shell[data-overlay="1"] .sidebar__ciut {
+  margin-left: 0;
+}
+
+.sidebar__nav {
+  flex: 1;
+  min-height: 0;          /* R2 — area menu bisa di-scroll sendiri */
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+  scrollbar-width: thin;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  min-height: 2.25rem;
+  border-radius: 0.5rem;
+  color: var(--sidebar-teks);
+  font-size: 0.8438rem;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.nav-item:hover {
+  background: var(--sidebar-hover);
+  color: var(--sidebar-hover-teks);
+}
+.nav-item--aktif {
+  background: var(--sidebar-aktif);
+  color: var(--accent-contrast);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+}
+
+/* W3 — mode ciut: sorotan menu aktif = pil membulat PENUH di sekitar ikon,
+   selebar item lain, tanpa glow luar (overflow-x sidebar memotongnya jadi
+   "setengah lingkaran" di tepi kiri). */
+.app-shell[data-sb="collapsed"] .nav-item.nav-item--aktif {
+  box-shadow: none;
+}
+.nav-item svg {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+/* Lencana angka (mis. jumlah faktur terlambat) pada item menu. */
+.nav-badge {
+  margin-left: auto;
+  min-width: 1.25rem;
+  padding: 0.0625rem 0.375rem;
+  border-radius: 62.4375rem;
+  background: var(--danger-fill);
+  color: var(--accent-contrast);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.5;
+}
+.sidebar__footer {
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--sidebar-border);
+  font-size: 0.75rem;
+}
+
+.status-db {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+.status-db__titik {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--teks-redup);
+}
+
+.status-db--ok .status-db__titik {
+  background: var(--success);
+  box-shadow: 0 0 0 3px var(--success-soft);
+}
+.status-db--loading .status-db__titik {
+  background: var(--warning);
+}
+
+/* --- Area utama & topbar ------------------------------------------------- */
+
+.app-utama {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  /* U1 — satu-satunya area scroll vertikal. */
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* auto = scroll berantai: begitu tabel di dalamnya mentok, roda mouse
+     melanjutkan ke halaman. */
+  overscroll-behavior: auto;
+}
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  /* AT1 — tinggi header 72px, tetap di semua halaman & kepadatan. */
+  height: var(--header-h);
+  min-height: var(--header-h);
+  padding: 0 var(--sp-4);
+  box-sizing: border-box;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar__hamburger {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  color: var(--teks);
+  cursor: pointer;
+}
+/* R3/R4 — hamburger hanya saat sidebar tersembunyi (ponsel atau disembunyikan)
+   atau sedang tampil sebagai panel melayang. */
+.app-shell[data-sb="hidden"] .topbar__hamburger,
+.app-shell[data-overlay="1"] .topbar__hamburger {
+  display: inline-flex;
+}
+
+/* U1 — judul & subjudul SEBARIS pada layar >=1024px; subjudul hilang di bawahnya. */
+.topbar__judul {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.topbar__judul h1 {
+  font-size: 1.0625rem;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  /* R5 — layar sempit: judul menyusut rapi (…), bukan terpotong kasar. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Di ponsel cukup judul halaman (pengalih grup Master Data ▾ dihapus). */
+@media (max-width: 767.98px) {.topbar__judul {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+.topbar__judul h1 {
+    font-size: 1rem;
+  }
+}
+.topbar__judul p {
+  font-size: 0.7813rem;
+  color: var(--teks-redup);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+@media (max-width: 1023.98px) {.topbar__judul p {
+    display: none;
+  }
+}
+/* U1 — Mode Fokus: sidebar tersembunyi (data-sb="hidden") dan header
+   dirampingkan supaya konten memenuhi seluruh lebar layar. */
+.app-shell[data-fokus="1"] .topbar {
+  height: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0 var(--sp-3);
+  gap: var(--sp-2);
+}
+
+.app-shell[data-fokus="1"] .topbar__tanggal,
+.app-shell[data-fokus="1"] .topbar__nama {
+  display: none;
+}
+.app-shell[data-fokus="1"] .konten {
+  padding-top: var(--sp-3);
+}
+
+.topbar__kanan {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-shrink: 0;
+}
+.topbar__tanggal {
+  font-size: 0.7813rem;
+  color: var(--teks-redup);
+}
+/* Tombol Segarkan global: ikon berputar 600ms tiap diklik (umpan balik visual
+   saat data halaman dimuat ulang tanpa reload). */
+@keyframes segarkan-putar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.topbar__segarkan.berputar svg {
+  animation: segarkan-putar 0.6s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .topbar__segarkan.berputar svg {
+    animation: none;
+  }
+}
+
+/* TAHAP 1 — chip pengguna di header: klik nama → menu Ubah Password/Keluar. */
+.topbar__pengguna-wrap {
+  position: relative;
+}
+.topbar__pengguna {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 62.4375rem;
+  padding: 0.1875rem 0.5rem 0.1875rem 0.1875rem;
+  cursor: pointer;
+  color: var(--teks);
+  font: inherit;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.topbar__pengguna:hover,
+.topbar__pengguna[aria-expanded="true"] {
+  background: var(--row-hover);
+  border-color: var(--border);
+}
+.topbar__pengguna-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.375rem);
+  z-index: 60;
+  min-width: 13.125rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.14);
+  padding: 0.5rem;
+}
+
+.topbar__pengguna-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+  padding: 0.375rem 0.625rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.25rem;
+}
+.topbar__pengguna-info strong {
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+
+.topbar__pengguna-info small {
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+.topbar__pengguna-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.4375rem 0.625rem;
+  border: 0;
+  border-radius: 0.4375rem;
+  background: none;
+  font-size: 0.8125rem;
+  color: var(--teks);
+  cursor: pointer;
+}
+
+.topbar__pengguna-menu button:hover {
+  background: var(--row-hover);
+}
+.topbar__pengguna-menu button.topbar__keluar {
+  color: var(--bahaya, #dc2626);
+}
+
+.topbar__avatar {
+  display: grid;
+  place-items: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 50%;
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+  font-weight: 650;
+  font-size: 0.8125rem;
+}
+.topbar__nama {
+  font-size: 0.8125rem;
+  font-weight: 550;
+}
+
+/* --- Konten -------------------------------------------------------------- */
+
+/* AT1/AT2 — PageArea: jarak seragam (atas 16, kiri 26, kanan 24, bawah 20)
+   mengikuti --jarak-skala. Baik >=1920px maupun ultra lebar (>=2560px)
+   konten mengisi seluruh area, bukan menyisakan ruang kosong. */
+.konten {
+  flex: 1;
+  min-width: 0;
+  padding:
+    calc(var(--page-gap-top) * var(--jarak-skala))
+    calc(var(--page-gap-right) * var(--jarak-skala))
+    calc(var(--page-gap-bottom) * var(--jarak-skala))
+    calc(var(--page-gap-left) * var(--jarak-skala));
+  box-sizing: border-box;
+  /* U3 — kolom flex supaya kartu daftar boleh MENGISI sisa tinggi layar
+     (tabel menggulir di dalam, bukan seluruh halaman). */
+  display: flex;
+  flex-direction: column;
+}
+/* Catatan U1: tanpa max-width/margin-auto di sini — konten selalu selebar
+   area (margin auto pada anak flex kolom mematikan stretch dan mengecilkan
+   halaman ke fit-content). */
+
+.halaman {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-kartu);
+  /* Lebar penuh area konten di sebelah sidebar — tanpa max-width/margin auto */
+  width: 100%;
+  /* U3 — isi sisa tinggi konten; kartu daftar di dalamnya boleh tumbuh. */
+  flex: 1 1 auto;
+  min-height: min-content;
+}
+
+/* AT1 — PageCard: padding 24px vertikal / 34px horizontal, radius 16px.
+   Kepadatan hanya mengalikan jarak via --jarak-skala. */
+.kartu {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--bayangan);
+  padding: var(--padding-kartu);
+}
+.kartu__kepala {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+
+/* U4 — subjudul di atas tabel cukup SATU baris (sisa ruang jadi elipsis).
+   Teks bantuan panjang tidak lagi mengambil tempat di atas tabel. */
+.kartu__kepala > div:first-child {
+  min-width: 0;
+}
+.kartu__kepala p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kartu__kepala h3 {
+  font-size: 1rem;
+  line-height: 1.3;
+}
+.kartu__kepala .teks-redup {
+  font-size: 0.7813rem;
+}
+
+/* U4 — banner sapaan diringkas jadi satu baris setipis 48-56px. */
+.kartu-sapaan {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: 0.5rem var(--sp-4);
+  min-height: 3rem;
+  box-sizing: border-box;
+  /* Stop lebih gelap agar teks putih tetap ≥4.5:1 (P5). */
+  background: linear-gradient(120deg, #4338ca, #7c3aed 55%, #be185d);
+  color: #fff;
+  border-radius: var(--radius);
+}
+/* Judul + tanggal SEBARIS, bukan dua baris tinggi. */
+.kartu-sapaan > div:first-child {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  min-width: 0;
+  /* flex-basis 0 supaya judul MENYUSUT dan baris kanan tidak turun. */
+  flex: 1 1 0;
+  flex-wrap: wrap;
+}
+
+.kartu-sapaan h2 {
+  font-size: 1rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kartu-sapaan p {
+  font-size: 0.7813rem;
+  opacity: 0.85;
+}
+
+.kartu-sapaan__status {
+  background: rgba(255, 255, 255, 0.14);
+  padding: 0.4375rem 0.75rem;
+  border-radius: 62.4375rem;
+  color: #fff;
+  white-space: nowrap;
+}
+.grid-modul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.625rem;
+}
+
+/* U4 — kartu modul dirampingkan jadi baris ringkas (ikon kecil + teks). */
+.modul-kartu {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5625rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--teks);
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.modul-kartu:hover {
+  border-color: var(--kartu-hover-border);
+  background: var(--kartu-hover-bg);
+  transform: translateY(-1px);
+  box-shadow: var(--kartu-hover-shadow);
+}
+
+.modul-kartu__ikon {
+  display: grid;
+  place-items: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  flex-shrink: 0;
+  border-radius: 0.5rem;
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+}
+.modul-kartu__teks {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.modul-kartu__teks strong {
+  font-size: 0.8438rem;
+  font-weight: 600;
+}
+.modul-kartu__teks small {
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+
+.grid-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.125rem;
+}
+.kartu--kecil h4 {
+  font-size: 0.875rem;
+  margin-bottom: 0.625rem;
+}
+
+.daftar-status {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.daftar-status li {
+  display: flex;
+  align-items: center;
+  gap: 0.5625rem;
+  font-size: 0.8125rem;
+  color: var(--teks-redup);
+}
+
+.daftar-status li svg {
+  color: var(--sukses);
+  flex-shrink: 0;
+}
+/* --- Halaman kosong / placeholder ---------------------------------------- */
+
+/* U4 — keadaan kosong kompak: ikon kecil, satu kalimat, satu tombol. */
+.kartu--kosong {
+  text-align: center;
+  padding: 1.5rem 1rem;
+}
+
+.kartu--kosong__ikon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0 auto 0.625rem;
+  border-radius: 0.75rem;
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+}
+.kartu--kosong h2 {
+  font-size: 1.125rem;
+  margin-bottom: 0.375rem;
+}
+
+.pita {
+  margin: 1.125rem auto 0;
+  max-width: 35rem;
+  padding: 0.625rem 0.875rem;
+  border: 1px dashed var(--pita-border);
+  background: var(--pita-bg);
+  border-radius: 0.625rem;
+  font-size: 0.8125rem;
+  color: var(--teks-redup);
+}
+.aksi-kosong {
+  margin-top: 1.125rem;
+}
+
+.tombol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5625rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  font-size: 0.8438rem;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.tombol--primer {
+  background: var(--primer);
+  color: var(--accent-contrast);
+}
+
+.tombol--primer:hover {
+  background: var(--accent-hover);
+}
+/* --- Overlay laci (tablet/HP) -------------------------------------------- */
+
+/* Elemen .sidebar-overlay hanya dirender saat laci terbuka (React), jadi
+   langsung tampil — lapisan gelap di belakang panel melayang. */
+.sidebar-overlay {
+  display: block;
+}
+
+/* --- Responsif ------------------------------------------------------------ */
+
+/* --- R4 — ponsel (<768px): laci geser, header ringkas, ruang aman -------- */
+/* U4 — banner sapaan tetap SATU baris di layar sempit: tanggal & status
+   dirapatkan (teks panjang disembunyikan, titik status tetap terlihat). */
+@media (max-width: 1023.98px) {.kartu-sapaan > div:first-child p {
+    display: none;
+  }
+
+  .kartu-sapaan__status {
+    font-size: 0;
+    padding: 0.4375rem 0.5625rem;
+  }
+}
+
+@media (max-width: 639.98px) {/* U4 — di ponsel banner tetap satu baris: hanya judul + tombol atur. */
+  .kartu-sapaan__status {
+    display: none;
+  }
+
+  .kartu-sapaan h2 {
+    font-size: 0.9063rem;
+  }
+}
+
+@media (max-width: 767.98px) {.topbar {
+    padding: 0 var(--sp-3);
+    gap: 0.625rem;
+    padding-top: env(safe-area-inset-top);
+  }
+
+  /* R4 — di ponsel hanya hamburger, judul, ikon tema, ikon POS, dan avatar. */
+  .topbar__tanggal,
+  .topbar__nama {
+    display: none;
+  }
+  /* AT4 — ponsel: token menangani jarak; safe-area ditambahkan di tepi. */
+  .konten {
+    padding-right: calc(var(--page-gap-right) * var(--jarak-skala) + env(safe-area-inset-right));
+    padding-bottom: calc(var(--page-gap-bottom) * var(--jarak-skala) + env(safe-area-inset-bottom));
+    padding-left: calc(var(--page-gap-left) * var(--jarak-skala) + env(safe-area-inset-left));
+  }
+
+  .kartu-sapaan {
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-3);
+  }
+.sidebar__brand {
+    padding: 0.875rem 0.875rem;
+  }
+}
+
+/* R4 — layar sentuh: target sentuh minimal 40×40 px. */
+@media (pointer: coarse) {.nav-item,
+  .nav-grup__judul,
+  .tombol,
+  .sidebar__ciut,
+  .sidebar__tutup,
+  .topbar__hamburger {
+    min-height: 2.5rem;
+  }
+
+  .tombol,
+  .sidebar__ciut,
+  .sidebar__tutup,
+  .topbar__hamburger {
+    min-width: 2.5rem;
+  }
+}
+
+@media (max-width: 560px) {.topbar__judul p,
+  .topbar__nama {
+    display: none;
+  }
+
+  /* R5 — ponsel kecil (<640px): hanya hamburger, judul, dan avatar.
+     Ikon non-krusial (segarkan, panduan, fokus, tema, POS, tanggal)
+     disembunyikan agar judul halaman punya ruang penuh dan tidak
+     bertumpuk/terpotong. Judul dibatasi 52vw dengan elipsis. */
+  .topbar__kanan > .topbar__opsi,
+  .topbar__kanan > .topbar__panduan,
+  .topbar__kanan > .topbar__tanggal {
+    display: none;
+  }
+  .topbar__judul h1 {
+    max-width: 52vw;
+  }
+
+  .grid-modul {
+    grid-template-columns: 1fr;
+  }
+.kartu {
+    padding: 0.9375rem 0.9375rem;
+  }
+}
+
+/* R5 — kunci bocor mendatar global: tidak ada halaman yang bisa digeser
+   ke samping. Pengguliran vertikal tetap di .app-utama. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+.konten {
+  max-width: 100%;
+  min-width: 0;
+}
+/* Grup sidebar dengan sub-menu (mis. Persediaan Sub → Item Masuk / Keluar).
+   Tambahan baru saja — gaya menu lama di atas tidak diubah. */
+.nav-grup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.nav-grup__judul {
+  display: flex;
+  align-items: center;
+  gap: 0.6875rem;
+  padding: 0.5625rem 0.75rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sidebar-label);
+}
+/* R2 — animasi buka-tutup 180 ms: tinggi bertahap lewat grid-template-rows.
+   Saat tertutup isi dibuat visibility:hidden agar tautannya tidak bisa
+   difokus keyboard (aria-expanded di tombol induk menjadi sumber kebenaran). */
+.nav-grup__anak {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-left: 1.25rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--sidebar-border);
+  transition: grid-template-rows 180ms ease;
+}
+
+.nav-grup__anak--buka {
+  grid-template-rows: 1fr;
+}
+.nav-grup__isi {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  visibility: hidden;
+  transition: visibility 0s linear 180ms;
+}
+
+.nav-grup__anak--buka .nav-grup__isi {
+  visibility: visible;
+  transition-delay: 0s;
+}
+.nav-item--anak {
+  padding-left: 0.875rem;
+  font-size: 0.8125rem;
+}
+
+/* --- Induk tautan langsung + anak (mis. Penjualan): baris tautan + panah --- */
+.nav-grup__baris {
+  display: flex;
+  align-items: stretch;
+  gap: 0.25rem;
+}
+.nav-grup__baris .nav-grup__tautan {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.nav-grup__aliha {
+  appearance: none;
+  background: none;
+  border: 0;
+  border-radius: 0.5rem;
+  color: var(--sidebar-label);
+  cursor: pointer;
+  padding: 0 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.nav-grup__aliha:hover {
+  color: var(--sidebar-hover-teks);
+  background: var(--sidebar-hover);
+}
+.nav-grup__aliha:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.nav-grup__aliha .nav-grup__panah {
+  margin-left: 0;
+}
+.nav-grup__aliha[aria-expanded="true"] .nav-grup__panah {
+  transform: rotate(90deg);
+}
+/* Mode ciut: hanya ikon tautan (aturan .nav-item collapsed berlaku otomatis);
+   panah disembunyikan — anak dijangkau lewat flyout hover/klik ikon. */
+.app-shell[data-sb="collapsed"] .nav-grup__aliha {
+  display: none;
+}
+
+/* --- M1: menu induk (grup) menjadi tombol buka-tutup ------------------- */
+.nav-grup__judul {
+  appearance: none;
+  width: 100%;
+  background: none;
+  border: 0;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.nav-grup__judul:hover {
+  color: var(--sidebar-hover-teks);
+  background: var(--sidebar-hover);
+}
+
+.nav-grup__judul:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.nav-grup__judul--aktif {
+  color: var(--sidebar-active-teks);
+  background: var(--sidebar-aktif);
+  /* W3 — pil penuh menggantikan garis inset 3px yang tampak terpotong. */
+  box-shadow: none;
+}
+
+.nav-grup__judul--aktif:hover {
+  background: var(--sidebar-aktif);
+  color: var(--sidebar-active-teks);
+}
+.nav-grup__panah {
+  margin-left: auto;
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: transform 180ms ease; /* R2 — panah berputar saat grup dibuka */
+}
+
+.nav-grup__judul[aria-expanded="true"] .nav-grup__panah {
+  transform: rotate(90deg);
+}
+
+/* --- R2 — menghormati preferensi kurangi animasi ---------------------- */
+@media (prefers-reduced-motion: reduce) {.nav-grup__anak,
+  .nav-grup__isi,
+  .nav-grup__panah,
+  .sidebar,
+  .app-shell .sidebar {
+    transition: none !important;
+  }
+}
+/* --- R3 — mode collapsed (72px, hanya ikon) ------------------------------ */
+.app-shell[data-sb="collapsed"] .sidebar__brand {
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 0.375rem;
+}
+
+.app-shell[data-sb="collapsed"] .sidebar__brand-teks,
+.app-shell[data-sb="collapsed"] .nav-item > span,
+.app-shell[data-sb="collapsed"] .nav-grup__judul > span,
+.app-shell[data-sb="collapsed"] .nav-grup__panah,
+.app-shell[data-sb="collapsed"] .nav-badge {
+  display: none;
+}
+.app-shell[data-sb="collapsed"] .sidebar__ciut,
+.app-shell[data-sb="collapsed"] .sidebar__tutup {
+  margin-left: 0;
+}
+
+/* Permintaan: tombol X dihilangkan; chevron pindah ke depan logo dan
+   dibuat tak terlihat namun tetap bisa diklik untuk membuka. */
+.app-shell[data-overlay="1"] .sidebar__tutup {
+  display: none;
+}
+/* CONTOH (minta persetujuan): chevron ">" MENIMPA logo — transparan
+   penuh (tak terlihat) tapi tetap bisa diklik untuk membuka. Saat kursor
+   menyorot / fokus keyboard, ia memudar tampil sebagai petunjuk. */
+.app-shell[data-sb="collapsed"] .sidebar__brand {
+  position: relative;
+}
+.app-shell[data-sb="collapsed"] .sidebar__brand .sidebar__ciut {
+  position: absolute;
+  top: 0.75rem; /* sejajar kotak logo 2rem di dalam padding brand */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2rem;
+  height: 2rem;
+  margin-left: 0;
+  padding: 0;
+  z-index: 2; /* di atas logo */
+  opacity: 0; /* transparan */
+  border-radius: 0.625rem;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+.app-shell[data-sb="collapsed"] .sidebar__brand .sidebar__ciut:hover,
+.app-shell[data-sb="collapsed"] .sidebar__brand .sidebar__ciut:focus-visible {
+  opacity: 1;
+  background: var(--sidebar-hover);
+}
+
+.app-shell[data-sb="collapsed"] .nav-item,
+.app-shell[data-sb="collapsed"] .nav-grup__judul {
+  justify-content: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.app-shell[data-sb="collapsed"] .sidebar__nav {
+  padding: 0.75rem 0.375rem;
+}
+
+.app-shell[data-sb="collapsed"] .nav-grup__anak {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: 0;
+}
+.app-shell[data-sb="collapsed"] .sidebar__footer {
+  padding: 0.75rem 0.375rem;
+  text-align: center;
+}
+
+.app-shell[data-sb="collapsed"] .status-db {
+  font-size: 0;
+  gap: 0;
+  justify-content: center;
+}
+/* --- S: mode ciut — flyout sub-menu (portal ke body, posisi fixed per ikon) --- */
+/* Ikon grup dalam keadaan "terbuka" (flyout aktif) — sorotan bukan ungu,
+   karena ungu hanya untuk grup yang memuat halaman aktif. */
+.app-shell[data-sb="collapsed"] .nav-grup__judul--buka {
+  background: var(--sidebar-hover);
+  color: var(--sidebar-hover-teks);
+}
+
+.flyout {
+  position: fixed;
+  z-index: 65; /* di atas konten (0), header (30), sidebar (40), tooltip (60); di bawah modal */
+  width: 15rem; /* rentang lebar 220–260px */
+  max-width: min(16.25rem, calc(100vw - 1.5rem));
+  max-height: calc(100vh - 1.5rem);
+  overflow-y: auto;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  background: var(--surface-2); /* solid — batas terlihat di atas dashboard gelap */
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  animation: flyout-muncul 120ms ease;
+}
+/* Panah kecil penunjuk ke ikon yang dibuka (sebaris ikon, via --panah-y). */
+.flyout::before {
+  content: "";
+  position: absolute;
+  left: -0.375rem;
+  top: var(--panah-y, 1.5rem);
+  width: 0.625rem;
+  height: 0.625rem;
+  background: var(--surface-2);
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.flyout[data-panah="0"]::before {
+  display: none;
+}
+.flyout__judul {
+  margin: 0.125rem 0.375rem 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Sub-menu: teks --text (kontras ≥ 4.5:1 di atas --surface-2). */
+.flyout .nav-item {
+  color: var(--text);
+}
+.flyout .nav-item:hover {
+  background: var(--row-hover);
+  color: var(--text);
+}
+
+.flyout .nav-item.nav-item--aktif,
+.flyout .nav-item--anak.nav-item--aktif {
+  background: var(--sidebar-active);
+  color: var(--sidebar-active-teks);
+}
+.flyout .nav-item--anak {
+  padding-left: 0.625rem;
+}
+
+@keyframes flyout-muncul {from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {.flyout {
+    animation: none;
+  }
+}
+/* R3 — tooltip nama menu pada mode collapsed (hover & fokus). */
+.sidebar-tip {
+  position: fixed;
+  transform: translateY(-50%);
+  padding: 0.3125rem 0.5625rem;
+  border-radius: 0.375rem;
+  background: var(--tooltip-bg);
+  color: var(--tooltip-teks);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.35;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.28);
+  z-index: 60;
+}
+
+/* --- Tooltip teks untuk tombol berlabel (hover & fokus) ---------------- */
+.tombol-tip {
+  position: relative;
+}
+.tombol-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.375rem);
+  transform: translateX(-50%);
+  background: var(--tooltip-bg);
+  color: var(--tooltip-teks);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.35;
+  padding: 0.3125rem 0.5rem;
+  border-radius: 0.375rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+  z-index: 40;
+}
+
+.tombol-tip:hover::after,
+.tombol-tip:focus-visible::after {
+  opacity: 1;
+}
+
+/* --- Tip anti-terpotong AX4: bubble membungkus + balik otomatis ---------- */
+.tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+.tip::after {
+  content: attr(data-teks);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.375rem);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(16rem, calc(100vw - 2rem));
+  white-space: normal;
+  overflow-wrap: break-word;
+  background: var(--tooltip-bg);
+  color: var(--tooltip-teks);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  padding: 0.375rem 0.5625rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+  z-index: 80;
+}
+.tip:hover::after,
+.tip:focus-visible::after,
+.tip:focus-within::after {
+  opacity: 1;
+}
+/* Balik ke kiri bila mepet tepi kanan layar. */
+.tip--kiri::after {
+  left: auto;
+  right: -0.5rem;
+  transform: none;
+}
+/* Tampil di atas bila mepet bawah layar. */
+.tip--atas::after {
+  bottom: auto;
+  top: calc(100% + 0.375rem);
+}
+/* ===================== BAGIAN X1 — Identitas aplikasi ===================== */
+
+.sidebar__logo--gambar {
+  background: var(--surface-2);
+}
+
+.sidebar__logo img {
+  width: 1.375rem;
+  height: 1.375rem;
+  object-fit: contain;
+  border-radius: 0.375rem;
+  display: block;
+}
+/* X1.3 — logo & teks sejajar; nama/tagline satu baris + ellipsis; tombol
+   tidak menimpa teks; tagline disembunyikan sebelum nama terpotong. */
+.sidebar__brand {
+  min-width: 0;
+  min-height: 3.75rem; /* rentang 56–64px (X1.3) */
+}
+
+.sidebar__brand-teks {
+  min-width: 0;
+  flex: 1;
+}
+.sidebar__brand-teks strong,
+.sidebar__brand-teks small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar__ciut,
+.sidebar__tutup {
+  flex-shrink: 0;
+}
+
+@media (max-width: 1100px) {.sidebar__brand-teks small {
+    display: none; /* tagline hilang dulu sebelum nama terpotong */
+  }
+}
+/* Panel Identitas Aplikasi (Pengaturan ▸ Identitas Aplikasi) */
+.identitas-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.identitas-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.identitas-pratinjau {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+}
+
+.identitas-sidebar {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.625rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+.identitas-logo-baris {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.875rem;
+}
+
+/* Ukuran logo Loading Screen (Pengaturan ▸ Identitas Aplikasi) */
+.layar-muat-ukuran {
+  margin-top: 0.875rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+}
+.layar-muat-ukuran__kendali {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 8rem;
+  gap: 0.75rem;
+  align-items: end;
+}
+.layar-muat-ukuran__kendali input[type='range'] {
+  width: 100%;
+}
+.layar-muat-ukuran__angka input {
+  text-align: right;
+}
+.layar-muat-ukuran__pratinjau {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  min-height: 10rem;
+  max-height: 22rem;
+  overflow: auto;
+  padding: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface);
+}
+.layar-muat-ukuran__logo {
+  display: grid;
+  place-items: center;
+  border-radius: 0.625rem;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--primer), var(--accent-2, var(--primer)));
+  color: #fff;
+  font-weight: 800;
+  line-height: 1;
+  transition: width 0.3s ease, height 0.3s ease, font-size 0.3s ease;
+}
+.layar-muat-ukuran__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.layar-muat-ukuran__nama {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  transition: font-size 0.3s ease;
+}
+.layar-muat-ukuran__bilah {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--primer), transparent);
+  background-size: 200% 100%;
+  animation: lm-geser 1.1s ease-in-out infinite;
+  transition: width 0.3s ease;
+}
+@keyframes lm-geser {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.identitas-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+}
+.identitas-logo b {
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+
+.identitas-logo__kotak {
+  display: grid;
+  place-items: center;
+  height: 6rem;
+  border-radius: 0.625rem;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  overflow: hidden;
+}
+.identitas-logo__kotak--ikon {
+  height: 4rem;
+}
+
+.identitas-logo__kotak img {
+  max-height: 5.5rem;
+  max-width: 90%;
+  object-fit: contain;
+}
+.identitas-crop {
+  position: relative;
+  width: 15rem;
+  height: 15rem;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: repeating-conic-gradient(var(--surface-2) 0% 25%, var(--surface) 0% 50%) 50% / 20px 20px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.identitas-crop img {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  max-width: 100%;
+  max-height: 100%;
+  transform-origin: center;
+  user-select: none;
+}
+
+@media (max-width: 900px) {.identitas-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* =================== BAGIAN Y2 — Identitas Aplikasi ===================== */
+
+/* --- Halaman Identitas Aplikasi ------------------------------------- */
+.identitas-halaman .kartu__kepala {
+  align-items: flex-start;
+}
+
+.identitas-label-baris {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.identitas-hitung {
+  font-style: normal;
+  font-size: 0.6875rem;
+  color: var(--teks-redup);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.identitas-hitung--penuh {
+  color: var(--danger);
+  font-weight: 600;
+}
+/* Y2.2 — teks bantuan hubungan dengan pengaturan lain. */
+.identitas-bantuan {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+  font-size: 0.8125rem;
+}
+
+.identitas-bantuan > b {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--teks-redup);
+}
+.identitas-bantuan ul {
+  margin: 0;
+  padding-left: 1.125rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--teks-redup);
+}
+
+.identitas-bantuan li strong {
+  color: var(--teks);
+}
+.identitas-opsi {
+  align-items: flex-start;
+}
+
+.identitas-opsi em {
+  display: block;
+  margin-top: 0.125rem;
+  font-style: normal;
+  font-size: 0.75rem;
+}
+.identitas-cakupan {
+  margin: 0;
+  padding: 0.375rem 0.75rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+}
+
+.identitas-cakupan legend {
+  padding: 0 0.375rem;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+.identitas-pilihan {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+/* Y2.1 — pemilih warna aksen aplikasi. */
+.identitas-aksen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.identitas-aksen__kotak {
+  width: 1.625rem;
+  height: 1.625rem;
+  padding: 0;
+  border-radius: 0.5rem;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.identitas-aksen__kotak.aktif {
+  border-color: var(--teks);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+/* Swatch aksen terbaru: cincin penanda "Baru" (Deep Teal). */
+.identitas-aksen__kotak[data-baru="true"] {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px #147a75;
+}
+.identitas-aksen__kotak[data-baru="true"].aktif {
+  border-color: var(--teks);
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px #147a75;
+}
+.identitas-aksen__kotak:focus-visible {
+  outline: 2px solid var(--focus-ring, var(--primer));
+  outline-offset: 2px;
+}
+/* Pemilih warna kartu kustom: sejajar swatch preset. */
+.identitas-kartu-kustom {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.identitas-kartu-kustom input[type="color"] {
+  width: 1.625rem;
+  height: 1.625rem;
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: 0.5rem;
+  background: none;
+  cursor: pointer;
+}
+
+.identitas-grid {
+  margin-top: 0.875rem;
+}
+
+/* --- Pratinjau langsung (Y2.1 — kanan halaman) ----------------------- */
+.identitas-tema {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.ip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--ip-bg);
+  color: var(--ip-teks);
+}
+.ip[data-tema="siang"] {
+  --ip-bg: #f1f5f9;
+  --ip-panel: #ffffff;
+  --ip-teks: #0f172a;
+  --ip-redup: #64748b;
+  --ip-border: #e2e8f0;
+  --ip-sb: #0f172a;
+  --ip-sb-teks: #e2e8f0;
+  --ip-sb-redup: #94a3b8;
+  --ip-sb-hover: rgba(148, 163, 184, 0.18);
+}
+
+.ip[data-tema="malam"] {
+  --ip-bg: #020617;
+  --ip-panel: #111827;
+  --ip-teks: #e2e8f0;
+  --ip-redup: #94a3b8;
+  --ip-border: #1f2937;
+  --ip-sb: #000000;
+  --ip-sb-teks: #e2e8f0;
+  --ip-sb-redup: #94a3b8;
+  --ip-sb-hover: rgba(148, 163, 184, 0.22);
+}
+.ip-tema {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ip-redup);
+}
+
+.ip-blok {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+.ip-blok > b {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--ip-redup);
+}
+
+.ip-logo {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  border-radius: 0.4375rem;
+  overflow: hidden;
+  background: var(--ip-latar-logo, var(--ip-panel));
+}
+.ip-logo img {
+  width: 1.125rem;
+  height: 1.125rem;
+  object-fit: contain;
+  display: block;
+}
+
+.ip-logo__teks {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--ip-aksen);
+}
+.ip-sb {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 11.875rem;
+  max-width: 100%;
+  padding: 0.375rem;
+  border-radius: 0.5rem;
+  background: var(--ip-sb);
+}
+
+.ip-sb__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.125rem;
+  padding: 0.125rem 0.25rem;
+}
+.ip-sb__teks {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.ip-sb__teks strong {
+  font-size: 0.7188rem;
+  color: var(--ip-sb-teks);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ip-sb__teks small {
+  font-size: 0.5938rem;
+  color: var(--ip-sb-redup);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ip-sb__aksi {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--ip-sb-redup);
+}
+.ip-sb__nav {
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+}
+
+.ip-sb__nav li {
+  padding: 0.3125rem 0.4375rem;
+  border-radius: 0.375rem;
+  font-size: 0.6563rem;
+  color: var(--ip-sb-redup);
+}
+.ip-sb__nav li.aktif {
+  background: var(--ip-aksen);
+  color: #ffffff;
+}
+
+.ip-sb-ciut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  width: 2.875rem;
+  padding: 0.5rem 0.375rem;
+  border-radius: 0.5rem;
+  background: var(--ip-sb);
+}
+.ip-sb-ciut__titik {
+  display: block;
+  width: 1.5rem;
+  height: 0.5rem;
+  border-radius: 0.25rem;
+  background: var(--ip-sb-hover);
+}
+
+.ip-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3125rem;
+  max-width: 13.75rem;
+  padding: 0.75rem 0.625rem;
+  border: 1px solid var(--ip-border);
+  border-radius: 0.5rem;
+  background: var(--ip-panel);
+}
+.ip-login .ip-logo {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5625rem;
+}
+
+.ip-login .ip-logo img {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.ip-login strong {
+  font-size: 0.7813rem;
+  color: var(--ip-teks);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.ip-login small {
+  font-size: 0.5938rem;
+  color: var(--ip-redup);
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* AI5 — kartu layar muat pada pratinjau langsung. */
+.identitas-pratinjau__kepala {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.ip-muat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.875rem 0.625rem;
+  border: 1px solid var(--ip-border);
+  border-radius: 0.5rem;
+  background: var(--ip-panel);
+}
+
+.ip-logo--muat {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5625rem;
+}
+
+.ip-logo--muat img {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.ip-logo--muat-inisial {
+  background: var(--ip-aksen);
+  background: linear-gradient(135deg, var(--ip-aksen), color-mix(in srgb, var(--ip-aksen) 55%, #ffffff));
+}
+
+.ip-logo--muat .ip-logo__teks {
+  color: #ffffff;
+  font-size: 0.9375rem;
+}
+
+.ip-muat strong {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.7813rem;
+  color: var(--ip-teks);
+}
+
+.ip-muat small {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.5938rem;
+  color: var(--ip-redup);
+}
+
+.ip-muat__bilah {
+  display: block;
+  width: 3.5rem;
+  height: 3px;
+  margin-top: 0.125rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--ip-aksen), transparent);
+}
+
+.ip-kolom-palsu {
+  display: block;
+  width: 100%;
+  height: 1rem;
+  border: 1px solid var(--ip-border);
+  border-radius: 0.3125rem;
+  background: var(--ip-bg);
+}
+
+.ip-tombol {
+  display: block;
+  width: 100%;
+  padding: 0.25rem 0;
+  border-radius: 0.3125rem;
+  background: var(--ip-aksen);
+  color: #ffffff;
+  font-size: 0.6563rem;
+  font-weight: 600;
+  text-align: center;
+}
+.ip-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-width: 0;
+  padding: 0.3125rem 0.5rem;
+  border: 1px solid var(--ip-border);
+  border-radius: 0.5rem;
+  background: var(--ip-panel);
+}
+
+.ip-tab__fav {
+  display: grid;
+  place-items: center;
+  width: 0.75rem;
+  height: 0.75rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.ip-tab__fav img {
+  width: 0.75rem;
+  height: 0.75rem;
+  object-fit: contain;
+  display: block;
+}
+
+.ip-tab__judul {
+  font-size: 0.6875rem;
+  color: var(--ip-teks);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ip-tab__tutup {
+  margin-left: auto;
+  color: var(--ip-redup);
+  line-height: 1;
+}
+
+/* Kop faktur selalu kertas putih — hasil cetak tidak bergantung tema. */
+.ip-kop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #ffffff;
+  color: #0f172a;
+  border-bottom: 2px solid var(--ip-aksen);
+}
+
+.ip-kop__logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.ip-kop__kosong {
+  display: block;
+  width: 26px;
+  height: 26px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.ip-kop__teks {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ip-kop__teks strong {
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ip-kop__teks small {
+  font-size: 9.5px;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Y2.1 — pratinjau bentuk potongan pada kotak edit logo. */
+.identitas-crop--bulat {
+  border-radius: 50%;
+}
+.identitas-crop--sudut {
+  border-radius: 6rem;
+}
+
+@media (max-width: 720px) {.ip-sb {
+    width: 100%;
+  }
+}
+
+/* AH3 — Menu Sidebar ▸ "Ciutkan sidebar otomatis": ikon saja mulai lebar
+   layar sedang. Dipindah ke styles.css agar berlaku di seluruh aplikasi. */
+@media (max-width: 1439.98px) {
+  html[data-sidebar-ciut='ya'] {
+    --sidebar-lebar: var(--sidebar-ciut);
+  }
+  html[data-sidebar-ciut='ya'] .sidebar__brand-teks,
+  html[data-sidebar-ciut='ya'] .sidebar__grup-teks,
+  html[data-sidebar-ciut='ya'] .sidebar__label,
+  html[data-sidebar-ciut='ya'] .sidebar__grup-toggle span,
+  html[data-sidebar-ciut='ya'] .sidebar__nav a span {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   MOBILE OTOMATIS — Stok / Kartu / Penjualan (disetujui contoh-mobile-otomatis.html).
+   Pola: desktop tetap tabel; <=767px tabel disembunyikan, kartu HP tampil.
+   Kartu memakai grid label:nilai yang mengisi lebar — tidak bertumpuk,
+   tidak ada area kosong. Berlaku umum via kelas .hp-daftar/.hp-kartu.
+   ========================================================================== */
+.hp-daftar {
+  display: none;
+}
+@media (max-width: 767.98px) {
+  .sembunyi-hp {
+    display: none !important;
+  }
+  .hp-daftar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.625rem;
+  }
+  .hp-kartu {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    padding: 0.75rem 0.875rem;
+    min-width: 0;
+  }
+  .hp-kartu__atas {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .hp-kartu__kode {
+    flex: none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: var(--surface-2);
+    border-radius: 999px;
+    padding: 0.1875rem 0.625rem;
+    white-space: nowrap;
+  }
+  .hp-kartu__kanan {
+    margin-left: auto;
+    min-width: 0;
+    font-size: 0.75rem;
+    color: var(--teks-redup);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hp-kartu__nama {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-top: 0.375rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hp-kartu__sub {
+    font-size: 0.7813rem;
+    color: var(--teks-redup);
+    margin-top: 0.125rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.375rem 0.5rem;
+    margin-top: 0.625rem;
+  }
+  .hp-sel {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 0.625rem;
+    padding: 0.4375rem 0.625rem;
+    min-width: 0;
+  }
+  .hp-sel--penuh {
+    grid-column: 1 / -1;
+  }
+  .hp-label {
+    font-size: 0.6563rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--teks-redup);
+  }
+  .hp-nilai {
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-top: 0.125rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hp-aksi {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.625rem;
+  }
+  .hp-aksi .tombol,
+  .hp-aksi .hp-btn {
+    flex: 1 1 0;
+    min-height: 2.75rem;
+  }
+  .hp-ikonbar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.375rem;
+    margin-top: 0.625rem;
+  }
+  .hp-ikonbar > span,
+  .hp-ikonbar > .ikon-btn-wadah {
+    display: flex;
+    min-width: 0;
+  }
+  .hp-ikonbar .ikon-btn {
+    flex: 1 1 0;
+    width: 100%;
+    min-height: 2.75rem;
+  }
+  /* Kepala kartu menumpuk rapi; filter mengisi penuh. */
+  .kartu__kepala {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .kartu__kepala .tombol-baris {
+    width: 100%;
+  }
+  .alat-tabel .input-cari {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+  .alat-tabel .input-pilih {
+    flex: 1 1 calc(50% - 0.25rem);
+    max-width: none;
+    min-width: 0;
+  }
+  .alat-tabel .input-pilih--lebar {
+    flex: 1 1 100%;
+  }
+  .paginasi {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .paginasi > .teks-redup,
+  .paginasi > .teks-kecil {
+    text-align: center;
+    width: 100%;
+  }
+  .paginasi__kontrol {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .paginasi__kontrol .tombol,
+  .paginasi__kontrol .input-pilih {
+    flex: 1 1 0;
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .hp-daftar--tablet-2 {
+    display: grid;
+  }
+}
+
+/* ---- Layar maintenance global (restore database sedang berjalan) ---- */
+.layar-maintenance {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 1rem;
+}
+.layar-maintenance__kartu {
+  background: var(--surface, #fff);
+  color: var(--teks, #111);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 26rem;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+.layar-maintenance__kartu h2 {
+  margin: 0 0 0.5rem;
+}
+.layar-maintenance__spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  border: 4px solid var(--border, #ddd);
+  border-top-color: var(--primer, #2563eb);
+  animation: layar-maintenance-putar 0.9s linear infinite;
+}
+@keyframes layar-maintenance-putar {
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Kontrol scroll area luar per halaman (Pengaturan ▸ Tampilan)
+   --------------------------------------------------------------------------
+   AppLayout memasang data-scroll-luar pada <html> sesuai rute aktif:
+   - "bebas" (bawaan, tanpa aturan di bawah): .app-utama menggulir seperti biasa.
+   - "kunci": jendela & rangka aplikasi setinggi layar; .app-utama tidak
+     menggulir, gulir berpindah ke .konten sehingga tabel internal
+     (.tabel-bungkus, .sub-tabel-bungkus, .pos-tabel-keranjang) tetap menjadi
+     area gulir utama saat isinya panjang.
+   ========================================================================== */
+:root[data-scroll-luar='kunci'],
+:root[data-scroll-luar='kunci'] body {
+  overflow: hidden;
+  height: 100%;
+}
+:root[data-scroll-luar='kunci'] .app-utama {
+  overflow-y: hidden;
+}
+:root[data-scroll-luar='kunci'] .konten {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}

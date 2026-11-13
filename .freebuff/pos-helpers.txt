@@ -1,0 +1,229 @@
+/** Hasil validasi + perhitungan satu penjualan (dipakai POST /pos/sales & PUT /pos/sales/:id). */
+type PenjualanSiap = {
+  tanggal: string;
+  rincian: { productId: number; qty: number; harga: number; diskon: number; hpp: number; sku: string; nama: string }[];
+  payments: BayarMasuk[];
+  customerId: number | null;
+  warehouseId: number;
+  modePos: 'foto' | 'cepat';
+  subtotal: number;
+  diskonTotal: number;
+  pajak: number;
+  total: number;
+  tunaiNet: number;
+  transferNet: number;
+  qrisNet: number;
+  kreditNet: number;
+  jatuhTempo: string | null;
+  dibayar: number;
+};
+
+/**
+ * Validasi keranjang, pelanggan, pembayaran, produk, dan hak khusus diskon,
+ * lalu hitung total + net penerimaan per metode. SATU sumber aturan untuk
+ * transaksi baru (POST) maupun edit transaksi (PUT — Token Edit).
+ */
+async function hitungPenjualan(
+  req: import('express').Request,
+  body: {
+    items?: ItemMasuk[];
+    diskon?: number;
+    pajak_persen?: number;
+    customer_id?: number | null;
+    warehouse_id?: number;
+    mode_pos?: string;
+    payments?: BayarMasuk[];
+    jatuh_tempo?: string | null;
+    created_at?: string | null;
+  },
+): Promise<PenjualanSiap> {
+  // Waktu transaksi dari jam kasir (live clock header POS) — dipakai sebagai
+  // tanggal bila valid & masuk akal, fallback ke waktu server.
+  let tanggal = new Date().toISOString();
+  if (typeof body.created_at === 'string' && body.created_at) {
+    const cli = new Date(body.created_at);
+    if (Number.isFinite(cli.getTime())) {
+      const selisih = Date.now() - cli.getTime();
+      if (selisih >= -5 * 60_000 && selisih <= 24 * 3600_000) tanggal = cli.toISOString();
+    }
+  }
+
+  const items = Array.isArray(body.items) ? body.items : [];
+  if (items.length === 0) throw tolak(400, 'Keranjang kosong.');
+  const diskon = Math.max(0, Number(body.diskon ?? 0));
+  // Tarif PPN dari Pengaturan (akuntansi_ppn); bila klien mengirim nilai
+  // eksplisit, nilai klien yang dipakai (kompatibel dengan POS lama).
+  const ppnSet = await pengaturanPpn();
+  const pajakPersen =
+    body.pajak_persen !== undefined && body.pajak_persen !== null && body.pajak_persen !== ('' as unknown)
+      ? Number(body.pajak_persen)
+      : ppnSet.aktif
+        ? ppnSet.tarif
+        : 0;
+  if (!Number.isFinite(pajakPersen) || pajakPersen < 0 || pajakPersen > 100) throw tolak(400, 'Persentase pajak tidak valid.');
+  const warehouseId = Number(body.warehouse_id ?? 0);
+  const gudang = await get<{ id: number }>(`SELECT id FROM warehouses WHERE id = ?`, warehouseId);
+  if (!gudang) throw tolak(400, 'Gudang penjualan tidak valid.');
+  // ISOLASI GUDANG — transaksi tidak boleh dibuat ke gudang di luar cakupan.
+  await wajibGudangDiizinkan(req, warehouseId);
+  const payments = Array.isArray(body.payments) ? body.payments : [];
+  if (payments.length === 0) throw tolak(400, 'Belum ada pembayaran.');
+  for (const b of payments) {
+    if (!METODE.has(b.metode)) throw tolak(400, `Metode pembayaran "${String(b.metode)}" tidak dikenal.`);
+    if (!Number.isFinite(Number(b.jumlah)) || Number(b.jumlah) <= 0) throw tolak(400, 'Jumlah pembayaran tidak valid.');
+  }
+
+  const customerId = body.customer_id ? Number(body.customer_id) : null;
+  const kreditTotal = payments.filter((p) => p.metode === 'kredit').reduce((a, p) => a + Number(p.jumlah), 0);
+  if (kreditTotal > 0 && !customerId) throw tolak(400, 'Pembayaran kredit/piutang memerlukan pelanggan.');
+
+  // Validasi produk + hitung total SEBELUM transaksi (baca konsisten).
+  let subtotal = 0;
+  let diskonItem = 0;
+  const rincian = await Promise.all(items.map(async (it) => {
+    const qty = Number(it.qty);
+    const harga = Number(it.harga);
+    const diskonBaris = Math.max(0, Number(it.diskon ?? 0));
+    if (!Number.isInteger(Number(it.product_id)) || !Number.isFinite(qty) || qty <= 0) throw tolak(400, 'Item tidak valid.');
+    if (!Number.isFinite(harga) || harga < 0) throw tolak(400, 'Harga tidak valid.');
+    if (!Number.isFinite(diskonBaris)) throw tolak(400, 'Diskon item tidak valid.');
+    if (diskonBaris > qty * harga) throw tolak(400, 'Diskon item melebihi nilai baris.');
+    const p = await get<{ id: number; harga_beli: number; harga_jual: number; sku: string; nama: string }>(
+      `SELECT id, harga_beli, harga_jual, sku, nama FROM products
+       WHERE id = ? AND deleted_at IS NULL AND aktif = TRUE`,
+      Number(it.product_id),
+    );
+    if (!p) throw tolak(404, `Produk ${Number(it.product_id)} tidak ditemukan atau nonaktif.`);
+    // Hak Khusus: izin ubah harga jual di kasir + batas maksimal diskon %.
+    const k = konteksWajib(req);
+    const bolehUbahHarga = k.admin || k.khusus.ubah_harga_kasir;
+    const batasDiskon = k.admin ? 100 : k.khusus.diskon_maks;
+    if (!bolehUbahHarga && harga !== Number(p.harga_jual)) {
+      throw tolak(403, 'Peran ini tidak memiliki hak "Ubah harga jual di kasir" (Hak Khusus).');
+    }
+    const persenBaris = qty * harga > 0 ? (diskonBaris / (qty * harga)) * 100 : 0;
+    if (persenBaris > batasDiskon + 1e-9) {
+      throw tolak(403, `Diskon baris ${persenBaris.toFixed(1)}% melebihi batas ${batasDiskon}% peran ini.`);
+    }
+    subtotal += qty * harga;
+    diskonItem += diskonBaris;
+    // Snapshot nama & SKU saat transaksi — riwayat tetap utuh walau master berubah.
+    return { productId: p.id, qty, harga, diskon: diskonBaris, hpp: qty * Number(p.harga_beli), sku: p.sku, nama: p.nama };
+  }));
+
+  // Hak Khusus: diskon kasir (persentase subtotal) ikut dibatasi.
+  {
+    const k = konteksWajib(req);
+    const batas = k.admin ? 100 : k.khusus.diskon_maks;
+    const persen = subtotal > 0 ? (diskon / subtotal) * 100 : 0;
+    if (persen > batas + 1e-9) {
+      throw tolak(403, `Diskon penjualan ${persen.toFixed(1)}% melebihi batas ${batas}% peran ini.`);
+    }
+  }
+  const dasar = Math.max(0, subtotal - diskon - diskonItem);
+  const pajak = Math.round(dasar * (pajakPersen / 100));
+  const total = dasar + pajak;
+  const dibayar = payments.reduce((a, p) => a + Number(p.jumlah), 0);
+  if (dibayar + 0.5 < total) throw tolak(400, `Pembayaran kurang ${total - dibayar} — lengkapi pembayaran.`);
+
+  // Net penerimaan untuk kas & piutang: uang kembalian dipotong berurutan
+  // (tunai → transfer → qris → kredit).
+  let sisaKembalian = Math.max(0, dibayar - total);
+  const potong = (n: number): number => {
+    const ambil = Math.min(n, sisaKembalian);
+    sisaKembalian -= ambil;
+    return n - ambil;
+  };
+  const tunaiNet = potong(payments.filter((p) => p.metode === 'tunai').reduce((a, p) => a + Number(p.jumlah), 0));
+  const transferNet = potong(payments.filter((p) => p.metode === 'transfer').reduce((a, p) => a + Number(p.jumlah), 0));
+  const qrisNet = potong(payments.filter((p) => p.metode === 'qris').reduce((a, p) => a + Number(p.jumlah), 0));
+  const kreditNet = potong(kreditTotal);
+
+  return {
+    tanggal,
+    rincian,
+    payments,
+    customerId,
+    warehouseId,
+    modePos: body.mode_pos === 'cepat' ? 'cepat' : 'foto',
+    subtotal,
+    diskonTotal: diskon + diskonItem,
+    pajak,
+    total,
+    tunaiNet,
+    transferNet,
+    qrisNet,
+    kreditNet,
+    jatuhTempo: body.jatuh_tempo ? String(body.jatuh_tempo) : null,
+    dibayar,
+  };
+}
+
+/**
+ * Tulis seluruh efek satu penjualan: baris item + potong stok (kartu stok),
+ * pembayaran, piutang kredit, dan kas masuk. WAJIB di dalam withTransaction().
+ */
+async function terapkanPenjualan(saleId: number, s: PenjualanSiap, kasir: number, noDok: string): Promise<void> {
+  for (const it of s.rincian) {
+    await run(
+      `INSERT INTO sale_items (sale_id, product_id, nama_produk, sku, qty, unit_id, harga, diskon, subtotal, hpp)
+       VALUES (?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)`,
+      saleId,
+      it.productId,
+      it.nama,
+      it.sku,
+      it.qty,
+      it.harga,
+      it.diskon,
+      it.qty * it.harga - it.diskon,
+      it.hpp,
+    );
+    // Stok berkurang + kartu stok tercatat (transaksi yang sama).
+    await kurangiStok(s.warehouseId, it.productId, it.qty, 'penjualan', saleId, kasir);
+  }
+
+  for (const b of s.payments) {
+    await run(
+      `INSERT INTO sale_payments (sale_id, metode, jumlah, referensi) VALUES (?, ?, ?, ?)`,
+      saleId,
+      b.metode,
+      Number(b.jumlah),
+      b.referensi ? String(b.referensi) : null,
+    );
+  }
+
+  if (s.kreditNet > 0) {
+    const tempo = s.jatuhTempo ?? new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+    await run(
+      `INSERT INTO receivables (sale_id, customer_id, jatuh_tempo, total, status, dibuat_oleh)
+       VALUES (?, ?, ?, ?, 'belum', ?)`,
+      saleId,
+      s.customerId,
+      tempo,
+      s.kreditNet,
+      kasir,
+    );
+  }
+
+  // AKUNTANSI DASAR — tanpa jurnal. Penerimaan tunai/transfer/QRIS langsung
+  // menjadi Kas Masuk pada rekening sesuai metode bayar.
+  const penerimaan: [string, number][] = [
+    ['tunai', s.tunaiNet],
+    ['transfer', s.transferNet],
+    ['qris', s.qrisNet],
+  ];
+  for (const [metode, jumlah] of penerimaan) {
+    if (jumlah <= 0) continue;
+    const akunKas = await akunKasMetode(metode);
+    if (!akunKas) continue; // metode belum ditautkan ke rekening — dilewati agar POS tetap jalan
+    await catatMutasiKas({
+      tipe: 'masuk',
+      akunId: akunKas.id,
+      jumlah,
+      keterangan: `Penjualan ${noDok}`,
+      sumberTipe: 'penjualan',
+      sumberId: saleId,
+      dibuatOleh: kasir,
+    });
+  }
+}

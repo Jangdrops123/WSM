@@ -1,0 +1,116 @@
+/* Modul Stok Persediaan — kartu header (judul + deskripsi) dihapus, isi
+   langsung di bawah topbar. Padding atas halaman dipatok 16px agar tidak
+   menyisakan ruang kosong bekas header. */
+.konten:has(> .stok-halaman) {
+  padding-top: 0;
+}
+.stok-halaman {
+  padding-top: 16px;
+}
+
+/* Baris ringkasan metrik + switcher token: sejajar kanan, rata tengah,
+   jarak antar elemen 12px. */
+.stok-ringkas {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-left: auto;
+}
+.stok-ringkas .token-grup {
+  flex: 0 0 auto;
+}
+.stok-ringkas .kartu-ringkas {
+  flex: 0 0 auto;
+}
+
+/* Layar sempit: baris ringkasan turun ke baris sendiri agar chip + token
+   tidak terpotong (aturan mobile .kartu__kepala--kompak memakai nowrap). */
+@media (max-width: 767.98px) {
+  .kartu--daftar > .kartu__kepala--kompak.stok-kepala {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+  .kartu--daftar > .kartu__kepala--kompak.stok-kepala > .tombol-baris.stok-ringkas {
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+}
+
+/* Tampilan Pengaturan tetap punya switcher di baris atas. */
+.stok-token-atas {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+/* Kartu Stok — baris kanan header: jumlah mutasi → badge Saldo → badge
+   Nilai → grup tombol/ikon aksi, semuanya satu garis rata kanan. */
+.kartu--daftar > .kartu__kepala--kompak.stok-kartu__kepala {
+  gap: 12px;
+}
+.stok-kartu__judul {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.stok-kartu__kanan {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.stok-kartu__kanan .tombol-baris {
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.kartu--daftar > .kartu__kepala--kompak .stok-kartu__kanan .kartu__jumlah {
+  flex: 0 0 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Rapatkan filter produk/gudang ke tabel mutasi; info SKU sejajar inline. */
+.kartu--daftar > .alat-tabel.stok-kartu__alat {
+  margin-bottom: 8px;
+  padding-bottom: 0;
+  gap: 8px;
+  min-height: 0;
+}
+.stok-kartu__info {
+  margin-left: auto;
+  white-space: nowrap;
+}
+.kartu--daftar > .tabel-bungkus.stok-kartu__tabel {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+@media (max-width: 767.98px) {
+  .kartu--daftar > .kartu__kepala--kompak.stok-kartu__kepala {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .stok-kartu__judul {
+    flex: 1 0 100%;
+  }
+  .stok-kartu__kanan {
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .stok-kartu__kanan .tombol-baris {
+    justify-content: flex-start;
+  }
+  .stok-kartu__info {
+    margin-left: 0;
+  }
+}

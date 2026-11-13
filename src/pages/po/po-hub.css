@@ -1,0 +1,574 @@
+/* Tema Purchasing Executive Hub — modul Purchase Order.
+   Gaya terang mandiri (tanpa Tailwind/CDN) meniru template elegan:
+   hero navy, kartu statistik, tabel monitoring kolom berwarna, kertas A4. */
+
+.hub {
+  --hub-latar: #f8fafc;
+  --hub-navy-900: #0b0f19;
+  --hub-navy-800: #0f172a;
+  --hub-garis: #e2e8f0;
+  --hub-teks: #1e293b;
+  --hub-redup: #64748b;
+  --hub-sky: #0284c7;
+  --hub-sky-latar: #f0f9ff;
+  --hub-hijau: #059669;
+  --hub-hijau-latar: #ecfdf5;
+  --hub-amber: #b45309;
+  --hub-amber-latar: #fffbeb;
+  --hub-indigo: #4f46e5;
+  --hub-indigo-latar: #eef2ff;
+  --hub-merah: #b91c1c;
+  --hub-merah-latar: #fef2f2;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--hub-teks);
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* ---------- Hero navy ---------- */
+.hub-hero {
+  background: linear-gradient(135deg, var(--hub-navy-900), var(--hub-navy-800));
+  color: #fff;
+  border: 1px solid #1e293b;
+  border-radius: 1rem;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  box-shadow: 0 10px 24px -18px rgba(2, 6, 23, 0.8);
+}
+.hub-hero__identitas { display: flex; align-items: center; gap: 0.8rem; }
+.hub-hero__logo {
+  height: 2.75rem; width: 2.75rem; border-radius: 0.8rem; flex: none;
+  display: grid; place-items: center; font-size: 1.3rem;
+  background: linear-gradient(135deg, #0284c7, #4f46e5); color: #fff;
+  box-shadow: 0 6px 16px -6px rgba(56, 189, 248, 0.5);
+}
+.hub-hero h2 { margin: 0; font-size: 1.02rem; font-weight: 800; letter-spacing: -0.01em; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.hub-hero__versi {
+  font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  color: #7dd3fc; background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 0.375rem; padding: 0.1rem 0.45rem;
+}
+.hub-hero p { margin: 0.15rem 0 0; font-size: 0.75rem; color: #94a3b8; }
+.hub-hero__aksi { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.hub-btn {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  font-size: 0.75rem; font-weight: 700; border-radius: 0.65rem;
+  padding: 0.55rem 0.9rem; border: 1px solid transparent; cursor: pointer;
+  transition: filter 120ms ease, transform 120ms ease;
+}
+.hub-btn:active { transform: translateY(1px); }
+.hub-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.hub-btn--gelap { background: #1e293b; color: #e2e8f0; border-color: #334155; }
+.hub-btn--gelap:hover:not(:disabled) { background: #334155; }
+.hub-btn--sky { background: linear-gradient(90deg, #0284c7, #2563eb); color: #fff; box-shadow: 0 6px 16px -8px rgba(2, 132, 199, 0.7); }
+/* Tombol WhatsApp — solid hijau aksen WhatsApp. */
+.hub-btn--wa { background: #1da851; color: #fff; box-shadow: 0 6px 16px -10px rgba(29, 168, 81, 0.8); }
+.hub-btn--wa:hover:not(:disabled) { background: #178f44; filter: none; }
+.hub-btn--sky:hover:not(:disabled) { filter: brightness(1.08); }
+.hub-btn--terang { background: var(--surface); color: var(--teks); border-color: var(--border); }
+.hub-btn--terang:hover:not(:disabled) { background: var(--surface-2); }
+
+/* ---------- Baris pemasok + konversi ---------- */
+.hub-baris { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+@media (min-width: 900px) { .hub-baris { grid-template-columns: 2fr 1fr; } }
+.hub-kartu {
+  /* Token tema: putih di Siang, gelap di Malam (tanpa override terpisah). */
+  background: var(--card-bg-color); border: 1px solid var(--card-border-color); border-radius: 1rem;
+  padding: 1.1rem 1.25rem; box-shadow: var(--card-shadow);
+}
+.hub-kartu--pemasok { display: flex; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.hub-bidang { flex: 1; min-width: 12rem; }
+.hub-bidang > span {
+  display: flex; align-items: center; gap: 0.35rem;
+  font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--hub-redup); margin-bottom: 0.35rem;
+}
+.hub-bidang select, .hub-bidang input {
+  width: 100%; font-size: 0.85rem; font-weight: 700; color: var(--teks);
+  background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 0.65rem; padding: 0.6rem 0.75rem;
+}
+.hub-po-meta { display: flex; gap: 1.25rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
+@media (min-width: 640px) { .hub-po-meta { border-top: 0; border-left: 1px solid var(--border); padding-top: 0; padding-left: 1.25rem; } }
+.hub-po-meta small { display: block; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; color: var(--hub-redup); }
+.hub-po-meta strong { font-size: 0.85rem; }
+.hub-konversi {
+  background: linear-gradient(135deg, var(--hub-navy-900), var(--hub-navy-800));
+  color: #fff; border: 1px solid #1e293b; border-radius: 1rem;
+  padding: 1.1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.hub-konversi__tag {
+  font-size: 0.62rem; font-weight: 800; color: #6ee7b7;
+  background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.3);
+  border-radius: 0.375rem; padding: 0.1rem 0.45rem;
+}
+.hub-konversi__sub { font-size: 0.7rem; color: #94a3b8; margin-left: 0.4rem; }
+.hub-konversi__rumus { margin: 0.35rem 0 0; font-size: 1.15rem; font-weight: 800; }
+.hub-konversi__ket { margin: 0.25rem 0 0; font-size: 0.72rem; color: #94a3b8; }
+.hub-konversi__ikon {
+  height: 3rem; width: 3rem; flex: none; display: grid; place-items: center; font-size: 1.2rem;
+  background: #1e293b; border: 1px solid #334155; border-radius: 0.8rem; color: #7dd3fc;
+}
+
+/* ---------- Kartu statistik ---------- */
+.hub-stats { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+@media (min-width: 640px) { .hub-stats { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .hub-stats { grid-template-columns: repeat(4, 1fr); } }
+.hub-stat {
+  background: linear-gradient(135deg, #0f766e, #0d9488);
+  border: 1px solid #0f766e;
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 10px 24px -18px rgba(15, 118, 110, 0.7);
+}
+.hub-stat__atas { display: flex; justify-content: space-between; align-items: flex-start; }
+.hub-stat__judul { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #ccfbf1; }
+.hub-stat__ikon {
+  height: 40px; width: 40px; flex: none;
+  display: grid; place-items: center;
+  font-size: 20px; line-height: 1;
+  padding: 0; border-radius: 10px; opacity: 1;
+  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.hub-stat__ikon--sky, .hub-stat__ikon--hijau, .hub-stat__ikon--amber, .hub-stat__ikon--indigo { background: #ffffff; }
+.hub-stat__angka { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; margin-top: 0.7rem; }
+.hub-stat__angka strong { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: #ffffff; }
+.hub-stat__angka strong.hijau, .hub-stat__angka strong.amber { color: #ffffff; }
+.hub-stat__kodi { font-size: 0.68rem; font-weight: 800; border-radius: 999px; padding: 0.1rem 0.55rem; border: 1px solid; white-space: nowrap; }
+.hub-stat__kodi--sky { color: #0369a1; background: #e0f2fe; border-color: #bae6fd; }
+.hub-stat__kodi--hijau { color: #15803d; background: #dcfce7; border-color: #bbf7d0; }
+.hub-stat__kodi--amber { color: #b45309; background: #fef3c7; border-color: #fde68a; }
+.hub-stat p { margin: 0.3rem 0 0; font-size: 12px; color: #ccfbf1; }
+.hub-stat__nominal { display: block; margin-top: 0.7rem; font-size: 22px; font-weight: 700; color: #ffffff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hub-maju { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+/* Track di dalam kartu teal — putih transparan agar benar di Siang & Malam. */
+.hub-maju__rel { flex: 1; height: 0.375rem; background: rgba(255, 255, 255, 0.3); border-radius: 999px; overflow: hidden; }
+.hub-maju__rel > span { display: block; height: 100%; background: linear-gradient(90deg, #0284c7, #059669); border-radius: 999px; transition: width 400ms ease; }
+.hub-maju small { font-size: 0.68rem; font-weight: 800; color: #ccfbf1; }
+
+/* ---------- Panel monitoring ---------- */
+.hub-panel { background: var(--card-bg-color); border: 1px solid var(--card-border-color); border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--card-shadow); }
+.hub-panel__kepala { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--border); background: var(--surface-2); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: center; }
+.hub-panel__kepala h3 { margin: 0; font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+.hub-panel__kepala p { margin: 0.2rem 0 0; font-size: 0.72rem; color: var(--hub-redup); }
+.hub-legenda { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; font-size: 0.72rem; font-weight: 700; color: var(--hub-redup); }
+.hub-gulir { overflow-x: auto; }
+.hub-tabel { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 56rem; }
+.hub-tabel thead th {
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted);
+  background: var(--surface-2); border-bottom: 1px solid var(--border); padding: 0.7rem 1rem; text-align: left; white-space: nowrap;
+}
+.hub-tabel tbody td { padding: 0.8rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.hub-tabel tbody tr:hover { background: var(--row-hover); }
+.hub-tabel tfoot td { background: var(--surface-2); font-weight: 800; padding: 0.8rem 1rem; border-top: 2px solid var(--border); }
+.hub-td--target { background: rgba(2, 132, 199, 0.06); border-left: 1px solid #e0f2fe; border-right: 1px solid #e0f2fe; }
+.hub-td--datang { background: rgba(5, 150, 105, 0.06); }
+.hub-td--sisa { background: rgba(180, 83, 9, 0.06); border-left: 1px solid #fef3c7; border-right: 1px solid #fef3c7; }
+.hub-angka { font-weight: 800; }
+.hub-angka--sky { color: var(--hub-navy-800); }
+.hub-angka--hijau { color: var(--hub-hijau); }
+.hub-angka--amber { color: var(--hub-amber); }
+.hub-angka--indigo { color: var(--hub-indigo); }
+.hub-angka--redup { color: #94a3b8; }
+.hub-kodi { font-size: 0.72rem; font-weight: 700; margin-left: 0.25rem; }
+.hub-kodi--sky { color: var(--hub-sky); }
+.hub-kodi--hijau { color: var(--hub-hijau); }
+.hub-pil {
+  display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap;
+  font-size: 0.68rem; font-weight: 800; border-radius: 999px; padding: 0.25rem 0.65rem; border: 1px solid;
+}
+.hub-pil--kurang { color: var(--hub-amber); background: var(--hub-amber-latar); border-color: #fde68a; }
+.hub-pil--lengkap { color: var(--hub-hijau); background: var(--hub-hijau-latar); border-color: #a7f3d0; }
+.hub-pil--lebih { color: var(--hub-indigo); background: var(--hub-indigo-latar); border-color: #c7d2fe; }
+
+/* ---------- Kertas A4 ---------- */
+.hub-a4judul { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.hub-a4judul h3 { margin: 0; font-size: 1rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+.hub-a4judul p { margin: 0.2rem 0 0; font-size: 0.72rem; color: var(--hub-redup); }
+.hub-a4 {
+  width: 210mm; max-width: 100%; min-height: 200mm; margin: 0 auto; background: #fff;
+  padding: 14mm 12mm; border: 1px solid var(--hub-garis); border-radius: 0.25rem;
+  box-shadow: 0 20px 25px -12px rgba(15, 23, 42, 0.25); color: #0f172a; font-size: 12px;
+  overflow-x: auto;
+}
+.hub-a4__kop { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; border-bottom: 2px solid #0f172a; padding-bottom: 1rem; margin-bottom: 1.25rem; }
+.hub-a4__brand { display: flex; gap: 0.6rem; align-items: flex-start; }
+.hub-a4__logo {
+  height: 2rem; width: 2rem; flex: none; display: grid; place-items: center;
+  background: #0f172a; color: #fff; font-weight: 800; font-size: 0.85rem; border-radius: 0.375rem;
+}
+.hub-a4__brand h4 { margin: 0; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; text-transform: uppercase; line-height: 1.1; }
+.hub-a4__brand p { margin: 0.3rem 0 0; font-size: 0.72rem; color: #475569; }
+.hub-a4__badge { text-align: right; flex: none; }
+.hub-a4__badge span {
+  display: inline-block; background: #0f172a; color: #fff; font-size: 0.62rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.08em; border-radius: 0.375rem; padding: 0.25rem 0.6rem; margin-bottom: 0.4rem;
+}
+.hub-a4__badge strong { display: block; font-size: 0.95rem; font-weight: 800; }
+.hub-a4__badge small { font-size: 0.72rem; color: #475569; }
+/* PO susulan: badge di kiri judul dokumen + baris referensi PO induk. */
+.hub-a4__badge-judul {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 0.4rem;
+}
+.hub-a4__badge-judul > span { margin-bottom: 0; }
+.hub-a4__badge .hub-a4__susulan {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1.5px solid #d97706;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.hub-a4__badge small.hub-a4__ref {
+  display: block;
+  margin-top: 2px;
+  color: #b45309;
+  font-weight: 700;
+}
+.hub-a4__meta p.hub-a4__jenis {
+  margin-top: 0.25rem;
+  color: #b45309;
+  font-weight: 700;
+}
+.hub-a4__meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; font-size: 0.72rem;
+  background: #f8fafc; border: 1px solid var(--hub-garis); border-radius: 0.65rem; padding: 0.9rem 1rem; margin-bottom: 1.25rem;
+}
+@media (max-width: 560px) { .hub-a4__meta { grid-template-columns: 1fr; } }
+.hub-a4__meta h5 { margin: 0 0 0.35rem; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; color: #94a3b8; }
+.hub-a4__meta .nama { font-size: 0.85rem; font-weight: 800; }
+.hub-a4__meta p { margin: 0.1rem 0; color: #475569; }
+.hub-a4__meta .kanan { border-left: 1px solid var(--hub-garis); padding-left: 1.25rem; }
+@media (max-width: 560px) { .hub-a4__meta .kanan { border-left: 0; padding-left: 0; } }
+.hub-a4__meta .baris { display: flex; justify-content: space-between; gap: 0.75rem; padding: 0.15rem 0; }
+.hub-a4__meta .baris > span:first-child { color: #64748b; }
+.hub-a4__meta .baris > span:last-child { font-weight: 800; text-align: right; }
+.hub-a4__tabel { width: 100%; border-collapse: collapse; font-size: 0.7rem; margin-bottom: 1.25rem; }
+.hub-a4__tabel th, .hub-a4__tabel td { border: 1px solid #cbd5e1; padding: 0.4rem 0.45rem; vertical-align: top; }
+.hub-a4__tabel thead th { background: #0f172a; color: #fff; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.hub-a4__tabel thead tr:nth-child(2) th { background: #f1f5f9; color: #475569; }
+.hub-a4__tabel tfoot td { background: #f8fafc; border-top: 2px solid #0f172a; }
+.hub-a4__bawah { display: grid; grid-template-columns: 7fr 5fr; gap: 1.25rem; margin-bottom: 1rem; }
+@media (max-width: 560px) { .hub-a4__bawah { grid-template-columns: 1fr; } }
+.hub-a4__catatan { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.65rem; padding: 0.8rem 0.9rem; font-size: 11px; }
+.hub-a4__catatan h5 { margin: 0 0 0.35rem; font-size: 0.72rem; font-weight: 800; }
+.hub-a4__catatan-isi { margin: 0; color: #0f172a; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word; }
+.hub-a4__catatan-kosong { margin: 0; color: #94a3b8; line-height: 1.5; }
+.hub-a4__catatan-nonpo { margin: 0.3rem 0 0; color: #b45309; font-size: 10px; line-height: 1.45; font-style: italic; }
+/* Baris barang luar PO pada tabel faktur. */
+.hub-a4__baris-luar { background: #fffbeb; }
+.hub-a4__badge-luar {
+  display: inline-block; margin-left: 4px; padding: 0 4px; border: 1px solid #f59e0b;
+  border-radius: 3px; background: #fff7e6; color: #b45309;
+  font-size: 8px; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase;
+  vertical-align: middle; white-space: nowrap;
+}
+.hub-a4__total { font-size: 0.72rem; text-align: right; }
+.hub-a4__total .baris { display: flex; justify-content: space-between; gap: 0.75rem; padding: 0.35rem 0; border-bottom: 1px solid var(--hub-garis); color: #475569; }
+.hub-a4__total .baris strong { color: #0f172a; }
+.hub-a4__total .grand { display: flex; justify-content: space-between; gap: 0.75rem; padding: 0.55rem 0; border-top: 2px solid #0f172a; font-size: 0.85rem; font-weight: 800; }
+.hub-a4__total .grand strong { color: #312e81; }
+.hub-a4__ttd { border-top: 1px solid var(--hub-garis); padding-top: 1.1rem; }
+.hub-a4__ttd-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center; font-size: 0.7rem; }
+.hub-a4__ttd-grid p { margin: 0; }
+.hub-a4__ttd-grid .jabatan { color: #94a3b8; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3rem; }
+.hub-a4__ttd-grid .nama { font-weight: 800; text-decoration: underline; }
+.hub-a4__kaki { margin: 1rem 0 0; text-align: center; font-size: 0.58rem; color: #94a3b8; }
+
+/* ---------- Kontainer faktur PO standar cetak A4 ---------- */
+.po-invoice-container {
+  width: 100%;
+  max-width: 210mm;
+  box-sizing: border-box;
+  background: #ffffff;
+  margin: 0 auto;
+  page-break-inside: avoid;
+}
+/* Tabel anti-wrap: layout fixed + persentase kolom presisi dari colgroup
+   (NO 5% | Deskripsi 28.5% | Size 5.5% | Target 10% | Diterima 12% |
+   Sisa 11% | Harga 12.5% | Subtotal 15.5% = 100%). Sel angka/satuan/harga
+   tidak pernah patah ke baris bawah; hanya nama barang boleh membungkus.
+   min-width 44rem menjaga header tetap satu baris saat pratinjau menyempit. */
+.hub-a4__tabel { table-layout: fixed; width: 100%; min-width: 44rem; font-size: 11px; }
+.hub-a4__tabel th, .hub-a4__tabel td { padding: 4px 6px; }
+/* Judul kolom faktur SELALU satu baris horizontal: tanpa lipat kata,
+   tanpa hyphenation, dan lebar kolom dikunci dari colgroup (=100%).
+   Ukuran 10px dipilih karena 9pt/10pt (12–13px) membuat label terpanjang
+   ("SUBTOTAL DITERIMA") melewati garis kolom pada lebar konten A4 (±703px,
+   margin cetak 12mm). 10px adalah ukuran terbesar yang tetap muat penuh. */
+.hub-a4__tabel thead th {
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+  letter-spacing: 0;
+  line-height: 1.25;
+  padding: 6px 4px;
+  font-size: 10px;
+  vertical-align: middle;
+}
+.hub-a4__tabel thead tr:nth-child(2) th { font-size: 9px; }
+.hub-a4__tabel tbody td { white-space: nowrap; }
+.hub-a4__tabel tbody td:nth-child(2) { white-space: normal; overflow-wrap: break-word; }
+/* Floating action bar: kanan atas pratinjau faktur, ikut menggulir (sticky). */
+.po-invoice-aksi {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  background: var(--bg);
+}
+@media print {
+  .po-invoice-aksi { display: none; }
+  .po-invoice-container { max-width: 100%; box-shadow: none; }
+  .hub-a4__tabel { font-size: 10px; min-width: 0; }
+  /* Cetak/PDF: header tetap satu baris (tanpa hyphenation). */
+  .hub-a4__tabel thead th {
+    white-space: nowrap;
+    word-break: normal;
+    hyphens: none;
+    padding: 6px 4px;
+    font-size: 10px;
+  }
+  .hub-a4__tabel thead tr:nth-child(2) th { font-size: 9px; }
+}
+
+/* ---------- Modal terima ---------- */
+.hub-modal__daftar { display: grid; gap: 0.6rem; max-height: 16rem; overflow-y: auto; padding-right: 0.15rem; }
+.hub-modal__baris { background: var(--surface-2); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.65rem 0.8rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.hub-modal__baris strong { display: block; font-size: 0.75rem; }
+.hub-modal__baris small { display: block; font-size: 0.65rem; color: var(--hub-redup); }
+.hub-modal__baris input { width: 7rem; font-size: 0.8rem; font-weight: 800; background: var(--input-bg); color: var(--teks); border: 1px solid var(--input-border); border-radius: 0.5rem; padding: 0.4rem 0.5rem; }
+
+/* ---------- Varian Daftar PO: banner teal solid ---------- */
+.hub-hero--teal {
+  background: linear-gradient(135deg, #0f766e, #0d9488);
+  border-color: #0f766e;
+  box-shadow: 0 10px 24px -18px rgba(15, 118, 110, 0.7);
+}
+.hub-hero--teal h2 { color: #ffffff; font-weight: 700; }
+.hub-hero--teal .hub-hero__identitas p { color: #ccfbf1; font-size: 13px; }
+.hub-hero--teal .hub-hero__logo {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+  height: auto;
+  width: auto;
+  box-shadow: none;
+}
+.hub-btn--buat {
+  background: #10b981;
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: none;
+}
+.hub-btn--buat:hover:not(:disabled) { background: #0da271; filter: none; }
+
+/* ---------- Kartu filter Daftar PO ---------- */
+.po-daftar-filter { background: var(--card-bg-color); border: 1px solid var(--card-border-color); border-radius: 8px; }
+.po-daftar-filter .po-filter .bidang input,
+.po-daftar-filter .po-filter .bidang select {
+  height: 36px;
+  min-height: 34px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  font-size: 13px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  background: var(--input-bg);
+  color: var(--teks);
+}
+/* Pill filter aktif: aksen dark teal/emerald. */
+.po-chip-grup .tombol--primer {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #ffffff;
+}
+.po-chip-grup .tombol--primer:hover:not(:disabled) {
+  background: #0d9488;
+  border-color: #0d9488;
+}
+.po-daftar .periode-bar__pil--aktif {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #ffffff;
+}
+
+/* ---------- Seluruh modul Purchase: kartu, tombol, filter, pill ---------- */
+.po-modul section.kartu {
+  background: var(--card-bg-color);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-radius);
+}
+/* Tombol aksi primer modul: emerald solid. */
+.po-modul .tombol--primer {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+.po-modul .tombol--primer:hover:not(:disabled) {
+  background: #0da271;
+  border-color: #0da271;
+}
+/* Input filter & cari di semua halaman modul. */
+.po-modul .po-filter .bidang input,
+.po-modul .po-filter .bidang select,
+.po-modul .cari-barang__input,
+.po-modul .hub-bidang select {
+  min-height: 34px;
+  height: 36px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+  background: var(--input-bg);
+  color: var(--teks);
+}
+.po-modul .po-filter .bidang input,
+.po-modul .po-filter .bidang select,
+.po-modul .cari-barang__input {
+  padding: 0 10px;
+}
+/* Pill aktif (filter cepat & periode) di semua halaman modul. */
+.po-modul .po-chip-grup .tombol--primer {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #ffffff;
+}
+.po-modul .po-chip-grup .tombol--primer:hover:not(:disabled) {
+  background: #0d9488;
+  border-color: #0d9488;
+}
+.po-modul .periode-bar__pil--aktif {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #ffffff;
+}
+
+/* ---------- Cetak: hanya area .po-cetak ---------- */
+.po-cetak .hub-a4 { box-shadow: none; border: 0; border-radius: 0; margin: 0; width: auto; max-width: none; min-height: auto; padding: 0; overflow: visible; }
+.po-cetak .hub-a4__tabel { font-size: 11px; }
+.po-cetak .hub-a4__tabel tr { page-break-inside: avoid; }
+.po-cetak .hub-a4__tabel thead { display: table-header-group; }
+
+/* ==========================================================================
+   MODUS MALAM — seluruh permukaan Hub & daftar PO memakai token tema.
+   Kertas A4/faktur (.hub-a4, .po-invoice-container) SENGAJA tetap putih
+   karena merupakan pratinjau cetak.
+   ========================================================================== */
+:root[data-theme='dark'] .hub {
+  --hub-latar: var(--bg);
+  --hub-garis: var(--border);
+  --hub-teks: var(--teks);
+  --hub-redup: var(--teks-redup);
+}
+
+/* Label kartu ("PILIH PEMASOK / SUPPLIER", "NO. PO AKTIF", "TANGGAL PO")
+   jadi muted gray agar tidak menyala di latar gelap. */
+:root[data-theme='dark'] .hub-bidang > span,
+:root[data-theme='dark'] .hub-po-meta small,
+:root[data-theme='dark'] .hub-panel__kepala p,
+:root[data-theme='dark'] .hub-legenda,
+:root[data-theme='dark'] .hub-a4judul p {
+  color: var(--teks-redup);
+}
+:root[data-theme='dark'] .hub-po-meta strong,
+:root[data-theme='dark'] .hub-panel__kepala h3,
+:root[data-theme='dark'] .hub-a4judul h3 {
+  color: var(--teks);
+}
+
+/* Select & input: latar gelap + border tipis, teks terang. */
+:root[data-theme='dark'] .hub-bidang select,
+:root[data-theme='dark'] .hub-bidang input {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--teks);
+}
+:root[data-theme='dark'] .hub-bidang select option {
+  background: var(--surface-2);
+  color: var(--teks);
+}
+:root[data-theme='dark'] .hub-bidang select:focus,
+:root[data-theme='dark'] .hub-bidang input:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+/* Tabel monitoring: header gelap, sel & footer ikut permukaan. */
+:root[data-theme='dark'] .hub-tabel tbody td {
+  color: var(--teks);
+}
+:root[data-theme='dark'] .hub-td--target {
+  background: rgba(56, 189, 248, 0.1);
+  border-left-color: rgba(56, 189, 248, 0.22);
+  border-right-color: rgba(56, 189, 248, 0.22);
+}
+:root[data-theme='dark'] .hub-td--datang {
+  background: rgba(52, 211, 153, 0.1);
+}
+:root[data-theme='dark'] .hub-td--sisa {
+  background: rgba(251, 191, 36, 0.1);
+  border-left-color: rgba(251, 191, 36, 0.22);
+  border-right-color: rgba(251, 191, 36, 0.22);
+}
+:root[data-theme='dark'] .hub-angka--sky { color: #7dd3fc; }
+:root[data-theme='dark'] .hub-angka--redup { color: var(--text-muted); }
+:root[data-theme='dark'] .hub-angka--amber { color: #fbbf24; }
+:root[data-theme='dark'] .hub-angka--indigo { color: #a5b4fc; }
+:root[data-theme='dark'] .hub-kodi--sky { color: #7dd3fc; }
+
+/* Pill status pada tabel. */
+:root[data-theme='dark'] .hub-pil--kurang {
+  color: #fbbf24; background: rgba(251, 191, 36, 0.14); border-color: rgba(251, 191, 36, 0.35);
+}
+:root[data-theme='dark'] .hub-pil--lengkap {
+  color: #6ee7b7; background: rgba(52, 211, 153, 0.14); border-color: rgba(52, 211, 153, 0.35);
+}
+:root[data-theme='dark'] .hub-pil--lebih {
+  color: #a5b4fc; background: rgba(99, 102, 241, 0.18); border-color: rgba(99, 102, 241, 0.4);
+}
+
+/* Chip ikon pada kartu statistik teal — tidak lagi putih menyilaukan. */
+:root[data-theme='dark'] .hub-stat__ikon,
+:root[data-theme='dark'] .hub-stat__ikon--sky,
+:root[data-theme='dark'] .hub-stat__ikon--hijau,
+:root[data-theme='dark'] .hub-stat__ikon--amber,
+:root[data-theme='dark'] .hub-stat__ikon--indigo {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: none;
+}
+
+/* Kertas A4 & faktur cetak tetap putih (bukan bagian UI gelap). */
+:root[data-theme='dark'] .hub-a4,
+:root[data-theme='dark'] .po-invoice-container {
+  --hub-garis: #e2e8f0;
+  --hub-teks: #1e293b;
+  --hub-redup: #64748b;
+  background: #fff;
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
