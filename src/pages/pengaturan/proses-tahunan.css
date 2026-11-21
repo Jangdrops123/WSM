@@ -1,0 +1,383 @@
+/* ---- Reset Data (Database & Backup) — pemilihan jenis reset (Langkah 1) ---- */
+.pt-pilih-jenis {
+  display: grid;
+  gap: 0.625rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.pt-pilih-jenis__kartu {
+  display: flex;
+  gap: 0.625rem;
+  align-items: flex-start;
+  padding: 0.625rem 0.8125rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  cursor: pointer;
+}
+.pt-pilih-jenis__kartu:hover {
+  border-color: var(--primer);
+}
+
+.pt-pilih-jenis__kartu--aktif {
+  border-color: var(--primer);
+  background: var(--primer-lembut);
+}
+.pt-pilih-jenis__kartu input {
+  margin-top: 0.1875rem;
+}
+
+.pt-pilih-jenis__kartu span {
+  display: grid;
+  gap: 0.1875rem;
+}
+.pt-pilih-jenis__kartu small {
+  color: var(--teks-redup);
+  font-size: 0.7813rem;
+  line-height: 1.5;
+}
+
+/* Proses Tahunan — wizard 4 langkah di modul Pengaturan.
+   Gaya memakai token tema (--panel/--teks/--border/--primer) agar otomatis
+   mengikuti tema terang/gelap aplikasi; tombol aksi berbentuk ikon dengan
+   teks yang muncul saat hover/fokus (pola .tombol-ikon-teks persediaan). */
+
+.pt-langkah {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 0.875rem;
+}
+.pt-langkah__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 62.4375rem;
+  background: var(--panel);
+  color: var(--teks-redup);
+  font-size: 0.7813rem;
+  font-weight: 600;
+}
+
+.pt-langkah__item--aktif {
+  border-color: var(--primer);
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+}
+.pt-langkah__item--selesai {
+  border-color: var(--sukses);
+  color: var(--sukses);
+}
+
+.pt-langkah__no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--teks);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+.pt-langkah__item--aktif .pt-langkah__no {
+  background: var(--primer);
+  color: var(--accent-contrast);
+}
+
+.pt-langkah__item--selesai .pt-langkah__no {
+  background: var(--sukses);
+  color: var(--accent-contrast);
+}
+.pt-kartu {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 0.875rem;
+  box-shadow: var(--bayangan);
+}
+
+.pt-kartu h3 {
+  margin: 0 0 0.25rem;
+  font-size: 0.9688rem;
+}
+.pt-kartu__desk {
+  margin: 0 0 0.75rem;
+  color: var(--teks-redup);
+  font-size: 0.8125rem;
+}
+
+/* Kotak pesan (peringatan merah, waspada, sukses) */
+.pt-kotak {
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.8438rem;
+  line-height: 1.55;
+  margin: 0.625rem 0;
+}
+.pt-kotak p {
+  margin: 0 0 0.375rem;
+}
+
+.pt-kotak p:last-child {
+  margin-bottom: 0;
+}
+.pt-kotak--bahaya {
+  background: var(--danger-soft);
+  border-color: var(--danger-border);
+  color: var(--danger-text);
+}
+
+.pt-kotak--waspada {
+  background: var(--warning-soft);
+  border-color: var(--warning-fill);
+  color: var(--warning);
+}
+.pt-kotak--sukses {
+  background: var(--success-soft);
+  border-color: var(--success-border);
+  color: var(--success);
+}
+
+.pt-kotak ul {
+  margin: 0.375rem 0 0;
+  padding-left: 1.125rem;
+}
+/* Baris input */
+.pt-baris-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-bottom: 0.375rem;
+}
+
+.pt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+  min-width: 11.25rem;
+}
+
+.pt-field label {
+  font-size: 0.7813rem;
+  font-weight: 600;
+  color: var(--teks-redup);
+}
+
+.pt-field input,
+.pt-field select {
+  font: inherit;
+  font-size: 0.8438rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--panel);
+  color: var(--teks);
+}
+.pt-field input:focus,
+.pt-field select:focus {
+  outline: none;
+  border-color: var(--primer);
+  box-shadow: 0 0 0 3px var(--primer-lembut);
+}
+
+/* Tombol aksi: ikon, teks muncul saat hover/fokus */
+.pt-aksi {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 0.5625rem 0.8125rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--teks);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.pt-aksi > span {
+  max-width: 0;
+  opacity: 0;
+  margin-left: 0;
+  overflow: hidden;
+  transition:
+    max-width 0.18s ease,
+    opacity 0.18s ease,
+    margin-left 0.18s ease;
+}
+
+.pt-aksi:hover > span,
+.pt-aksi:focus-visible > span {
+  max-width: 13.75rem;
+  opacity: 1;
+  margin-left: 0.5rem;
+}
+.pt-aksi:focus-visible {
+  outline: none;
+  border-color: var(--primer);
+  box-shadow: 0 0 0 3px var(--primer-lembut);
+}
+
+.pt-aksi:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.pt-aksi--primer {
+  background: var(--primer);
+  border-color: var(--primer);
+  color: var(--accent-contrast);
+}
+
+.pt-aksi--primer:focus-visible {
+  box-shadow: 0 0 0 3px var(--primer-lembut);
+}
+.pt-aksi--bahaya {
+  background: var(--danger-fill);
+  border-color: var(--danger-fill);
+  color: var(--accent-contrast);
+}
+
+.pt-aksi--besar {
+  padding: 0.75rem 1.125rem;
+  font-size: 0.875rem;
+}
+.pt-aksi-kelompok {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.875rem;
+}
+
+/* Tabel ringkasan & perbandingan */
+.pt-tabel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8438rem;
+  margin-top: 0.5rem;
+}
+.pt-tabel th,
+.pt-tabel td {
+  padding: 0.4375rem 0.5625rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.pt-tabel th {
+  color: var(--teks-redup);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.pt-tabel td.rata-kanan,
+.pt-tabel th.rata-kanan {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.pt-tabel tr.pt-total td {
+  font-weight: 700;
+  background: var(--primer-lembut);
+}
+.pt-selisih-nol {
+  color: var(--sukses);
+  font-weight: 600;
+}
+
+.pt-selisih-ada {
+  color: var(--danger);
+  font-weight: 700;
+}
+/* Rincian dapat dilipat */
+.pt-rincian {
+  margin-top: 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 0.5rem 0.75rem 0.625rem;
+}
+
+.pt-rincian > summary {
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--teks);
+  user-select: none;
+}
+.pt-rincian[open] > summary {
+  margin-bottom: 0.375rem;
+}
+
+.pt-label-saldo {
+  display: inline-block;
+  padding: 0.0625rem 0.4375rem;
+  border-radius: 62.4375rem;
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+/* Progres penghapusan */
+.pt-progres {
+  height: 0.625rem;
+  background: var(--border);
+  border-radius: 62.4375rem;
+  overflow: hidden;
+  margin: 0.75rem 0 0.375rem;
+}
+
+.pt-progres__isi {
+  height: 100%;
+  background: var(--primer);
+  transition: width 0.45s ease;
+}
+.pt-progres__catatan {
+  font-size: 0.7813rem;
+  color: var(--teks-redup);
+}
+
+/* Centang wajib langkah 2 */
+.pt-centang {
+  display: flex;
+  gap: 0.5625rem;
+  align-items: flex-start;
+  font-size: 0.8438rem;
+  margin: 0.75rem 0;
+  cursor: pointer;
+}
+.pt-centang input {
+  margin-top: 0.125rem;
+  accent-color: var(--primer);
+}
+
+.pt-centang--kunci {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.pt-grid2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 0.875rem;
+}
+
+.pt-kotak--kecil {
+  padding: 0.625rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.pt-status-cetak {
+  color: var(--teks-redup);
+  font-size: 0.7813rem;
+}

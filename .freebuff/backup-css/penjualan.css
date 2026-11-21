@@ -1,0 +1,130 @@
+/* Halaman Penjualan (/penjualan, /penjualan/retur, /penjualan/piutang) —
+   di samping crud.css (gaya tabel, kartu, tombol global). */
+
+/* Tab Riwayat | Retur | Piutang (rute-driven). */
+.penjualan-tab {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px 0 14px;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
+.penjualan-tab__tombol {
+  padding: 8px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--teks-redup, #64748b);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.penjualan-tab__tombol:hover {
+  color: var(--teks, #0f172a);
+}
+
+.penjualan-tab__tombol--aktif {
+  color: var(--primer, #2563eb);
+  border-bottom-color: var(--primer, #2563eb);
+}
+
+/* Keadaan kosong (M3): tombol POS di tengah + teks petunjuk. */
+.penjualan-kosong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 46px 16px;
+  text-align: center;
+  color: var(--teks-redup, #64748b);
+}
+
+.penjualan-kosong p {
+  font-size: 15px;
+}
+
+/* ------------------------- Split tombol POS (M3) ------------------------- */
+.pos-split {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.pos-split--tengah {
+  justify-content: center;
+}
+
+.pos-split__utama {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.pos-split__panah {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.pos-split__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 30;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+  overflow: hidden;
+}
+
+.pos-split__menu button {
+  appearance: none;
+  background: none;
+  border: 0;
+  text-align: left;
+  padding: 9px 12px;
+  font-size: 13.5px;
+  color: var(--teks, #0f172a);
+  cursor: pointer;
+}
+
+.pos-split__menu button:hover,
+.pos-split__menu button:focus-visible {
+  background: #f1f5f9;
+  outline: none;
+}
+
+/* --------------------------- Dialog "Lihat" ----------------------------- */
+.penjualan-detail__info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px 16px;
+  margin-bottom: 16px;
+}
+
+.penjualan-detail__info div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.penjualan-detail__info span {
+  font-size: 12px;
+  color: var(--teks-redup, #64748b);
+}
+
+.penjualan-detail__sub {
+  margin: 18px 0 8px;
+  font-size: 14px;
+}

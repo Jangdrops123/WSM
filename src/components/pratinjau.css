@@ -1,0 +1,179 @@
+/* BAGIAN AA — wadah pratinjau kertas bersama (skala otomatis + kendali). */
+
+.pratinjau-blok {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* --- Alat tampilan (AA3): ikon ber-tooltip + persentase skala ----------- */
+.pratinjau-alat {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  padding: 0.375rem 0.5rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.pratinjau-alat__pct {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--teks);
+  border-radius: 0.5rem;
+  font: inherit;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.pratinjau-alat__pct:hover {
+  border-color: var(--primer);
+  color: var(--primer-teks);
+}
+
+.pratinjau-alat__pct.aktif {
+  background: var(--primer-lembut);
+  border-color: var(--primer);
+  color: var(--primer-teks);
+  font-weight: 600;
+}
+
+.pratinjau-alat__persen {
+  min-width: 2.875rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--teks-redup);
+  padding: 0 0.125rem;
+}
+
+.pratinjau-alat__sisi {
+  margin-left: auto;
+  display: inline-flex;
+}
+
+/* --- Jendela tampilan: latar netral --surface-2, satu-satunya penggulir --
+   Ruang udara di sekeliling kertas (atas, kiri, kanan, bawah) agar kertas
+   tidak menempel ke bingkai kontainer. Ukur() di PratinjauKertas sudah
+   memperhitungkan padding ini saat menghitung skala fit. */
+.pratinjau-tampilan {
+  height: var(--pratinjau-tinggi, clamp(18.75rem, 66vh, 53.75rem));
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1.5rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 0 0 var(--radius) var(--radius);
+  cursor: grab;
+}
+
+@media (min-width: 64rem) {
+  .pratinjau-tampilan {
+    padding: 2rem;
+  }
+}
+
+.pratinjau-tampilan--seret {
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* --- Kertas: kontainer selebar kertas × skala, terpusat (AA1/AA2) -------
+   Radius hanya kosmetik layar — saat cetak latar/bayangan dilepas sehingga
+   tidak berpengaruh pada hasil cetak/PDF. */
+.pratinjau-bingkai {
+  position: relative;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 0.375rem;
+  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.16);
+}
+
+.pratinjau-skala {
+  flex: none;
+}
+
+/* --- Penanda halaman tersusun vertikal (AA3) ---------------------------- */
+.pratinjau-halaman {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pratinjau-halaman__batas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed rgba(100, 116, 139, 0.85);
+}
+
+.pratinjau-halaman__penanda {
+  position: absolute;
+  right: 0.375rem;
+  top: -0.5625rem;
+  font-size: 0.625rem;
+  line-height: 1;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(15, 23, 42, 0.72);
+  border-radius: 62.4375rem;
+  padding: 0.1875rem 0.4375rem;
+  white-space: nowrap;
+}
+
+.pratinjau-halaman__penanda--awal {
+  top: 0.375rem;
+}
+
+/* --- Layar penuh (AA3): alat tetap terlihat di atas -------------------- */
+.pratinjau-blok:fullscreen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0.625rem;
+  box-sizing: border-box;
+  background: var(--surface-2);
+}
+
+.pratinjau-blok:fullscreen .pratinjau-tampilan {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+}
+
+/* --- Cetak: skala hanya tampilan layar — hasil cetak/PDF 1:1 (AA4) ----- */
+@media print {
+  .pratinjau-alat {
+    display: none !important;
+  }
+
+  .pratinjau-tampilan {
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    background: none !important;
+    border: 0 !important;
+  }
+
+  .pratinjau-bingkai {
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+  .pratinjau-skala {
+    width: auto !important;
+    transform: none !important;
+  }
+
+  .pratinjau-halaman {
+    display: none !important;
+  }
+}

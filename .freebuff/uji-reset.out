@@ -1,0 +1,83 @@
+✔ ringkasan transaksi → 200 — status 200
+✔ ringkasan transaksi: modul penjualan/jurnal/stok terhitung — ["retur=2","faktur=1","penjualan=6","pembayaran=0","pembelian=5","item_masuk_keluar=2","opname=2","transfer=2","jurnal=3","kas=1","stok=2","nomor_urut=2"]
+✔ ringkasan transaksi: TANPA modul master
+✔ ringkasan transaksi: daftar dipertahankan terisi
+✔ ringkasan master: produk/pelanggan/pemasok/gudang ikut — ["retur=2","faktur=1","penjualan=6","pembayaran=0","pembelian=5","item_masuk_keluar=2","opname=2","transfer=2","jurnal=3","kas=1","stok=2","produk=4","kategori_merek=2","satuan=2","pelanggan=1","pemasok=1","gudang=3","profil_size=2","nomor_urut=2"]
+✔ ringkasan master > ringkasan transaksi — 43 vs 28
+✔ ringkasan total: pengguna/pengaturan/toko/log ikut — ["retur=2","faktur=1","penjualan=6","pembayaran=0","pembelian=5","item_masuk_keluar=2","opname=2","transfer=2","jurnal=3","kas=1","stok=2","produk=4","kategori_merek=2","satuan=2","pelanggan=1","pemasok=1","gudang=3","profil_size=2","toko=1","laporan_tersimpan=2","riwayat_impor=2","riwayat_proses=1","log_aktivitas=2","pengguna=1","pengaturan=17","nomor_urut=3"]
+✔ ringkasan total: pengguna terhitung 1 (selain admin)
+✔ ringkasan total: toko terhitung 1
+✔ ringkasan ditolak untuk Manajer (403) — status 403
+✔ reset ditolak untuk Kasir (403) — status 403
+✔ data tetap utuh setelah penolakan peran
+✔ tanpa konfirmasi RESET → 400 — status 400
+✔ konfirmasi huruf kecil → 400 — status 400
+✔ kata sandi salah → 401 — status 401
+✔ jenis tak dikenal → 400 — status 400
+✔ validasi tidak mengubah data
+✔ log aktivitas berisi 2 baris uji — 2
+✔ Reset Transaksi → 200 — status 200 Reset Transaksi selesai — 28 baris data diproses. Cadangan pengaman backup-2026-10-13T15-07-37-571Z.db dibuat sebelum reset.
+✔ laporan: dilewati kosong — []
+✔ laporan: nomor urut direset (2 counter transaksi) — nomor_urut=2
+✔ laporan: pengguna tidak dihapus — 0
+✔ laporan: pengaturan tidak disentuh — 0
+✔ cadangan pengaman dibuat — backup-2026-10-13T15-07-37-571Z.db
+✔ seluruh tabel transaksi kosong — sisa: 
+✔ master data tetap utuh — hilang: 
+✔ stok kembali 0 (saldo stok kosong)
+✔ pengguna tetap (admin + kasir) — 2
+✔ pengaturan kustom tetap
+✔ counter transaksi direset, counter non-transaksi tetap — [{"kunci":"rsx-lain-2099"}]
+✔ log aktivitas lama tetap + 1 entri reset
+✔ entri log memuat jenis reset & cadangan — Reset Data — Reset Transaksi
+✔ dokumen baru nomor urut 0001 — 201 PB-2026-10-0001
+✔ ringkasan pasca reset: tinggal dokumen baru (induk + item) — pembelian=2
+✔ Reset Master → 200 — status 200 Reset Transaksi + Master Data selesai — 18 baris data diproses. Cadangan pengaman backup-2026-10-13T15-07-37-604Z.db dibuat sebelum reset.
+✔ laporan master: dilewati kosong — []
+✔ seluruh tabel master kosong — sisa: 
+✔ transaksi juga kosong
+✔ profil size bawaan dipertahankan
+✔ toko tetap, rujukan gudang dilepas
+✔ riwayat proses tahunan tetap, rujukan gudang dilepas
+✔ pengguna tetap
+✔ pengaturan kustom tetap
+✔ rujukan pengaturan yang menggantung dibersihkan
+✔ log aktivitas bertambah entri reset — 2
+✔ Reset Total → 200 — status 200 Reset Total selesai — 27 baris data diproses. Cadangan pengaman backup-2026-10-13T15-07-37-634Z.db dibuat sebelum reset.
+✔ laporan total: dilewati kosong — []
+✔ laporan total: pengguna dihapus 1 — 1
+✔ laporan total: pengaturan dikembalikan — 14
+✔ hanya akun Admin utama yang tersisa
+✔ peran & hak akses tetap
+✔ COA, periode, kas/bank tetap
+✔ template faktur & struk tetap
+✔ toko, laporan, riwayat impor, riwayat proses habis — stores=0 reports=0 impor=0 proses=0
+✔ counter seluruh dokumen direset — 0
+✔ pengaturan kembali ke bawaan
+✔ pin supervisor kembali bawaan (verifikasi tetap jalan)
+✔ pemetaan akun jurnal kembali bawaan
+✔ log lama habis, tersisa entri reset total — baris=1
+✔ reset lanjutan setelah Reset Total tetap valid — status 200 Reset Transaksi selesai — 0 baris data diproses. Cadangan pengaman backup-2026-10-13T15-07-37-668Z.db dibuat sebelum reset.
+✔ log aktivitas menampilkan reset — jumlah=2
+✘ pulihkan cadangan pengaman → 200 — status 409 Data terkait masih dipakai atau referensinya belum ada. Periksa pilihan Anda.
+[PULIH-DIAG] foreign_key_check: [{"table":"size_profile_sizes","rowid":28,"parent":"size_profiles","fkid":0},{"table":"size_profile_sizes","rowid":29,"parent":"size_profiles","fkid":0},{"table":"size_profile_sizes","rowid":30,"parent":"size_profiles","fkid":0},{"table":"size_profile_sizes","rowid":31,"parent":"size_profiles","fkid":0}]
+[PULIH-DIAG] profil_size_sizes yatim: [{"rid":28,"profile_id":7,"size":"M"},{"rid":29,"profile_id":8,"size":"M"},{"rid":30,"profile_id":10,"size":"M"},{"rid":31,"profile_id":11,"size":"M"}]
+[PULIH-DIAG] aktif size_profiles: [{"id":1,"kode":"sepatu-pria","bawaan":1},{"id":2,"kode":"sepatu-wanita","bawaan":1},{"id":3,"kode":"sandal-pria","bawaan":1},{"id":4,"kode":"sandal-wanita","bawaan":1},{"id":5,"kode":"anak","bawaan":1},{"id":6,"kode":"kustom","bawaan":1}]
+[PULIH-DIAG] src size_profiles: [{"id":1,"kode":"sepatu-pria","bawaan":1},{"id":2,"kode":"sepatu-wanita","bawaan":1},{"id":3,"kode":"sandal-pria","bawaan":1},{"id":4,"kode":"sandal-wanita","bawaan":1},{"id":5,"kode":"anak","bawaan":1},{"id":6,"kode":"kustom","bawaan":1}]
+[PULIH-DIAG] src sizes: [{"profile_id":1,"n":5},{"profile_id":2,"n":4},{"profile_id":3,"n":5},{"profile_id":4,"n":4},{"profile_id":5,"n":5},{"profile_id":6,"n":4},{"profile_id":7,"n":1},{"profile_id":8,"n":1},{"profile_id":10,"n":1},{"profile_id":11,"n":1}]
+  [diag] pulih langsung dari skrip gagal:
+Error: FOREIGN KEY constraint failed
+    at withTransaction (C:\Users\HNF\Downloads\wms v7\server\db.ts:73:27)
+    at pulihkanBackup (C:\Users\HNF\Downloads\wms v7\server\lib\sistem.ts:204:5)
+    at main (C:\Users\HNF\Downloads\wms v7\scripts\uji-reset-data.ts:470:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+✘ data kembali setelah pemulihan — users=1 pelanggan=0 produk=0
+✘ pengaturan kustom kembali
+✔ pulihkan tanpa konfirmasi PULIHKAN → 400 — status 400
+✘ unggah file backup → 200 — 500 near "-": syntax error
+✘ data kembali setelah pemulihan unggahan
+✔ unggah berkas bukan SQLite → 400 — status 400
+✔ unggah tanpa konfirmasi PULIHKAN → 400 — status 400
+✔ cadangan lama tidak tersentuh rotasi
+
+Hasil: 65 lulus, 5 gagal

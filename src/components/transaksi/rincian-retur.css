@@ -1,0 +1,122 @@
+/* Rincian Barang Retur — chip ringkas di sel tabel + modal Detail Dokumen.
+   Dipakai halaman Retur Penjualan dan Retur Pembelian. */
+
+.rincian-retur {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+  max-width: 22rem;
+}
+
+.rincian-retur__chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--surface-2);
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  color: var(--teks);
+  white-space: nowrap;
+}
+
+.rincian-retur__chip em {
+  font-style: normal;
+  color: var(--teks-redup);
+  font-weight: 600;
+}
+
+.rincian-retur__lebih {
+  border: 0;
+  background: transparent;
+  padding: 0 0.125rem;
+  font: inherit;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--primer-teks);
+  cursor: pointer;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.rincian-retur__lebih:hover {
+  color: var(--primer);
+}
+
+/* --- Modal Detail Dokumen Retur ----------------------------------------- */
+
+.retur-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.retur-detail__info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+}
+
+.retur-detail__info > div,
+.retur-detail__kaki > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.retur-detail__info span,
+.retur-detail__kaki span {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--teks-redup);
+  font-weight: 700;
+}
+
+.retur-detail__info b,
+.retur-detail__kaki b {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--teks);
+  word-break: break-word;
+}
+
+.retur-detail__tabel {
+  overflow-x: auto;
+}
+
+.retur-detail__tabel .tabel {
+  width: 100%;
+}
+
+.retur-detail__kaki {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+}
+
+.retur-detail__total {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+}
+
+@media (max-width: 640px) {
+  .rincian-retur {
+    max-width: none;
+  }
+  .rincian-retur__chip {
+    white-space: normal;
+  }
+}

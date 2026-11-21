@@ -1,0 +1,1033 @@
+/* ==========================================================================
+   Modul Laporan (BAGIAN N) — filter bar, kartu KPI, grafik, tabel generik.
+   N8: pada layar kecil filter menjadi bottom-sheet & grid jadi satu kolom.
+   ========================================================================== */
+
+.laporan-shell {
+  display: flex;
+  flex-direction: column;
+  /* AT — jarak antar blok mengikuti token. */
+  gap: var(--gap-kartu);
+}
+
+/* ------------------------------- Filter bar (N2/N8) ---------------------- */
+
+.filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--bayangan);
+  padding: 0.75rem 0.875rem;
+}
+.filter-bar__toggle {
+  display: none !important;
+}
+
+.filter-bar__isi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+.filter-bar__periode {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.filter-bar__periode-tombol {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--teks);
+  border-radius: 62.4375rem;
+  padding: 0.3125rem 0.75rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.filter-bar__periode-tombol:hover {
+  border-color: var(--primer);
+  color: var(--primer-teks);
+}
+
+.filter-bar__periode-tombol.aktif {
+  background: var(--primer);
+  border-color: var(--primer);
+  color: var(--accent-contrast);
+}
+.filter-bar__rentang {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.filter-bar__rentang label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+.filter-bar__banding {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--teks-redup);
+  cursor: pointer;
+}
+
+.filter-bar__entitas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.625rem;
+}
+.filter-bar__kotak {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+
+.filter-bar__kotak select,
+.filter-bar__kotak input {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.4375rem 0.5625rem;
+  font-size: 0.8125rem;
+  background: var(--surface);
+  color: var(--teks);
+  font-family: inherit;
+}
+.filter-bar__kotak select:focus,
+.filter-bar__kotak input:focus {
+  outline: 2px solid var(--primer-lembut);
+  border-color: var(--primer);
+}
+
+.filter-bar__reset,
+.filter-bar__terapkan {
+  align-self: end;
+}
+.filter-bar__terapkan {
+  display: none;
+}
+
+/* Filter tampil hanya bila diminta: tombol "Filter (n)" membuka panel popup.
+   Berlaku di desktop & tablet; ponsel tetap memakai bottom-sheet (di bawah). */
+@media (min-width: 721px) {.filter-bar {
+    position: relative;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+  .filter-bar__toggle {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.375rem;
+    align-self: flex-start;
+  }
+  .filter-bar__isi {
+    display: none;
+  }
+  .filter-bar--buka .filter-bar__isi {
+    display: flex;
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    z-index: 50;
+    width: min(38.75rem, 100%);
+    max-height: 70vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 12px 32px rgba(16, 24, 40, 0.18);
+    padding: 0.875rem 1rem;
+  }
+  .filter-bar--buka .filter-bar__terapkan {
+    display: inline-flex;
+  }
+}
+
+/* --------------------------- Kepala halaman laporan ---------------------- */
+
+.laporan-kepala {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+}
+.laporan-kepala__judul {
+  min-width: 0;
+}
+
+.laporan-kepala__filter {
+  margin-top: 0.25rem;
+}
+.laporan-cari {
+  display: flex;
+  align-items: center;
+  min-width: 15rem;
+  flex: 0 1 320px;
+}
+
+.laporan-cari input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 62.4375rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8125rem;
+  font-family: inherit;
+}
+.laporan-cari input:focus {
+  outline: 2px solid var(--primer-lembut);
+  border-color: var(--primer);
+}
+
+/* ----------------------------- Kartu KPI (N1) ---------------------------- */
+
+.laporan-kartu {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.laporan-kartu__isi {
+  min-width: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--bayangan);
+  padding: 0.875rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.25rem;
+}
+@media (min-width: 640px) {
+  .laporan-kartu {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .laporan-kartu {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1536px) {
+  .laporan-kartu {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
+
+/* Bar metrik horizontal: kartu statistik + tombol Filter di ujung kanan.
+   Tepat satu baris pada layar lebar, membungkus rapi di layar sempit. */
+.laporan-kartu--baris {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+.laporan-kartu--baris .laporan-kartu__isi {
+  flex: 1 1 9rem;
+  align-self: stretch;
+}
+.laporan-kartu__aksi {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.laporan-kartu__aksi .filter-bar {
+  flex: 0 0 auto;
+}
+/* Popup filter di ujung kanan baris: melebar ke kiri agar tidak keluar layar.
+   Lebar tidak boleh 100% karena induknya (tombol) hanya selebar tombol. */
+.laporan-kartu__aksi .filter-bar--buka .filter-bar__isi {
+  left: auto;
+  right: 0;
+  width: min(38.75rem, calc(100vw - 3rem));
+}
+
+.laporan-kartu__label {
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.laporan-kartu__nilai {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 1280px) {
+  .laporan-kartu__nilai {
+    font-size: 1.375rem;
+  }
+}
+
+.laporan-kartu__nilai--minus {
+  color: var(--danger);
+}
+.laporan-kartu__delta {
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+
+.laporan-kartu__delta--naik {
+  color: var(--sukses);
+}
+.laporan-kartu__delta--turun {
+  color: var(--danger);
+}
+
+/* ------------------------- Grafik SVG (tanpa pustaka) -------------------- */
+
+.grafik {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.grafik-garis {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+}
+
+.grafik-teks {
+  /* X2.4 — sumbu & label minimal 11px agar terbaca di kedua tema. */
+  font-size: 0.6875rem;
+  fill: var(--chart-label);
+}
+.grafik-kosong {
+  color: var(--teks-redup);
+  font-size: 0.8125rem;
+  margin: auto;
+  padding: 0.875rem;
+  border: 1px dashed var(--border);
+  border-radius: 0.625rem;
+  text-align: center;
+}
+
+.grafik-batang {
+  display: flex;
+  align-items: flex-end;
+  /* X2.4 — data sedikit membuat batang terpusat, bukan merentang. */
+  justify-content: space-evenly;
+  gap: 0.5rem;
+  height: 100%;
+  min-height: 9.375rem;
+  padding: 0.5rem 0.125rem 0;
+  overflow-x: auto;
+}
+.grafik-batang__kolom {
+  /* X2.4 — lebar batang dibatasi maks 48px, boleh menyusut di kartu sempit. */
+  flex: 1 1 48px;
+  max-width: 3rem;
+  min-width: 1.875rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.grafik-batang__nilai {
+  font-size: 0.6875rem;
+  color: var(--teks-redup);
+  white-space: nowrap;
+}
+.grafik-batang__batang {
+  width: 100%;
+  border-radius: 0.375rem 0.375rem 0 0;
+  min-height: 0.1875rem;
+}
+
+.grafik-batang__label {
+  font-size: 0.6875rem;
+  color: var(--chart-label);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Deret panjang (30 hari) — kolom & label dirapatkan agar tetap muat. */
+.grafik-batang--padat {
+  gap: 0.125rem;
+  justify-content: space-between;
+}
+
+.grafik-batang--padat .grafik-batang__kolom {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+}
+
+.grafik-batang--padat .grafik-batang__label {
+  font-size: 0.5625rem;
+}
+
+/* 30 kolom: angka di atas tiap batang terlalu rapat — nilai lewat tooltip. */
+.grafik-batang--padat .grafik-batang__nilai {
+  display: none;
+}
+.grafik-donat {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.grafik-donat__tengah {
+  font-size: 0.6875rem;
+  fill: var(--chart-label);
+  text-anchor: middle;
+}
+.grafik-donat__tengah--nilai {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  fill: var(--teks);
+}
+
+.grafik-legenda {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+}
+.grafik-legenda li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.grafik-legenda b {
+  margin-left: auto;
+}
+.grafik-legenda__titik {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 0.1875rem;
+  display: inline-block;
+}
+
+/* --------------------------- Tabel laporan generik ----------------------- */
+
+.laporan-tabel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--bayangan);
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+}
+.laporan-tabel__alat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.laporan-tabel__kelompok {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+.laporan-tabel__kolom {
+  position: relative;
+  margin-left: auto;
+}
+
+.laporan-tabel__kolom-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.375rem);
+  z-index: 30;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.12);
+  padding: 0.625rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 12.5rem;
+}
+
+.laporan-tabel__kolom-menu label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.laporan-tabel__urut {
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+}
+.laporan-tabel__urut .redup {
+  opacity: 0.35;
+}
+
+.laporan-tabel__bungkus {
+  margin: 0;
+}
+.laporan-tabel__total td {
+  font-weight: 700;
+  background: var(--primer-lembut);
+  border-top: 2px solid var(--primer);
+}
+
+.laporan-tabel__kaki {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+}
+
+.laporan-tabel__kaki label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--teks-redup);
+}
+
+/* Drill-down (N4): baris agregat yang bisa dibuka. */
+.baris-drill {
+  cursor: pointer;
+}
+.baris-drill:hover {
+  background: var(--primer-lembut);
+}
+
+.baris-drill:focus-visible {
+  outline: 2px solid var(--primer);
+  outline-offset: -2px;
+}
+
+/* Rincian barang per baris (klik baris agregat untuk membuka). */
+.rincian-panah {
+  display: inline-block;
+  margin-right: 0.375rem;
+  color: var(--teks-redup);
+  font-size: 0.75rem;
+}
+.baris-rincian td {
+  background: var(--primer-lembut);
+  border-top: 0;
+  padding: 0.5rem 0.75rem;
+}
+.rincian-bungkus {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+/* Template PDF: rincian terbuka ke bawah sebagai tabel tersarang. */
+.rincian-bungkus--tabel {
+  flex-direction: column;
+  align-items: stretch;
+  flex-wrap: nowrap;
+}
+.rincian-kepala {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.rincian-kepala .rincian-judul {
+  padding-top: 0;
+}
+.rincian-meta {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+  white-space: nowrap;
+}
+.rincian-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+.rincian-tabel {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  background: var(--panel);
+  font-size: 0.8125rem;
+}
+.rincian-tabel th,
+.rincian-tabel td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.375rem 0.625rem;
+  text-align: left;
+  vertical-align: top;
+}
+.rincian-tabel thead th {
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+  font-weight: 600;
+  background: var(--panel);
+}
+.rincian-tabel tbody tr:last-child td {
+  border-bottom: 0;
+}
+.rincian-tabel .rata-kanan {
+  text-align: right;
+}
+.rincian-tabel .nowrap {
+  white-space: nowrap;
+}
+.rincian-tabel .rincian-total td {
+  font-weight: 700;
+  background: var(--primer-lembut);
+}
+
+.rincian-judul {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--teks-redup);
+  padding-top: 0.25rem;
+  white-space: nowrap;
+}
+.rincian-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  flex: 1 1 12rem;
+}
+.rincian-chip {
+  display: inline-block;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 999px;
+  padding: 0.125rem 0.625rem;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.rincian-catatan {
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--teks-redup);
+  align-self: center;
+}
+/* ------------------------------ Aksi & kartu lain ------------------------ */
+
+.laporan-aksi {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.laporan-aksi__isi {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.laporan-kolom-dua {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .laporan-kolom-dua {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}
+@media (min-width: 1280px) {
+  .laporan-kolom-dua {
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+  }
+}
+
+.laporan-terlaris {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.laporan-terlaris li {
+  display: grid;
+  grid-template-columns: 26px 1fr auto auto;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.375rem 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 0.8125rem;
+}
+
+.laporan-terlaris li:last-child {
+  border-bottom: 0;
+}
+
+/* Baris status kosong (satu-satunya anak) bukan baris data: tampil blok biasa. */
+.laporan-terlaris li:only-child {
+  display: block;
+}
+.laporan-terlaris__peringkat {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.laporan-terlaris__nama {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.laporan-daftar-kartu {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+/* Pintasan grid multi-baris (tanpa scroll samping): wrap rapi & simetris. */
+.laporan-pintasan {
+  overflow: visible;
+}
+.laporan-daftar-kartu--horizontal {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  overflow: visible;
+  padding-bottom: 0;
+}
+.laporan-daftar-kartu--horizontal .laporan-kartu-link {
+  flex: none;
+  width: auto;
+  height: 100%;
+}
+@media (min-width: 640px) {
+  .laporan-daftar-kartu--horizontal {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .laporan-daftar-kartu--horizontal {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1536px) {
+  .laporan-daftar-kartu--horizontal {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+/* Pintasan di kolom kanan (layout lama): 1 kolom di HP, 2 kolom mulai layar kecil,
+   1 kolom lagi saat berdampingan di lg (kolom kanan sempit),
+   kembali 2 kolom di xl saat ruang cukup. */
+.laporan-kolom-dua .laporan-daftar-kartu {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 560px) {
+  .laporan-kolom-dua .laporan-daftar-kartu {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .laporan-kolom-dua .laporan-daftar-kartu {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.laporan-kartu-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  height: 100%;
+  padding: 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--panel);
+  color: var(--teks);
+  text-decoration: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.laporan-kartu-link:hover {
+  border-color: var(--primer);
+  background: var(--primer-lembut);
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+}
+.laporan-kartu-link > strong,
+.laporan-kartu-link > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.laporan-chip {
+  align-self: flex-start;
+  font-size: 0.6875rem;
+  color: var(--primer-teks);
+  background: var(--primer-lembut);
+  border-radius: 62.4375rem;
+  padding: 0.125rem 0.5rem;
+  margin-top: 0.125rem;
+}
+.laporan-chip--jadwal {
+  color: var(--waspada);
+  background: var(--warning-soft);
+}
+
+.laporan-kaki {
+  margin: 0;
+  text-align: center;
+}
+.pita--galat {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid #fecaca;
+}
+
+/* ------------------------------ N8 — responsif --------------------------- */
+
+
+
+@media (max-width: 720px) {/* Filter menjadi bottom-sheet: bar toggle + tombol Terapkan. */
+  .filter-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -8px 30px rgba(16, 24, 40, 0.2);
+    transform: translateY(100%);
+    transition: transform 0.22s ease;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-bottom: 1.125rem;
+  }
+
+  .filter-bar--buka {
+    transform: translateY(0);
+  }
+.filter-bar__toggle {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.375rem;
+    position: fixed;
+    right: 0.875rem;
+    bottom: 0.875rem;
+    z-index: 61;
+    border-radius: 62.4375rem;
+    box-shadow: 0 6px 18px rgba(16, 24, 40, 0.25);
+  }
+
+  .filter-bar--buka .filter-bar__toggle {
+    position: static;
+    box-shadow: none;
+  }
+.filter-bar__terapkan {
+    display: inline-flex;
+  }
+
+  .laporan-kepala {
+    flex-direction: column;
+  }
+
+  .laporan-cari {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+/* N8 — ikon aksi pindah ke menu titik tiga (⋮). */
+  .laporan-aksi {
+    position: relative;
+  }
+
+  .laporan-aksi__isi {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.375rem);
+    z-index: 40;
+    flex-direction: column;
+    align-items: stretch;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.625rem;
+    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.14);
+    padding: 0.5rem;
+    gap: 0.375rem;
+  }
+.laporan-aksi--buka .laporan-aksi__isi {
+    display: flex;
+  }
+}
+
+@media (max-width: 420px) {
+  .laporan-kartu {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .laporan-kartu__nilai {
+    font-size: 1rem;
+  }
+}
+
+/* Cetak: hanya isi laporan yang dicetak (N4). */
+@media print {
+  .filter-bar,
+  .sidebar,
+  .topbar,
+  .laporan-aksi,
+  .laporan-tabel__alat,
+  .laporan-tabel__kaki {
+    display: none !important;
+  }
+
+  .kartu,
+  .laporan-kartu__isi,
+  .laporan-tabel {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}
+
+/* ==========================================================================
+   X3.2 — POP UP CETAK / EKSPOR PDF: dua kolom (pengaturan + pratinjau)
+   ========================================================================== */
+
+.cetak-dialog {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.cetak-dialog__pengaturan {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  min-width: 0;
+}
+
+.cetak-dialog__baris {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+}
+
+.cetak-dialog__cek {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--teks);
+  cursor: pointer;
+}
+
+.cetak-dialog__kolom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+}
+
+.cetak-dialog__kolom b {
+  font-size: 0.7813rem;
+}
+
+/* Opsi Cetak PDF (sembunyikan laba / rincian barang) — kotak ringkas. */
+.cetak-dialog__opsi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+}
+.cetak-dialog__opsi b {
+  font-size: 0.7813rem;
+}
+
+.cetak-dialog__pratinjau {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+}
+
+.cetak-dialog__baris-atas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* Halaman pratinjau lama (.cetak-halaman-bungkus/.cetak-halaman) DIHAPUS —
+   BAGIAN AA: pratinjau memakai components/pratinjau.css (fit-to-container,
+   terpusat, bayangan kertas, alat tampilan). */
+
+.cetak-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7813rem;
+  color: var(--teks);
+}
+
+.cetak-dialog__aksi {
+  position: sticky;
+  bottom: -1.125rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.75rem 0 0.125rem;
+  margin-top: 0.875rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+@media (max-width: 860px) {
+  .cetak-dialog {
+    grid-template-columns: 1fr;
+  }
+}

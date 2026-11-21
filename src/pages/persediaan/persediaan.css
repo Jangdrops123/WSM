@@ -1,0 +1,604 @@
+/* ============================================================================
+   MODUL PERSEDIAAN SUB — Item Masuk / Item Keluar
+   Hanya memakai variabel tema (terang/gelap); gaya modul lain tidak disentuh.
+   Input barang memakai kelas .pos-cari / .pos-saran / .pos-sel-input dari
+   pos.css — metode input IDENTIK dengan Kasir Tanpa Foto (Mode Cepat).
+   ========================================================================== */
+
+.sub-halaman {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  width: 100%;
+}
+
+/* --- Header form ---------------------------------------------------------- */
+
+.sub-kepala {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.625rem 0.75rem;
+  align-items: end;
+}
+.sub-kepala .bidang {
+  margin: 0;
+}
+
+.sub-kepala .sub-keterangan {
+  grid-column: 1 / -1;
+}
+.sub-nomor input {
+  background: var(--primer-lembut);
+  border-style: dashed;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.sub-nomor input[readonly] {
+  cursor: default;
+}
+/* --- Baris cari + ringkas + tombol aksi ----------------------------------- */
+
+.sub-baris {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+  flex-wrap: wrap;
+  /* Jarak napas 14px antara kolom cari dan header tabel item. */
+  margin-bottom: 0.875rem;
+}
+
+.sub-cari {
+  flex: 1;
+  min-width: 16.25rem;
+  max-width: 35rem;
+}
+.sub-ringkas {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--teks-redup);
+  white-space: nowrap;
+}
+
+.sub-ringkas strong {
+  color: var(--teks);
+  font-variant-numeric: tabular-nums;
+}
+.sub-flag {
+  font-size: 0.7188rem;
+  color: var(--waspada);
+  border: 1px dashed var(--waspada);
+  border-radius: 62.4375rem;
+  padding: 0.125rem 0.5rem;
+}
+
+.sub-aksi {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+/* Tombol ikon — teks muncul saat hover / fokus. */
+.tombol-ikon-teks {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 0.5625rem 0.8125rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--teks);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tombol-ikon-teks > span {
+  max-width: 0;
+  opacity: 0;
+  margin-left: 0;
+  overflow: hidden;
+  transition:
+    max-width 0.18s ease,
+    opacity 0.18s ease,
+    margin-left 0.18s ease;
+}
+.tombol-ikon-teks:hover > span,
+.tombol-ikon-teks:focus-visible > span {
+  max-width: 9.375rem;
+  opacity: 1;
+  margin-left: 0.5rem;
+}
+
+.tombol-ikon-teks:focus-visible {
+  outline: none;
+  border-color: var(--primer);
+  box-shadow: 0 0 0 3px var(--primer-lembut);
+}
+.tombol-ikon-teks:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.tombol-ikon-teks--primer {
+  background: var(--primer);
+  border-color: var(--primer);
+  color: var(--accent-contrast);
+}
+.tombol-ikon-teks--primer:hover {
+  background: var(--primer-teks);
+  border-color: var(--primer-teks);
+}
+
+.tombol-ikon-teks--bahaya {
+  color: var(--danger);
+  border-color: #fecaca;
+}
+.tombol-ikon-teks--bahaya:hover {
+  background: var(--danger-soft);
+}
+
+:is(.tombol-ikon-teks--primer, .tombol-ikon-teks--bahaya):focus-visible {
+  box-shadow: 0 0 0 3px var(--primer-lembut);
+}
+/* --- Tabel item ----------------------------------------------------------- */
+
+.sub-tabel-bungkus {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--panel);
+  overflow: auto;
+  /* Tinggi dinamis: tumbuh alami mengikuti jumlah baris (min 120px),
+     scroll vertikal hanya bila sangat panjang (> ~15 baris). */
+  height: auto;
+  min-height: 7.5rem;
+  max-height: min(31.25rem, 60vh);
+}
+
+.sub-tabel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+.sub-tabel thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg);
+  color: var(--teks-redup);
+  font-size: 0.7188rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.5rem 0.625rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.sub-tabel th.num,
+.sub-tabel td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.sub-tabel td {
+  padding: 0.3125rem 0.625rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.sub-tabel tbody tr:last-child td {
+  border-bottom: none;
+}
+.sub-tabel tbody tr:hover td {
+  background: var(--primer-lembut);
+}
+
+/* Sel yang bisa difokus keyboard (Panah ↑/↓ antar baris, Tab antar kolom). */
+.sub-tabel td[tabindex]:focus {
+  outline: 2px solid var(--primer);
+  outline-offset: -2px;
+  background: var(--primer-lembut);
+}
+.sub-td-kode {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+  white-space: nowrap;
+}
+
+.sub-td-nama {
+  font-weight: 600;
+  min-width: 11.25rem;
+  max-width: 21.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sub-td-redup {
+  color: var(--teks-redup);
+}
+
+.sub-td-sel {
+  width: 6rem;
+  padding-right: 0.375rem !important;
+}
+.sub-td-aksi {
+  width: 2.625rem;
+  text-align: center;
+}
+
+.sub-tabel td.sub-minus {
+  color: var(--danger);
+  font-weight: 700;
+}
+.sub-tabel td.sub-lebih {
+  color: var(--danger);
+  font-weight: 700;
+  background: var(--danger-soft);
+}
+
+.sub-kosong {
+  padding: 1.875rem 1.125rem !important;
+  text-align: center;
+  color: var(--teks-redup);
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+.sub-kosong b {
+  color: var(--teks);
+}
+
+/* --- Petunjuk keyboard ---------------------------------------------------- */
+
+.sub-petunjuk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem 1rem;
+  margin: 0;
+  font-size: 0.7188rem;
+  color: var(--teks-redup);
+}
+.sub-petunjuk span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+}
+
+.sub-petunjuk kbd {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.6875rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 0.3125rem;
+  padding: 0.0625rem 0.3125rem;
+  color: var(--teks);
+}
+/* --- Kartu Riwayat -------------------------------------------------------- */
+
+.sub-riwayat__alat {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.sub-riwayat__alat .tombol {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.sub-td-nomor {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.7813rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sub-ket {
+  color: var(--teks-redup);
+  font-size: 0.75rem;
+}
+.sub-td-aksi-riwayat {
+  width: 5.75rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.sub-hal-aksi {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 0.7813rem;
+  color: var(--teks-redup);
+}
+.sub-hal-aksi span {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Modal detail --------------------------------------------------------- */
+
+.sub-detail__kop {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+}
+.sub-detail__kop > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.sub-detail__kop span {
+  font-size: 0.6875rem;
+  color: var(--teks-redup);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.sub-detail__kop strong {
+  font-size: 0.8438rem;
+  color: var(--teks);
+}
+
+.sub-daftar-error {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  max-height: 16.25rem;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.625rem;
+}
+.sub-daftar-error > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+}
+
+.sub-daftar-error b {
+  color: var(--danger);
+  font-size: 0.75rem;
+}
+.sub-daftar-error span {
+  color: var(--teks-redup);
+  font-size: 0.7813rem;
+}
+
+/* --- Responsif ------------------------------------------------------------- */
+
+@media (max-width: 639.98px) {
+  /* AZ2 — kepala hemat: baris judul, lalu tab + toolbar sebaris (bukan
+     tombol selebar layar) supaya kartu pertama ≤150px dari header. */
+  .kartu--daftar > .kartu__kepala--kompak.sub-kepala-riwayat {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem 0.5rem;
+  }
+  .sub-kepala-riwayat > div:first-child {
+    flex: 1 1 12rem;
+    min-width: 0;
+    flex-wrap: nowrap;
+  }
+  .sub-kepala-riwayat > .kartu__jumlah {
+    margin-left: auto;
+  }
+  .sub-kepala-riwayat .rr-token-grup {
+    flex: 1 1 auto;
+    min-width: 0;
+    align-self: center;
+    max-width: 100%;
+  }
+  .sub-kepala-riwayat .sub-riwayat__alat {
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    margin-left: auto;
+  }
+  .sub-kepala-riwayat .sub-riwayat__alat .tombol--primer {
+    width: auto;
+  }
+}
+
+@media (max-width: 767.98px) {
+  /* AZ — daftar mobile dari DATA (MobileList kartu, bukan CSS tabel).
+     Tab Dokumen memakai .sub-daftar-hp; tab Penyesuaian Opname masih tabel
+     (`tabel--kompak-opname`). AZ2: deskripsi disembunyikan di HP. */
+  .sub-kepala-riwayat > div:first-child > .teks-kecil {
+    display: none;
+  }
+
+  .kartu--daftar:has(> .sub-daftar-hp, > .tabel-bungkus > table.tabel--kompak-opname) {
+    height: calc(100dvh - 7.5rem);
+    min-height: 24rem;
+    /* Kunci tinggi: jangan ikut meregang (flex:1 dari .kartu:has) supaya
+       daftar panjang menggulir DI DALAM kartu, bukan memperpanjang halaman. */
+    flex: 0 0 auto;
+  }
+  .kartu--daftar:has(> .sub-daftar-hp) > .sub-daftar-hp {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .kartu--daftar:has(> .tabel-bungkus > table.tabel--kompak-opname) > .tabel-bungkus {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .kartu--daftar:has(> .sub-daftar-hp, > .tabel-bungkus > table.tabel--kompak-opname) > .sub-opname__kepala,
+  .kartu--daftar:has(> .sub-daftar-hp, > .tabel-bungkus > table.tabel--kompak-opname) > .paginasi {
+    flex: 0 0 auto;
+  }
+  .kartu--daftar:has(> .sub-daftar-hp, > .tabel-bungkus > table.tabel--kompak-opname) > .paginasi {
+    margin-top: auto;
+  }
+
+  /* Tab Penyesuaian Opname (5 kolom: tanggal, nomor, gudang, netto, aksi):
+     Baris 1 nomor + aksi; Baris 2 tanggal + gudang; netto penuh. */
+  .kartu--daftar table.tabel.tabel--kompak-opname > tbody > tr {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+  .kartu--daftar table.tabel.tabel--kompak-opname > tbody > tr > td {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    display: block;
+    min-width: 0;
+  }
+  .kartu--daftar table.tabel.tabel--kompak-opname > tbody > tr > td:nth-child(2) {
+    grid-area: 1 / 1;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .kartu--daftar table.tabel.tabel--kompak-opname > tbody > tr > td:nth-child(5) {
+    grid-area: 1 / 2;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .kartu--daftar table.tabel.tabel--kompak-opname > tbody > tr > td:nth-child(1) {
+    grid-area: 2 / 1;
+  }
+  .kartu--daftar table.tabel.tabel--kompak-opname > tbody > tr > td:nth-child(3) {
+    grid-area: 2 / 2;
+    text-align: right;
+  }
+  .kartu--daftar table.tabel.tabel--kompak-opname > tbody > tr > td:nth-child(4) {
+    grid-area: 3 / 1 / 4 / 3;
+    border-top: 1px dashed var(--border);
+    border-radius: 0;
+    padding-top: 0.375rem;
+    text-align: right;
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 900px) {.sub-kepala {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sub-cari {
+    max-width: none;
+  }
+.sub-aksi {
+    margin-left: 0;
+  }
+
+  .sub-tabel-bungkus {
+    max-height: none;
+  }
+}
+
+/* --- FIT-LOCK formulir (tanpa scroll luar): kartu header tetap, hanya tabel
+   item (sub-tabel-bungkus, thead sticky) yang menggulir di dalam; petunjuk
+   bawah terkunci sebagai kaki. Berlaku semua ukuran layar. */
+.halaman--fit > .kartu--sub-fit {
+  flex: 0 0 auto;
+}
+
+.halaman--fit > .sub-tabel-bungkus {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.halaman--fit > .sub-petunjuk {
+  flex: 0 0 auto;
+  margin-bottom: 0;
+}
+
+/* --- O4b — kepala section Penyesuaian Opname dalam kartu riwayat ----------- */
+.sub-opname__kepala {
+  flex: 0 0 auto;
+  margin: 0.125rem 0 0.5rem;
+}
+
+.sub-opname__kepala .bagian-judul {
+  margin: 0 0 0.125rem;
+}
+
+/* --- RuangRapi Dynamic Token Switcher (Dokumen | Penyesuaian Opname) ------
+   Dipakai bersama Item Masuk & Item Keluar (RiwayatPersediaan).
+   Nonaktif: ikon saja + tooltip (title); aktif: ikon + label kapsul hijau. */
+.rr-token-grup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: #f8f8f4;
+  border: 1px solid #e9ece5;
+  border-radius: 9999px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+:root[data-theme='dark'] .rr-token-grup {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+.rr-token {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #768078;
+  padding: 0.375rem;
+  border-radius: 9999px;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.rr-token:hover {
+  color: #202a24;
+  background: rgba(255, 255, 255, 0.6);
+}
+:root[data-theme='dark'] .rr-token { color: var(--teks-redup); }
+:root[data-theme='dark'] .rr-token:hover {
+  color: var(--teks);
+  background: var(--row-hover);
+}
+.rr-token__ikon {
+  flex: none;
+}
+/* Label ciut saat non-aktif (ikon saja) — melebar + teks saat aktif. */
+.rr-token__label {
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.2s ease-in-out, opacity 0.15s ease;
+}
+.rr-token--aktif {
+  background: #267454;
+  border-color: #267454;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.1);
+  padding: 0.375rem 0.75rem;
+}
+.rr-token--aktif:hover {
+  color: #fff;
+  background: #267454;
+}
+.rr-token--aktif .rr-token__label {
+  max-width: 12rem;
+  opacity: 1;
+}

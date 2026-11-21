@@ -1,0 +1,353 @@
+/* ==========================================================================
+   POS — RuangRapi Edition (Cream & Forest Green, senada Dashboard).
+   --------------------------------------------------------------------------
+   Murni visual: warna, border, radius, spacing, tipografi. Tidak ada logika,
+   ID/class selector, shortcut, maupun struktur fitur yang diubah. Dimuat
+   SETELAH pos-deep-teal.css. KEDUA tema (siang & malam) dipetakan ke token
+   framework RuangRapi (tampilan-framework.css), sehingga POS selalu senada
+   dengan Dashboard dan mengikuti sakelar tema global tanpa reload.
+   ========================================================================== */
+
+/* --- Tipografi modern (kedua tema) --- */
+.pos-shell {
+  font-family: 'Aptos', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* --- Petakan hook lokal ke token RuangRapi (kedua tema otomatis) --- */
+.pos-shell {
+  --teal-50: var(--accent-soft);
+  --teal-100: var(--accent-soft);
+  --teal-400: var(--accent-text);
+  --teal-500: var(--accent-fill);
+  --teal-600: var(--accent-fill);
+  --teal-700: var(--accent-hover);
+  --teal-900: var(--accent-text);
+  --slate-950: var(--bg);
+  --slate-900: var(--surface);
+  --slate-850: var(--surface-2);
+  --slate-800: var(--border);
+  --slate-700: var(--border);
+  --slate-400: var(--text-muted);
+  --slate-300: var(--text);
+  --slate-200: var(--text);
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* --- Kanvas + header: krem RuangRapi (gantikan slate deep-teal) --- */
+.pos-shell {
+  background: var(--bg);
+  color: var(--text);
+}
+.pos-shell .pos-kepala {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.pos-shell .pos-kepala__judul {
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.pos-shell .pos-toko {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.pos-shell .pos-jejak {
+  color: var(--accent-text);
+}
+.pos-shell .pos-pemisah {
+  color: var(--border);
+}
+.pos-shell .pos-shift {
+  background: var(--accent-soft);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--accent-text);
+}
+.pos-shell .pos-shift b {
+  color: var(--accent-text);
+  font-family: inherit;
+}
+.pos-shell .pos-shift--tutup {
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+.pos-shell .pos-shift--tutup b {
+  color: var(--warning-text);
+}
+.pos-shell .pos-datetime {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-muted);
+}
+.pos-shell .pos-datetime svg {
+  color: var(--accent-text);
+}
+
+/* --- Tombol Bayar: hijau forest solid (template .btn-primary) --- */
+.pos-shell .pos-bayar,
+.pos-shell .pos-aksi-bayar {
+  background: var(--accent-fill);
+  border-radius: 12px;
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: var(--shadow);
+}
+.pos-shell .pos-bayar:hover:not(:disabled),
+.pos-shell .pos-aksi-bayar:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+/* --- Switcher mode gaya .tabs RuangRapi: aktif = permukaan + teks hijau --- */
+.pos-shell .pos-mode-switch {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+.pos-shell .pos-mode-switch button {
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+.pos-shell .pos-mode-switch button:hover {
+  color: var(--text);
+}
+.pos-shell .pos-mode-switch button.aktif {
+  background: var(--surface);
+  border-color: transparent;
+  color: var(--accent-text);
+  box-shadow: var(--shadow);
+}
+
+/* --- Kartu produk: .card (radius 16px, shadow, hover angkat) --- */
+.pos-shell .pos-kartu {
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.pos-shell .pos-kartu:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.pos-shell .pos-kartu.terpilih {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+  color: inherit;
+}
+
+/* --- Tabel teks: thead surface2 + baris sorot hijau lembut --- */
+.pos-shell .pos-tabel-cepat thead {
+  background: var(--surface-2);
+}
+.pos-shell .pos-tabel-cepat thead th {
+  color: var(--text-muted);
+}
+.pos-shell .pos-tabel-cepat tbody tr:hover {
+  background: var(--row-hover);
+}
+.pos-shell .pos-tabel-cepat tbody tr.aktif {
+  background: var(--accent-soft);
+  box-shadow: none;
+  color: inherit;
+}
+#pos-view-table .pos-tabel-cepat tbody tr.aktif {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: inherit;
+}
+#pos-view-table .pos-tabel-cepat tbody tr.aktif td {
+  background: transparent;
+}
+#pos-view-table .pos-td-total {
+  color: var(--success-text);
+}
+
+/* --- Input pencarian: permukaan surface2 + fokus ring framework --- */
+.pos-shell .pos-cari input {
+  background: var(--surface-2);
+  border-radius: 12px;
+  color: var(--text);
+}
+.pos-shell .pos-cari input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+/* --- Badge stok & kembalian memakai token status framework --- */
+.pos-shell .pos-saran__stok--ada,
+.pos-shell .pos-kartu__stok--ada {
+  color: var(--success-text);
+}
+.pos-shell .pos-saran__stok--menipis,
+.pos-shell .pos-kartu__stok--menipis {
+  color: var(--warning-text);
+}
+.pos-shell .pos-saran__stok--habis,
+.pos-shell .pos-kartu__stok--habis {
+  color: var(--danger-text);
+}
+.pos-shell .pos-kembalian b.cukup {
+  color: var(--success-text);
+}
+.pos-shell .pos-kembalian b.kurang {
+  color: var(--danger-text);
+}
+
+/* --- Footer kasir: permukaan surface2 + Total mencolok hijau --- */
+.pos-shell .pos-ringkas {
+  background: var(--surface-2);
+}
+.pos-shell .pos-total b {
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: var(--accent-text);
+}
+.pos-shell .pos-grandtotal {
+  border-color: var(--accent-soft);
+}
+.pos-shell .pos-grandtotal__nilai {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent-text);
+}
+.pos-shell .pos-grandtotal__siap {
+  color: var(--success-text);
+}
+
+/* ==========================================================================
+   SIANG SAJA — kartu putih & tombol sekunder putih (ciri khas RuangRapi).
+   Mode malam memakai panel/flat gelap framework (tanpa radius kartu).
+   ========================================================================== */
+
+/* Panel pencarian: kartu putih radius 20px. */
+:root:not([data-theme="dark"]) .pos-shell .pos-filter {
+  background: #ffffff;
+  border: 1px solid #e9ece5;
+  border-radius: 20px;
+  padding: 0.625rem 0.75rem;
+}
+
+/* Panel keranjang: kartu putih radius 20px (desktop; laci ponsel utuh). */
+@media (min-width: 1025px) {
+  :root:not([data-theme="dark"]) .pos-shell .pos-badan {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+  :root:not([data-theme="dark"]) .pos-shell .pos-kanan {
+    border: 1px solid #e9ece5;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+}
+
+/* Tombol sekunder: putih + border halus; hover → border & teks hijau. */
+:root:not([data-theme="dark"]) .pos-shell .pos-kepala__kanan .tombol,
+:root:not([data-theme="dark"]) .pos-shell .pos-tombol-keluar,
+:root:not([data-theme="dark"]) .pos-shell .pos-fullscreen-btn,
+:root:not([data-theme="dark"]) .pos-shell .pos-chip,
+:root:not([data-theme="dark"]) .pos-shell .pos-fastcash button,
+:root:not([data-theme="dark"]) .pos-shell .pos-bayar-cepat button,
+:root:not([data-theme="dark"]) .pos-shell .pos-tabel-tambah,
+:root:not([data-theme="dark"]) .pos-shell .pos-tombol-lebih,
+:root:not([data-theme="dark"]) .pos-shell .pos-baris__kontrol button,
+:root:not([data-theme="dark"]) .pos-shell .pos-rincian-btn {
+  background: #ffffff;
+  border: 1px solid #e9ece5;
+  color: #202a24;
+}
+:root:not([data-theme="dark"]) .pos-shell .pos-kepala__kanan .tombol:hover,
+:root:not([data-theme="dark"]) .pos-shell .pos-tombol-keluar:hover,
+:root:not([data-theme="dark"]) .pos-shell .pos-fullscreen-btn:hover,
+:root:not([data-theme="dark"]) .pos-shell .pos-chip:hover,
+:root:not([data-theme="dark"]) .pos-shell .pos-fastcash button:hover,
+:root:not([data-theme="dark"]) .pos-shell .pos-bayar-cepat button:hover,
+:root:not([data-theme="dark"]) .pos-shell .pos-tabel-tambah:hover,
+:root:not([data-theme="dark"]) .pos-shell .pos-tombol-lebih:hover,
+:root:not([data-theme="dark"]) .pos-shell .pos-baris__kontrol button:hover,
+:root:not([data-theme="dark"]) .pos-shell .pos-rincian-btn:hover,
+:root:not([data-theme="dark"]) .pos-shell .pos-kategori button:not(.aktif):hover {
+  background: #ffffff;
+  border-color: #267454;
+  color: #267454;
+}
+:root:not([data-theme="dark"]) .pos-shell .pos-kategori button:not(.aktif) {
+  background: transparent;
+}
+
+/* Filter pil lembut + badge netral. */
+:root:not([data-theme="dark"]) .pos-shell .pos-kategori button {
+  border-radius: 20px;
+}
+:root:not([data-theme="dark"]) .pos-shell .pos-kategori button.aktif {
+  background: #e5f2e9;
+  border-color: #e5f2e9;
+  color: #267454;
+  font-weight: 700;
+}
+:root:not([data-theme="dark"]) .pos-shell .pos-shift,
+:root:not([data-theme="dark"]) .pos-shell .pos-datetime {
+  background: #ffffff;
+  border: 1px solid #e9ece5;
+}
+
+/* --- Kategori pil: transparan + hover hijau (kedua tema) --- */
+.pos-shell .pos-kategori button:not(.aktif) {
+  background: transparent;
+}
+.pos-shell .pos-kategori button:not(.aktif):hover {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+.pos-shell .pos-kategori button.aktif {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent-text);
+}
+
+/* --- Keranjang kanan: permukaan + footer krem lembut --- */
+.pos-shell .pos-kanan {
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+}
+.pos-shell .pos-keranjang__kepala {
+  border-bottom: 1px solid var(--border);
+}
+.pos-shell .pos-baris + .pos-baris {
+  border-top: 1px solid var(--border);
+}
+.pos-shell .pos-saran {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+.pos-shell .pos-saran__item:hover,
+.pos-shell .pos-saran__item.aktif {
+  background: var(--accent-soft);
+}
+
+/* --- Dialog POS (.pos-dialog di dalam .modal portal): radius + fokus --- */
+.modal .pos-dialog label {
+  color: var(--text-muted);
+}
+.modal .pos-dialog input,
+.modal .pos-dialog select,
+.modal .pos-dialog textarea {
+  border-radius: 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text);
+}
+.modal .pos-dialog input:focus,
+.modal .pos-dialog select:focus,
+.modal .pos-dialog textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+  outline: none;
+}

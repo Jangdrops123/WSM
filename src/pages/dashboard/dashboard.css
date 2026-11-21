@@ -1,0 +1,872 @@
+/* ==========================================================================
+   Dashboard — kartu KPI, Pengingat faktur, panel "Atur tampilan".
+   Warna mengikuti token tema (styles.css / theme-gelap.css).
+   ========================================================================== */
+
+/* --- Tombol "Atur tampilan" di kartu sapaan ------------------------------ */
+
+.sapaan-atur {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: var(--accent-contrast);
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.875rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sapaan-atur:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+/* Ponsel: kiri = judul + tanggal bertumpuk, kanan = tombol Atur tampilan
+   yang diposisikan TEGAK LURUS DI TENGAH (bukan pojok kanan atas). */
+@media (max-width: 639.98px) {
+  section.kartu-sapaan {
+    flex-wrap: nowrap;
+    align-items: center;
+    column-gap: 0.75rem;
+    padding-block: 0.625rem;
+  }
+
+  section.kartu-sapaan > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.125rem;
+  }
+
+  section.kartu-sapaan h2 {
+    font-size: 0.9375rem;
+    line-height: 1.3;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  /* Ponsel tetap menampilkan tanggal & jam seperti desktop. */
+  section.kartu-sapaan > div:first-child p {
+    display: block;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    opacity: 0.9;
+  }
+
+  section.kartu-sapaan > div:last-child {
+    flex: 0 0 auto;
+    align-self: center;
+    justify-content: flex-end;
+  }
+
+  /* Tombol dipadatkan agar proporsional di samping dua baris teks. */
+  section.kartu-sapaan .sapaan-atur {
+    padding: 0.4375rem 0.625rem;
+    font-size: 0.75rem;
+    gap: 0.375rem;
+    white-space: nowrap;
+  }
+}
+/* --- Grid KPI (baris atas) ------------------------------------------------ */
+
+/* U3 — kartu KPI mengisi baris penuh: 6 → 4 → 2 → 1 kolom sesuai lebar. */
+.dash-kpi {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gap-kartu);
+}
+
+@media (min-width: 1536px) {.dash-kpi {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1023.98px) {.dash-kpi {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 639.98px) {.dash-kpi {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.kartu-kpi {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--bayangan);
+  padding: 1rem 1.125rem;
+  color: var(--teks);
+  font: inherit;
+  cursor: default;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.kartu-kpi[href] {
+  cursor: pointer;
+}
+.kartu-kpi[href]:hover {
+  border-color: var(--primer);
+}
+
+.kartu-kpi__ikon {
+  display: grid;
+  place-items: center;
+  width: 2.625rem;
+  height: 2.625rem;
+  flex-shrink: 0;
+  border-radius: 0.75rem;
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+}
+.kartu-kpi--bahaya .kartu-kpi__ikon {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--waspada);
+}
+
+.kartu-kpi--bahaya {
+  border-color: rgba(245, 158, 11, 0.35);
+}
+.kartu-kpi__teks {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.kartu-kpi__teks small {
+  color: var(--teks-redup);
+  font-size: 0.75rem;
+}
+.kartu-kpi__teks strong {
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- Grafik ringkas ------------------------------------------------------- */
+
+/* U3 — grafik 2–4 kolom (breakpoint bertahap), tinggi seragam & mengisi lebar. */
+.dash-grafik {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-kartu);
+  align-items: stretch;
+}
+
+@media (min-width: 640px) and (max-width: 1279.98px) {.dash-grafik {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) and (max-width: 1919.98px) {.dash-grafik {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1920px) {.dash-grafik {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 639.98px) {.dash-grafik {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.dash-grafik .kartu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  height: 100%;
+}
+
+.dash-grafik h4 {
+  font-size: 0.875rem;
+}
+.dash-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+
+.dash-legenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.dash-legenda i {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 0.1875rem;
+  display: inline-block;
+}
+
+/* --- Tabel ringkas -------------------------------------------------------- */
+
+.dash-tabel-wrap {
+  overflow-x: auto;
+}
+.dash-tabel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.dash-tabel th,
+.dash-tabel td {
+  padding: 0.5625rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+.dash-tabel th {
+  color: var(--teks-redup);
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.dash-tabel td.kanan,
+.dash-tabel th.kanan {
+  text-align: right;
+}
+.dash-tabel tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* --- Kartu Pengingat faktur ---------------------------------------------- */
+
+.pengingat__alat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+.pengingat-tab {
+  display: inline-flex;
+  gap: 0.375rem;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.25rem;
+  border-radius: 0.625rem;
+}
+
+.pengingat-tab button {
+  border: 0;
+  background: transparent;
+  color: var(--teks-redup);
+  font: inherit;
+  font-size: 0.8125rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+.pengingat-tab button.aktif {
+  background: var(--primer);
+  color: var(--accent-contrast);
+  font-weight: 600;
+}
+
+.pengingat__setelan {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--teks-redup);
+  flex-wrap: wrap;
+}
+.pengingat__setelan select {
+  background: var(--panel-padat);
+  color: var(--teks);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.3125rem 0.5rem;
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+.pengingat__setelan label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+}
+.urgensi {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.1875rem 0.5625rem;
+  border-radius: 62.4375rem;
+}
+
+.urgensi--terlambat {
+  background: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+}
+.urgensi--dekat {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--waspada);
+}
+
+.urgensi--aman {
+  background: rgba(59, 130, 246, 0.14);
+  color: #60a5fa;
+}
+.dash-tabel .pengingat-baris--terlambat td:first-child {
+  box-shadow: inset 3px 0 0 #ef4444;
+}
+
+.dash-tabel .pengingat-baris--dekat td:first-child {
+  box-shadow: inset 3px 0 0 var(--waspada);
+}
+.pengingat-tanda {
+  color: var(--waspada);
+  vertical-align: -2px;
+}
+
+.pengingat-kosong {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: var(--teks-redup);
+  padding: 1.125rem 0.25rem;
+  font-size: 0.8125rem;
+}
+.pengingat-kosong svg {
+  color: var(--sukses);
+}
+
+/* --- Dialog pembayaran ---------------------------------------------------- */
+
+.bayar-ringkas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  margin-bottom: 0.875rem;
+  font-size: 0.8125rem;
+}
+
+.bayar-ringkas strong {
+  font-size: 0.9375rem;
+}
+.bayar-metode {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bayar-metode label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.bayar-metode label.aktif {
+  border-color: var(--primer);
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+}
+
+.bayar-metode input {
+  display: none;
+}
+/* ==========================================================================
+   BAGIAN X2 — Grid widget (12 kolom, dense) + mode "Atur tampilan"
+   ========================================================================== */
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0.875rem;
+  grid-auto-flow: dense; /* pengemasan padat — tanpa ruang kosong */
+  align-items: stretch;
+}
+
+.dash-kartu {
+  grid-column: span var(--span, 6);
+  min-height: var(--tinggi, 15rem);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--bayangan);
+  padding: 0.875rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  position: relative;
+}
+.dash-kartu__kepala {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.dash-kartu__kepala h4 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.dash-kartu__isi {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grafik mengisi tinggi kartu secara seragam (X2.4) — tanpa ruang mati. */
+.dash-kartu__isi > .grafik,
+.dash-kartu__isi > .grafik-batang,
+.dash-kartu__isi > .grafik-donat {
+  flex: 1;
+  min-height: 0;
+}
+/* --- Mode Atur tampilan ------------------------------------------------- */
+
+.dash-grid[data-edit='1'] .dash-kartu {
+  outline: 1px dashed var(--border);
+}
+
+.dash-kartu[data-seret='1'] {
+  opacity: 0.45;
+}
+.dash-kartu[data-lewat='1'] {
+  outline: 2px dashed var(--primer);
+}
+
+.dash-kartu__alat {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  flex: 0 0 auto;
+}
+.dash-kartu__pegangan {
+  cursor: grab;
+  color: var(--teks-redup);
+  display: inline-flex;
+  padding: 0.25rem;
+  touch-action: none;
+}
+
+.dash-kartu__pegangan:active {
+  cursor: grabbing;
+}
+.dash-kartu__menu-wrap {
+  position: relative;
+}
+
+.dash-kartu__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.375rem);
+  z-index: 40;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.14);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 11.25rem;
+}
+.dash-kartu__menu b {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--teks-redup);
+  margin-top: 0.25rem;
+}
+
+.dash-kartu__menu button {
+  text-align: left;
+  border: 0;
+  background: none;
+  color: var(--teks);
+  font: inherit;
+  font-size: 0.8125rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+.dash-kartu__menu button:hover,
+.dash-kartu__menu button.aktif {
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+}
+
+/* Tarik sudut kartu untuk mengubah lebar (snap ke grid, X2.1). */
+.dash-kartu__sudut {
+  position: absolute;
+  right: 0.0625rem;
+  bottom: 0.0625rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  cursor: nwse-resize;
+  border-radius: 0 0 var(--radius) 0;
+  background: linear-gradient(135deg, transparent 50%, var(--border) 50%);
+}
+/* --- Bilah toolbar mode edit -------------------------------------------- */
+
+.dash-edit-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem;
+  background: var(--primer-lembut);
+  border: 1px solid var(--primer);
+  border-radius: var(--radius);
+  padding: 0.625rem 0.75rem;
+}
+
+.dash-edit-bar__preset {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.dash-edit-bar__aksi {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+/* --- Isi widget --------------------------------------------------------- */
+
+.widget-kpi {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.125rem;
+  min-width: 0;
+}
+.widget-kpi strong {
+  font-size: clamp(1.25rem, 2.2vw, 1.875rem);
+  line-height: 1.3;
+  padding-bottom: 0.06em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.widget-kpi small {
+  color: var(--teks-redup);
+  font-size: 0.7188rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.widget-kpi--bahaya strong {
+  color: var(--danger);
+}
+
+/* Sparkline kartu KPI — batang tipis deret harian (bukan angka baru). */
+.widget-kpi__spark {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.125rem;
+  height: 1.375rem;
+  margin-top: auto;
+  opacity: 0.85;
+}
+
+.widget-kpi__spark i {
+  flex: 1;
+  min-width: 0.125rem;
+  border-radius: 0.1875rem;
+  background: var(--primer);
+  opacity: 0.55;
+}
+
+.widget-kpi--bahaya .widget-kpi__spark i {
+  background: var(--waspada);
+  opacity: 0.5;
+}
+
+/* --- Kepala kartu: periode & tautan detail ------------------------------ */
+
+.dash-kartu__kepala > h4 {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dash-kartu__periode {
+  flex: 0 0 auto;
+  font-size: 0.6875rem;
+  color: var(--teks-redup);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 62.4375rem;
+  padding: 0.0625rem 0.5rem;
+  white-space: nowrap;
+}
+
+.dash-kartu__tautan {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  font-size: 0.7188rem;
+  font-weight: 600;
+  color: var(--primer-teks);
+  text-decoration: none;
+  border-radius: 0.375rem;
+  padding: 0.0625rem 0.25rem;
+}
+
+.dash-kartu__tautan:hover {
+  background: var(--primer-lembut);
+}
+
+/* Chip 7 / 14 / 30 hari pada kartu tren. */
+.dash-periode {
+  flex: 0 0 auto;
+  display: inline-flex;
+  gap: 0.125rem;
+  padding: 0.125rem;
+  border-radius: 62.4375rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.dash-periode button {
+  border: 0;
+  background: transparent;
+  color: var(--primer-teks);
+  font: inherit;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 62.4375rem;
+  cursor: pointer;
+}
+
+.dash-periode button:hover {
+  color: var(--teks);
+}
+
+.dash-periode button.aktif {
+  background: var(--primer);
+  color: var(--accent-contrast);
+}
+
+.widget-daftar {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+}
+.widget-daftar li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 0.625rem;
+  align-items: center;
+  font-size: 0.8125rem;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 0.375rem;
+}
+
+/* Bilah porsi relatif terhadap nilai terbesar (pengganti angka tambahan). */
+.widget-daftar__bar {
+  position: absolute;
+  left: 2.125rem;
+  bottom: 0.0625rem;
+  height: 2px;
+  width: var(--isi, 0%);
+  border-radius: 2px;
+  background: var(--primer);
+  opacity: 0.35;
+}
+
+.widget-daftar li:last-child .widget-daftar__bar {
+  opacity: 0.5;
+}
+
+.widget-daftar li:last-child {
+  border-bottom: 0;
+}
+.widget-daftar__peringkat {
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 50%;
+  background: var(--primer-lembut);
+  color: var(--primer-teks);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.widget-daftar__label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.widget-daftar__label small {
+  color: var(--teks-redup);
+  font-size: 0.6875rem;
+}
+
+.widget-kosong {
+  margin: auto;
+  width: 100%;
+  text-align: center;
+  color: var(--teks-redup);
+  font-size: 0.8125rem;
+  padding: 0.875rem;
+  border: 1px dashed var(--border);
+  border-radius: 0.625rem;
+}
+.widget-kosong--galat {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+/* Widget yang dibatasi matriks peran — netral, tanpa merah. */
+.widget-kosong--terbatas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+}
+.widget-kosong--terbatas svg {
+  color: var(--teks-redup);
+  opacity: 0.7;
+}
+.widget-kosong--terbatas p {
+  margin: 0;
+}
+
+/* --- Katalog widget & panel isi ----------------------------------------- */
+
+.katalog-widget {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.625rem;
+}
+.katalog-widget__kartu {
+  display: flex;
+  gap: 0.625rem;
+  align-items: flex-start;
+  text-align: left;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface);
+  color: var(--teks);
+  font: inherit;
+  cursor: pointer;
+}
+
+.katalog-widget__kartu:hover {
+  border-color: var(--primer);
+  background: var(--primer-lembut);
+}
+.katalog-widget__ikon {
+  color: var(--primer-teks);
+  display: inline-flex;
+}
+
+.katalog-widget__kartu strong {
+  display: block;
+  font-size: 0.8438rem;
+}
+.katalog-widget__kartu small {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+
+.katalog-widget__tipe {
+  font-weight: 400;
+  text-transform: capitalize;
+}
+.widget-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.widget-form__baris {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+}
+.widget-form__filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+}
+
+.widget-form__filter b {
+  font-size: 0.75rem;
+}
+
+/* --- Responsif: tablet 2 kolom, ponsel 1 kolom (X2.3) ------------------- */
+
+@media (max-width: 1180px) {.dash-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dash-kartu {
+    grid-column: span 1 !important;
+  }
+}
+
+@media (max-width: 680px) {.dash-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-edit-bar__aksi {
+    margin-left: 0;
+  }
+}

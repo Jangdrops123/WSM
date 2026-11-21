@@ -1,0 +1,674 @@
+/* MODUL STOK OPNAME — panel scan, tabel hitung, tinjau selisih, dan dokumen cetak. */
+
+/* --- Ringkasan atas -------------------------------------------------------- */
+.opname-ringkas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* --- Panel scan ------------------------------------------------------------ */
+.opname-scan {
+  margin-top: 0.875rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface-2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.opname-scan__input {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.opname-scan__input label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--teks);
+  width: 100%;
+}
+.opname-scan__input input {
+  flex: 1;
+  min-width: 15rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  font: inherit;
+  font-size: 0.875rem;
+  background: var(--surface);
+}
+
+.opname-scan__input input:focus {
+  outline: none;
+  border-color: var(--primer);
+  box-shadow: 0 0 0 3px var(--primer-lembut);
+}
+.opname-scan__input select {
+  padding: 0.5625rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  background: var(--surface);
+}
+
+.opname-scan__terakhir {
+  font-size: 0.7813rem;
+  color: var(--success-text);
+  background: var(--success-soft);
+  border: 1px solid var(--success-fill);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.625rem;
+}
+.opname-scan__galat {
+  font-size: 0.7813rem;
+  color: var(--danger-text);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-fill);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.625rem;
+}
+
+/* --- Tab hitung / tinjau --------------------------------------------------- */
+.opname-tab {
+  display: flex;
+  gap: 0.375rem;
+  margin-top: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.opname-tab__tombol {
+  border: none;
+  background: none;
+  padding: 0.5rem 0.875rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--teks-redup);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -0.0625rem;
+}
+
+.opname-tab__tombol.aktif {
+  color: var(--primer-teks);
+  border-bottom-color: var(--primer);
+}
+/* --- Tabel hitung ---------------------------------------------------------- */
+.opname-tabel-bungkus {
+  margin-top: 0.75rem;
+  max-height: 62vh;
+}
+
+/* Rincian sesi terkunci setinggi viewport (pola halaman--fit): kartu jadi
+   kolom flex, blok kepala/ringkas/panel/tab/alat tetap (shrink-0), dan
+   wadah tabel flex-1 + min-height-0 mengisi sisa ruang — tidak mengempis
+   saat baris sedikit, tidak meluber saat baris banyak. */
+.kartu.opname-sesi {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.opname-sesi > .kartu__kepala,
+.opname-sesi > .opname-ringkas,
+.opname-sesi > .opname-banner,
+.opname-sesi > .opname-scan,
+.opname-sesi > .opname-tab,
+.opname-sesi > .alat-tabel {
+  flex: 0 0 auto;
+}
+
+.opname-sesi > .tabel-bungkus {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  margin-bottom: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+/* Kaki kartu: ringkasan jumlah baris, terkunci di dasar kartu. */
+.opname-sesi > .opname-kaki {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.375rem 0 0;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+
+/* Sorot baris selisih: hijau lembut (lebih) / merah lembut (kurang).
+   Baris terpilih (spesifisitas lebih tinggi) tetap menang bila bentrok. */
+.opname-baris-lebih td {
+  background: var(--success-soft);
+}
+
+.opname-baris-kurang td {
+  background: var(--danger-soft);
+}
+
+/* W1d — input STOK FISIK memakai token input di kedua tema (Siang: putih
+   berbingkai abu; Malam: gelap berbingkai halus). Placeholder “—” memakai
+   --text-muted; fokus memakai --focus-ring. */
+.opname-input-fisik {
+  width: 5.25rem;
+  text-align: right;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  padding: 0.3125rem 0.5rem;
+  border: 1px solid var(--input-border);
+  border-radius: 0.4375rem;
+  background: var(--input-bg);
+  color: var(--text);
+}
+.opname-input-fisik::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.opname-input-fisik:focus {
+  outline: none;
+  border-color: var(--primer);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+/* W1a — baris “belum dihitung”: HANYA tint halus + garis aksen kiri 3px,
+   tanpa warna tetap. Teks baris tetap --text di atas latar --surface. */
+.opname-baris-belum td {
+  background: var(--row-warning);
+  color: var(--text);
+}
+
+.opname-baris-belum td:first-child {
+  box-shadow: inset 3px 0 0 var(--warning);
+}
+/* W1c — baris terpilih/fokus: tint --row-selected + outline --focus-ring. */
+.opname-tabel tr.baris-terpilih > td {
+  background: var(--row-selected);
+}
+
+.opname-tabel tr:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+/* W1e — badge SKU & teks lokasi memakai token badge (kontras terjaga). */
+/* Pil sukses (selisih lebih) — pasangan kartu-ringkas--bahaya, token tema. */
+.kartu-ringkas--sukses {
+  background: var(--success-soft);
+  border-color: var(--success-fill);
+  color: var(--success-text);
+}
+
+.kartu-ringkas--sukses strong {
+  color: var(--success-text);
+}
+.opname-tabel code {
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  border-radius: 0.375rem;
+  padding: 0.0625rem 0.375rem;
+  font-size: 0.75rem;
+}
+
+.opname-tabel .pos-td-lokasi {
+  color: var(--text-muted);
+}
+/* W1c — badge status baris: “Belum” (peringatan) & “Sesuai” (sukses). */
+.opname-lencana {
+  display: inline-block;
+  margin-left: 0.375rem;
+  font-size: 0.6563rem;
+  font-weight: 700;
+  line-height: 1.6;
+  border-radius: 62.4375rem;
+  padding: 0 0.4375rem;
+  vertical-align: 1px;
+}
+
+.opname-lencana--belum {
+  background: var(--warning-soft);
+  color: var(--warning-text);
+}
+.opname-lencana--sesuai {
+  background: var(--success-soft);
+  color: var(--success-text);
+}
+
+/* BAGIAN L — pratinjau impor: status baris & baris dikeluarkan (token tema). */
+.opname-lencana--galat {
+  background: var(--danger-soft);
+  color: var(--danger-text);
+}
+.opname-lencana--keluar {
+  background: var(--badge-bg);
+  color: var(--badge-text);
+}
+
+.opname-baris-error > td {
+  background: var(--row-danger);
+}
+.opname-baris-keluar > td {
+  background: var(--row-hover);
+}
+
+/* Input perbaikan inline (autocomplete produk) — token input di kedua tema. */
+.opname-input-perbaikan {
+  font-size: 0.7813rem;
+  text-align: left;
+}
+/* W1c — selisih: angka berwarna + tanda/panah (bukan warna saja). */
+.opname-lebih {
+  color: var(--success-text);
+  font-weight: 700;
+}
+
+.opname-kurang {
+  color: var(--danger-text);
+  font-weight: 700;
+}
+.opname-cek {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.7813rem;
+  color: var(--teks);
+  white-space: nowrap;
+}
+
+/* --- Banner ---------------------------------------------------------------- */
+.opname-banner {
+  margin-top: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.625rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.opname-banner--sukses {
+  background: var(--success-soft);
+  border: 1px solid var(--success-fill);
+  color: var(--success-text);
+}
+
+.opname-banner--peringatan {
+  background: var(--warning-soft);
+  border: 1px solid var(--warning-fill);
+  color: var(--warning-text);
+}
+.opname-banner--bahaya {
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-fill);
+  color: var(--danger-text);
+}
+
+/* ==========================================================================
+   DOKUMEN CETAK — di layar tampil sebagai pratinjau, saat print hanya dokumen.
+   ========================================================================== */
+.opname-cetak-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  overflow: auto;
+}
+
+.opname-cetak-wadah {
+  background: #fff;
+  color: #111;
+  width: 210mm;
+  max-width: 100%;
+  padding: 14mm;
+  box-shadow: 0 18px 48px rgba(16, 24, 40, 0.35);
+  border-radius: 6px;
+}
+
+.opname-cetak-aksi {
+  display: flex;
+  gap: 8px;
+}
+
+/* Isi dokumen --------------------------------------------------------------- */
+.opname-dok {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11pt;
+  color: #111;
+  line-height: 1.5;
+}
+
+.opname-dok__kop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2.5px solid #111;
+  padding-bottom: 8px;
+}
+
+.opname-dok__toko {
+  font-size: 15pt;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.opname-dok__sub {
+  font-size: 9.5pt;
+  color: #444;
+}
+
+.opname-dok__judul {
+  text-align: right;
+}
+
+.opname-dok__judul h1 {
+  margin: 0;
+  font-size: 13pt;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.opname-dok__no {
+  font-size: 10pt;
+  color: #333;
+}
+
+.opname-dok__info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 18px;
+  margin: 10px 0;
+}
+
+.opname-dok__info > div {
+  display: flex;
+  gap: 6px;
+  font-size: 10pt;
+}
+
+.opname-dok__info dt {
+  color: #555;
+  min-width: 92px;
+}
+
+.opname-dok__info dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.opname-dok__paragraf {
+  margin: 10px 0;
+  text-align: justify;
+}
+
+.opname-dok__h2 {
+  font-size: 11pt;
+  margin: 14px 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.opname-dok__tabel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9.5pt;
+}
+
+.opname-dok__tabel th,
+.opname-dok__tabel td {
+  border: 1px solid #999;
+  padding: 4px 6px;
+  text-align: left;
+}
+
+.opname-dok__tabel thead th {
+  background: #f1f1f1;
+  font-weight: 700;
+}
+
+.opname-dok__n {
+  width: 30px;
+  text-align: center;
+}
+
+.opname-dok__angka {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Baris kosong untuk diisi tangan pada lembar hitung */
+.opname-dok__kosong {
+  min-width: 56px;
+}
+
+.opname-dok__ringkas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px 14px;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+}
+
+.opname-dok__ringkas > div {
+  display: flex;
+  flex-direction: column;
+  font-size: 10pt;
+}
+
+.opname-dok__ringkas span {
+  color: #555;
+  font-size: 9pt;
+}
+
+.opname-dok__ringkas strong {
+  font-size: 11pt;
+}
+
+.opname-dok__catatan {
+  margin: 8px 0;
+  font-size: 9.5pt;
+  color: #444;
+}
+
+.opname-dok__ttd {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 34px;
+}
+
+.opname-dok__ttd > div {
+  width: 46%;
+  text-align: center;
+}
+
+.opname-dok__ttd-label {
+  font-size: 10pt;
+  font-weight: 700;
+}
+
+.opname-dok__ttd-isi {
+  margin-top: 44px;
+  border-top: 1px solid #111;
+  padding-top: 4px;
+}
+
+.opname-dok__ttd-nama {
+  font-size: 10pt;
+}
+
+.opname-dok__footer {
+  margin-top: 14px;
+  padding-top: 6px;
+  border-top: 1px dashed #bbb;
+  font-size: 8.5pt;
+  color: #666;
+  text-align: center;
+}
+
+/* @page A4 + print: sembunyikan seluruh aplikasi, tampilkan dokumen saja ----- */
+@page {
+  size: A4;
+  margin: 12mm;
+}
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  .opname-cetak-wadah,
+  .opname-cetak-wadah * {
+    visibility: visible !important;
+  }
+  .opname-cetak-wadah {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .opname-cetak-overlay {
+    position: static;
+    background: none;
+    padding: 0;
+    display: block;
+  }
+  .opname-cetak-aksi {
+    display: none !important;
+  }
+  .opname-dok__tabel thead {
+    display: table-header-group;
+  }
+  .opname-dok__tabel tr,
+  .opname-dok__ttd,
+  .opname-dok__ringkas {
+    page-break-inside: avoid;
+  }
+}
+
+/* ================= O3 — daftar sesi: jejak & tab status =================== */
+
+.opname-jejak {
+  margin: 0 0 0.375rem;
+}
+
+.opname-jejak a {
+  color: var(--primer-teks, #1d4ed8);
+  text-decoration: none;
+}
+.opname-jejak a:hover {
+  text-decoration: underline;
+}
+
+.opname-tab {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0.125rem 0 0.625rem;
+  border-bottom: 1px solid var(--border, #e4e8ee);
+  padding-bottom: 0.5rem;
+}
+.opname-tab__tombol {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 1px solid var(--border, #e4e8ee);
+  background: var(--surface);
+  color: var(--teks, #1c2430);
+  border-radius: 62.4375rem;
+  padding: 0.3125rem 0.75rem;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.opname-tab__tombol:hover {
+  border-color: var(--primer, #2563eb);
+  color: var(--primer-teks, #1d4ed8);
+}
+.opname-tab__tombol--aktif {
+  background: var(--primer, #2563eb);
+  border-color: var(--primer, #2563eb);
+  color: var(--accent-contrast);
+}
+
+.opname-tab__jumlah {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: var(--primer-lembut, #eef4ff);
+  color: var(--primer-teks, #1d4ed8);
+  border-radius: 62.4375rem;
+  padding: 0.0625rem 0.4375rem;
+}
+.opname-tab__tombol--aktif .opname-tab__jumlah {
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--accent-contrast);
+}
+
+@media (max-width: 720px) {.opname-tab {
+    gap: 0.25rem;
+  }
+
+  .opname-tab__tombol {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5625rem;
+  }
+}
+
+/* MOBILE OTOMATIS — kartu HP opname (<=767px): input fisik penuh, tab & scan melipat. */
+@media (max-width: 767.98px) {
+  .hp-kartu--aktif {
+    border-color: var(--primer);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+  }
+  .hp-input-fisik {
+    width: 100%;
+    min-height: 2.75rem;
+    font-size: 1rem;
+    margin-top: 0.375rem;
+  }
+  .opname-scan__input input,
+  .opname-scan__input select,
+  .opname-scan .tombol {
+    flex: 1 1 100%;
+    min-height: 2.75rem;
+  }
+  .opname-tab {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+  .opname-tab::-webkit-scrollbar {
+    display: none;
+  }
+  .opname-tab__tombol {
+    flex: none;
+    white-space: nowrap;
+    min-height: 2.75rem;
+  }
+  /* MOBILE OTOMATIS — daftar kartu jadi area gulir di dalam kartu terkunci. */
+  .kartu.opname-sesi > .hp-daftar {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
