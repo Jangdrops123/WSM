@@ -1,0 +1,185 @@
+PANDUAN MEMINDAHKAN NUSASUITE KE SERVER LINUX
+============================================
+
+Panduan ini mengikuti Dockerfile dan compose.yaml proyek: aplikasi pada port 3001, PostgreSQL di layanan db, volume pgdata untuk database, dan volume uploads untuk foto/file. Contoh perintah server mengasumsikan Ubuntu/Debian dan pengguna SSH bernama deploy. Ganti semua nilai dalam <tanda-kurung> dengan data server Anda.
+
+PENTING
+- Jangan kirim, unggah ke Git, atau masukkan file .env ke image Docker. File ini berisi rahasia.
+- Jangan menghapus volume pgdata saat deploy atau pemulihan.
+- Jangan membuka port PostgreSQL 5433 ke internet. Di compose, port database hanya terikat ke 127.0.0.1 server.
+- Sebelum pindah, buat cadangan database dan volume uploads. Lakukan pemulihan hanya pada database tujuan yang memang akan diganti.
+- File .env.pg.contoh adalah contoh untuk migrasi SQLite-ke-PostgreSQL; compose.yaml memakai POSTGRES_PASSWORD dari .env.
+
+1. SIAPKAN SERVER DAN AKSES SSH
+-------------------------------
+Di panel penyedia server:
+- Buat server Ubuntu/Debian dengan alamat IP publik.
+- Pastikan akses SSH port 22 tersedia dan batasi sumber koneksi ke IP kantor/rumah bila memungkinkan.
+- Buat pengguna deploy dengan hak sudo. Hindari login SSH harian sebagai root.
+
+Dari Windows PowerShell, buat kunci SSH bila belum ada:
+  ssh-keygen -t ed25519 -C "deploy-nusapos"
+
+Tambahkan isi kunci publik ke server melalui panel penyedia atau mekanisme aman penyedia. Jangan kirim file kunci privat id_ed25519.
+
+Masuk ke server:
+  ssh deploy@<IP_SERVER>
+
+Verifikasi sistem:
+  whoami
+  hostname
+  sudo apt update
+
+Pasang Docker Engine dan Docker Compose plugin mengikuti instruksi resmi untuk versi Ubuntu/Debian server Anda. Setelah instalasi, verifikasi:
+  docker --version
+  docker compose version
+
+Bila pengguna deploy belum bisa memakai Docker, tambahkan ke grup docker lalu keluar dan masuk SSH kembali:
+  sudo usermod -aG docker deploy
+  exit
+  ssh deploy@<IP_SERVER>
+  docker ps
+
+2. SIAPKAN FIREWALL
+-------------------
+Buka SSH dan web HTTPS pada firewall penyedia dan firewall server. Contoh UFW:
+  sudo ufw allow OpenSSH
+  sudo ufw allow 80/tcp
+  sudo ufw allow 443/tcp
+  sudo ufw enable
+  sudo ufw status
+
+Jangan membuka port 5433. Port aplikasi 3001 juga jangan diekspos langsung untuk penggunaan produksi; nantinya letakkan reverse proxy HTTPS seperti Caddy/Nginx di depan aplikasi. Untuk uji sementara saja, batasi port 3001 ke IP tepercaya.
+
+3. SALIN KODE PROYEK
+--------------------
+Buat direktori deploy di server:
+  sudo mkdir -p /opt/nusapos
+  sudo chown deploy:deploy /opt/nusapos
+
+Cara yang disarankan bila proyek ada di Git: dari server, clone repositori privat menggunakan kredensial/deploy key yang sesuai:
+  cd /opt/nusapos
+  git clone <URL_REPOSITORI> .
+
+Jangan simpan token Git di URL atau file proyek.
+
+Alternatif dari Windows PowerShell, dari folder proyek lokal:
+  scp -r Dockerfile compose.yaml package.json package-lock.json tsconfig.json vite.config.ts index.html .dockerignore src server public scripts pg-migrations deploy@<IP_SERVER>:/opt/nusapos/
+
+Pastikan folder yang disalin memuat Dockerfile, compose.yaml, package.json, package-lock.json, server/, src/, dan pg-migrations/. Jangan salin node_modules/ atau dist/; Dockerfile membangun frontend sendiri. Jangan salin .env lokal melalui perintah di atas.
+
+4. BUAT KONFIGURASI RAHASIA DI SERVER
+-------------------------------------
+Di sesi SSH:
+  cd /opt/nusapos
+  umask 077
+  openssl rand -hex 32
+
+Salin hasil acak tersebut ke file .env di server. Jangan tempelkan rahasia ke chat atau Git:
+  nano .env
+
+Isi minimal:
+  POSTGRES_PASSWORD=<HASIL_ACAK_PANJANG_DARI_OPENSSL>
+
+Simpan file, lalu pastikan hanya pemilik yang bisa membacanya:
+  chmod 600 .env
+  cat .env
+
+Jangan tampilkan isi .env saat membagikan log/tangkapan layar. Nilai POSTGRES_PASSWORD yang digunakan saat pertama kali membuat volume pgdata harus dipertahankan; mengganti .env saja tidak mengubah password yang tersimpan di database PostgreSQL.
+
+5. CADANGKAN DATA DARI SERVER LAMA
+----------------------------------
+Jalankan bagian ini di server lama, dari direktori proyek aktif:
+  cd /opt/nusapos
+  docker compose ps
+  docker compose exec -T db pg_dump -U nusa -d nusapos -Fc > nusapos.dump
+  docker volume ls
+
+Periksa bahwa nusapos.dump ada dan ukurannya bukan 0 byte. Catat volume uploads yang namanya biasanya berakhir dengan _uploads. Lihat nama tepat dari docker volume ls.
+
+Cadangkan uploads; ganti <VOLUME_UPLOADS_LAMA> dengan nama volume aktual:
+  docker run --rm -v <VOLUME_UPLOADS_LAMA>:/data -v "${PWD}:/backup" alpine sh -c "tar czf /backup/uploads.tar.gz -C /data ."
+
+Salin cadangan ke komputer lokal dari PowerShell:
+  scp deploy@<IP_SERVER_LAMA>:/opt/nusapos/nusapos.dump .\nusapos.dump
+  scp deploy@<IP_SERVER_LAMA>:/opt/nusapos/uploads.tar.gz .\uploads.tar.gz
+
+Bila perlu, salin kembali cadangan ke server baru:
+  scp .\nusapos.dump deploy@<IP_SERVER_BARU>:/opt/nusapos/
+  scp .\uploads.tar.gz deploy@<IP_SERVER_BARU>:/opt/nusapos/
+
+Jika database sumber bukan PostgreSQL pada proyek yang sama, jangan gunakan pg_dump/pg_restore ini untuk mengonversi SQLite. Ikuti skrip migrasi SQLite-ke-PostgreSQL proyek secara terpisah dan verifikasi database sumber sebelum cutover.
+
+6. JALANKAN STACK DI SERVER BARU
+--------------------------------
+Di sesi SSH server baru:
+  cd /opt/nusapos
+  docker compose config
+
+Periksa hasilnya agar tidak ada placeholder atau rahasia yang salah. Kemudian bangun image dan mulai layanan:
+  docker compose up --pull always --build -d
+  docker compose ps
+
+Tunggu sampai db berstatus healthy dan app berstatus Up. Lihat log bila perlu:
+  docker compose logs --tail 100 db
+  docker compose logs --tail 100 app
+
+7. PULIHKAN DATABASE LAMA BILA MEMINDAHKAN DATA
+------------------------------------------------
+Lewati bagian ini untuk instalasi baru tanpa data lama.
+
+Letakkan nusapos.dump di /opt/nusapos pada server baru. Pastikan server tujuan benar, cadangan sudah diperiksa, dan aplikasi tidak sedang menerima trafik. Perintah berikut MENGHAPUS database nusapos di server tujuan sebelum memulihkan cadangan:
+  cd /opt/nusapos
+  docker compose stop app
+  docker compose exec -T db psql -U nusa -d postgres -v ON_ERROR_STOP=1 -c "DROP DATABASE IF EXISTS nusapos WITH (FORCE);"
+  docker compose exec -T db psql -U nusa -d postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE nusapos OWNER nusa;"
+  docker compose exec -T db pg_restore -U nusa -d nusapos --no-owner --no-acl < nusapos.dump
+
+Pulihkan foto/file unggahan ke volume baru. Dapatkan nama volume uploads tujuan lewat `docker volume ls`; gunakan yang berakhir dengan _uploads:
+  docker volume ls
+  docker run --rm -v <VOLUME_UPLOADS_BARU>:/data -v "${PWD}:/backup" alpine sh -c "tar xzf /backup/uploads.tar.gz -C /data"
+
+Nyalakan aplikasi kembali:
+  docker compose up --pull always -d
+
+Jangan jalankan DROP DATABASE di server lama. Jangan gunakan perintah `docker compose down -v`; opsi `-v` menghapus volume database dan uploads.
+
+8. UJI APLIKASI
+----------------
+Dari server:
+  docker compose ps
+  docker compose logs --tail 100 app
+  docker compose exec -T db pg_isready -U nusa -d nusapos
+
+Uji health dari server:
+  curl -fsS http://127.0.0.1:3001/api/health
+
+Hasil yang diharapkan memuat "ok": true dan "database": "postgresql". Dari luar server, jangan uji port 3001 jika firewall sengaja menutupnya; uji melalui domain HTTPS setelah reverse proxy dipasang.
+
+Buka aplikasi melalui alamat reverse proxy HTTPS dan uji:
+- Login dan ubah password awal bila masih digunakan.
+- Produk: buka detail satu barang.
+- Pembelian dan Item Masuk/Keluar: cari barang yang memiliki stok pada gudang yang dipilih.
+- Laporan: buka Opname, Piutang, dan Utang.
+- Akuntansi: buat rekening Kas/Bank, lalu tautkan Tunai/Transfer/QRIS di Pengaturan > Kas & Bank sebelum menguji pembayaran.
+- Foto produk: pastikan unggahan lama tampil setelah volume uploads dipulihkan.
+
+Akun awal yang mungkin dibuat aplikasi pada instalasi baru menggunakan username admin dan password admin123. Ganti segera setelah login pertama. Jangan mengandalkan akun awal bila database hasil cadangan dipulihkan.
+
+9. OPERASIONAL DAN PEMBARUAN
+-----------------------------
+Perbarui source code di /opt/nusapos, lalu:
+  cd /opt/nusapos
+  docker compose up --pull always --build -d
+  docker compose ps
+  docker compose logs --tail 100 app
+
+Cadangkan berkala database dan volume uploads sebelum perubahan besar. Simpan cadangan di lokasi terpisah dari server produksi dan uji pemulihan cadangan secara berkala.
+
+Ringkas perintah penting:
+- Masuk: ssh deploy@<IP_SERVER>
+- Deploy: docker compose up --pull always --build -d
+- Status: docker compose ps
+- Log: docker compose logs --tail 100 app
+- Health: curl -fsS http://127.0.0.1:3001/api/health
+- Jangan pernah menghapus volume produksi dengan docker compose down -v.

@@ -1,0 +1,10 @@
+import { DatabaseSync } from 'node:sqlite';
+const db = new DatabaseSync('data/app.db');
+const q = (s: string) => (db.prepare(s).get() as any)?.n ?? 0;
+console.log('AKT products:', q(`SELECT COUNT(*) n FROM products WHERE sku LIKE 'AKT-%' OR kode_item LIKE 'AKT-%'`));
+console.log('AKT suppliers:', q(`SELECT COUNT(*) n FROM suppliers WHERE nama LIKE 'AKT-%'`));
+console.log('AKT warehouses:', q(`SELECT COUNT(*) n FROM warehouses WHERE kode LIKE 'AKT-%'`));
+console.log('AKT purchases:', q(`SELECT COUNT(*) n FROM purchases WHERE supplier_id IN (SELECT id FROM suppliers WHERE nama LIKE 'AKT-%')`));
+console.log('UCH docs:', q(`SELECT COUNT(*) n FROM purchases WHERE supplier_id IN (SELECT id FROM suppliers WHERE nama = 'Supplier A')`));
+console.log('UJI/PBL products:', q(`SELECT COUNT(*) n FROM products WHERE sku LIKE 'UJIP-%' OR sku LIKE 'PBL-%'`));
+db.close();

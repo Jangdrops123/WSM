@@ -1,0 +1,330 @@
+/* AN — Pindai barcode/QR tiga jalur (kamera / foto / ketik).
+   Kartu info memakai KUNING (peringatan), bukan merah: kamera yang sekadar
+   tak tersedia (HTTP biasa) bukanlah error. Semua warna lewat token tema
+   sehingga terbaca di Siang & Malam; ukuran rem mengikuti skala font. */
+
+.pindai {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  /* Tinggi memakai tinggi pandang dinamis + safe-area (AN5): area kamera di
+     atas, hasil di tengah, kolom manual menempel di bawah. */
+  max-height: calc(100dvh - 12rem);
+  min-height: 0;
+}
+
+/* --- Kartu info KUNING (bukan error merah) --- */
+.pindai__info {
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.625rem;
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--teks);
+  border: 1px solid #f59e0b;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.pindai__taut {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--primer-teks);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.pindai__bantuan {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pindai__bantuan code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  background: rgba(0, 0, 0, 0.08);
+  padding: 0 0.25rem;
+  border-radius: 0.25rem;
+}
+
+/* --- Jalur 1: kamera --- */
+.pindai__video-wadah {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #000;
+  /* Rasio 4:3, tidak melebihi separuh tinggi layar. */
+  aspect-ratio: 4 / 3;
+  max-height: 46dvh;
+}
+
+.pindai__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+/* Bingkai bidik sudut — panduan arahkan barcode ke tengah. */
+.pindai__bingkai {
+  position: absolute;
+  inset: 18% 12%;
+  pointer-events: none;
+}
+
+.pindai__bingkai span {
+  position: absolute;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 3px solid #fff;
+  opacity: 0.9;
+}
+
+.pindai__bingkai span:nth-child(1) {
+  top: 0;
+  left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 0.5rem 0 0 0;
+}
+
+.pindai__bingkai span:nth-child(2) {
+  top: 0;
+  right: 0;
+  border-left: 0;
+  border-bottom: 0;
+  border-radius: 0 0.5rem 0 0;
+}
+
+.pindai__bingkai span:nth-child(3) {
+  bottom: 0;
+  left: 0;
+  border-right: 0;
+  border-top: 0;
+  border-radius: 0 0 0 0.5rem;
+}
+
+.pindai__bingkai span:nth-child(4) {
+  bottom: 0;
+  right: 0;
+  border-left: 0;
+  border-top: 0;
+  border-radius: 0 0 0.5rem 0;
+}
+
+/* Garis bidik tengah — panduan arahkan tepat ke barcode/QR. */
+.pindai__garis {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 50%;
+  height: 2px;
+  margin-top: -1px;
+  background: var(--danger);
+  border-radius: 2px;
+  box-shadow: 0 0 0.5rem var(--danger);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pindai__garis {
+    animation: pindai-garis 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes pindai-garis {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.pindai__status {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.625rem;
+  text-align: center;
+  color: #fff;
+  font-size: 0.8125rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Izin ditolak: petunjuk + jalan keluar lain (bukan jalan buntu). */
+.pindai__izin {
+  position: absolute;
+  inset: auto 0.625rem 0.625rem;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  border-radius: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.pindai__izin p {
+  margin: 0 0 0.5rem;
+}
+
+.pindai__izin-aksi {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.pindai__baris {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Petunjuk singkat di bawah viewfinder bersih (tanpa kontrol kamera). */
+.pindai__petunjuk {
+  margin: 0;
+  text-align: center;
+}
+
+/* --- Jalur 2: foto --- */
+.pindai__foto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pindai__foto-aksi {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pindai__foto-aksi .tombol {
+  flex: 1 1 0;
+  min-height: 2.75rem; /* target sentuh */
+  justify-content: center;
+}
+
+.pindai__foto-hasil {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pindai__foto-pratinjau {
+  width: 100%;
+  max-height: 32dvh;
+  object-fit: contain;
+  border-radius: 0.625rem;
+  background: #000;
+}
+
+.pindai__foto-teks {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.pindai__foto-galat {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.625rem;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid #f59e0b;
+}
+
+/* --- Daftar kode terbaca (mode berkelanjutan) --- */
+.pindai__daftar {
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  max-height: 9rem;
+  overflow-y: auto;
+  background: var(--surface-2, transparent);
+}
+
+.pindai__daftar p {
+  margin: 0 0 0.25rem;
+}
+
+.pindai__daftar ul {
+  margin: 0;
+  padding-left: 1.125rem;
+  font-size: 0.8125rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+/* --- Jalur 3: manual (menempel di bawah, di atas papan ketik) --- */
+.pindai__manual {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.625rem;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pindai__manual-baris {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pindai__manual-baris .input-cari {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Kolom cari + tombol kamera: input mengisi sisa, tombol 44px. */
+.cari-scan {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cari-scan > input {
+  flex: 1 1 0%;
+  min-width: 0;
+  width: auto;
+  max-width: none;
+}
+
+/* POS (.pos-cari bukan flex): tombol kamera menempel di kanan kolom. */
+.pos-cari:has(> .ikon-btn-wadah) {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.pos-cari:has(> .ikon-btn-wadah) input {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.pos-cari > .ikon-btn-wadah {
+  flex: none;
+}
+
+.cari-scan .ikon-btn-wadah {
+  flex: none;
+}
+
+/* Tombol kamera 44px di layar sentuh (target sentuh aman). */
+@media (pointer: coarse) {
+  .cari-scan .ikon-btn,
+  .pos-cari > .ikon-btn-wadah .ikon-btn {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+}

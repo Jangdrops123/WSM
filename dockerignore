@@ -1,0 +1,29 @@
+# Mirror of .dockerignore for tools that use the nonstandard filename.
+# Docker itself reads .dockerignore only.
+node_modules
+dist
+coverage
+.vite
+.env
+.env.*
+.git
+.vscode
+.idea
+.preview-pid
+.pratinjau-http.cjs
+data
+backups
+_archiv
+_arsip
+.freebuff
+.cloud-attachments
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.dump
+*.sql.gz
+*.tar
+*.log
+.DS_Store
+Thumbs.db

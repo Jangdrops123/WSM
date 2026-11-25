@@ -1,0 +1,617 @@
+/* BAGIAN I — dokumen faktur, daftar/detail, editor template. */
+
+/* --- Dokumen faktur ------------------------------------------------------ */
+.faktur-wadah {
+  display: flex;
+  justify-content: center;
+}
+
+.faktur {
+  box-sizing: border-box;
+  width: var(--faktur-lebar, 210mm);
+  min-height: var(--faktur-tinggi, 297mm);
+  padding: var(--faktur-m-atas, 12mm) var(--faktur-m-kanan, 12mm) var(--faktur-m-bawah, 12mm) var(--faktur-m-kiri, 12mm);
+  background: #fff;
+  color: #111827;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: var(--faktur-font, 10pt);
+  line-height: 1.45;
+  /* BAGIAN AA — bayangan kertas dipegang .pratinjau-bingkai (di luar
+     transform) supaya tepinya tajam pada skala berapa pun. */
+  overflow: hidden;
+}
+
+/* AA4 — termal 58/80 mm: kertas gulungan, tinggi mengikuti isi
+   (pratinjau strip tinggi; min-height 200 mm dimatikan). */
+.faktur[data-termal] {
+  min-height: 0;
+}
+
+/* Skala isi: kotak isi dilebarkan lalu diperkecil agar hasilnya rata. */
+.faktur__isi {
+  width: calc(100% / var(--faktur-skala, 1));
+  transform: scale(var(--faktur-skala, 1));
+  transform-origin: top left;
+}
+
+.faktur__kop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--faktur-aksen, #2563eb);
+}
+
+.faktur__logo {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.faktur__kop-teks {
+  min-width: 0;
+}
+
+.faktur__usaha {
+  display: block;
+  font-size: 1.35em;
+  letter-spacing: 0.02em;
+}
+
+.faktur__redup {
+  color: #64748b;
+}
+
+.faktur__judul {
+  margin: 10px 0 8px;
+  text-align: center;
+  font-size: 1.25em;
+  letter-spacing: 0.12em;
+  color: var(--faktur-aksen, #2563eb);
+}
+
+.faktur__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.faktur__meta-kanan {
+  text-align: right;
+}
+
+.faktur__nomor {
+  font-variant-numeric: tabular-nums;
+}
+
+.faktur__pihak strong {
+  display: block;
+}
+
+.faktur__tabel,
+.faktur__ringkas {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* BAGIAN K2/K3 — tabel item: fixed layout + colgroup; nama kolom & isi tidak
+   terpecah per huruf, kolom angka/Kode nowrap dengan font auto-fit. */
+.faktur__tabel {
+  table-layout: fixed;
+  font-size: var(--faktur-font-kolom, var(--faktur-font, 10pt));
+}
+
+.faktur__tabel th,
+.faktur__tabel td {
+  padding: 4px 6px;
+  border: 1px solid #cbd5e1;
+  vertical-align: middle;
+  line-height: 1.3;
+  /* Teks biasa (Kode kiri, Nama) membungkus mengikuti kata — jangan memecah
+     kata di tengah; overflow-wrap hanya cadangan kata yang terlalu panjang. */
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.faktur__tabel thead th {
+  background: var(--faktur-aksen, #2563eb);
+  color: #fff;
+  font-weight: 600;
+  text-align: left;
+  /* K3: header tidak boleh terpecah — pilih singkatan bila kertas sempit. */
+  white-space: nowrap;
+}
+
+/* K3: kolom angka + Kode nowrap — angka tidak pernah turun baris/terpotong. */
+.faktur__tabel .faktur__sel-nowrap {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: normal;
+}
+
+.faktur__tabel tbody tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+/* Nama Barang: satu baris selama muat; maksimal 2 baris (line-clamp:2). */
+.faktur__nama-sel {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.faktur__th-no,
+.faktur__td-no {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.faktur__bawah {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.faktur__terbilang {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.95em;
+}
+
+.faktur__catatan {
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.faktur__ringkas {
+  width: auto;
+  min-width: 210px;
+}
+
+.faktur__ringkas td {
+  padding: 3px 4px;
+}
+
+.faktur__total td {
+  border-top: 2px solid var(--faktur-aksen, #2563eb);
+  font-weight: 700;
+}
+
+.faktur__tanda-tangan {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 18px;
+  font-size: 0.95em;
+}
+
+.faktur__ttd-pihak,
+.faktur__ttd-toko {
+  min-width: 0;
+  max-width: 48%;
+  overflow-wrap: break-word;
+}
+
+.faktur__ttd-ruang {
+  height: 54px;
+}
+
+.faktur__kaki {
+  margin-top: 14px;
+  padding-top: 6px;
+  border-top: 1px dashed #cbd5e1;
+  color: #64748b;
+  font-size: 0.9em;
+  text-align: center;
+}
+
+/* --- Pratinjau: lihat components/pratinjau.css (BAGIAN AA) — skala
+       fit-to-container, alat tampilan, penanda halaman, latar --surface-2. */
+
+/* Cetak / ekspor PDF: hanya dokumen yang ikut, ukuran dari @page. */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  .faktur-wadah,
+  .faktur-wadah * {
+    visibility: visible !important;
+  }
+  .faktur-wadah {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    background: none;
+    border: 0;
+  }
+  /* BAGIAN AA — lepas semua posisi/skala turunan pratinjau supaya dokumen
+     menterbit di titik asal halaman (1:1, sama dengan hasil ekspor PDF).
+     Skala & alat sendiri di-reset di components/pratinjau.css. */
+  .kolom-pratinjau,
+  .pratinjau-blok,
+  .pratinjau-bingkai {
+    position: static !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .kolom-pratinjau {
+    display: block !important;
+    inset: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+  .faktur {
+    box-shadow: none;
+    margin: 0;
+    /* Aksen warna kop/tabel ikut tercetak, bukan jadi abu-abu. */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .faktur__tabel thead {
+    display: table-header-group;
+  }
+  .faktur__tabel tr,
+  .faktur__ringkas tr,
+  .faktur__tanda-tangan,
+  .faktur__bawah {
+    page-break-inside: avoid;
+  }
+}
+
+/* --- Halaman detail & daftar -------------------------------------------- */
+.faktur-halaman {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.faktur-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.faktur-toolbar__isi {
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+  min-width: 0;
+}
+
+.faktur-toolbar__aksi {
+  display: flex;
+  gap: 6px;
+}
+
+.faktur-wa {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Ikon aksi faktur pada dialog sukses (POS & pengesahan pembelian). */
+.faktur-sukses {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.faktur-wa__pratinjau {
+  padding: 8px 10px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: #f8fafc;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+/* --- Editor template (Pengaturan) — BAGIAN AA5: responsif ---------------- */
+.editor-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+/* Layar lebar (>=1280px): pengaturan di kiri (360–440px), pratinjau di
+   kanan yang melekat (sticky tepat di bawah header) dengan tinggi mengikuti
+   layar; panel kiri memakai scroll sendiri (tanpa scroll ganda). */
+@media (min-width: 1280px) {
+  .editor-grid {
+    grid-template-columns: minmax(360px, 440px) minmax(0, 1fr);
+  }
+
+  .editor-panel {
+    max-height: calc(100dvh - var(--header-tinggi) - 110px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .kolom-pratinjau {
+    position: sticky;
+    top: calc(var(--header-tinggi) + 16px);
+    --pratinjau-tinggi: calc(100dvh - var(--header-tinggi) - 110px);
+  }
+}
+
+/* Layar menengah (768–1279px): pengaturan di atas, pratinjau di bawah
+   dengan lebar penuh. */
+@media (max-width: 1279.98px) {
+  .editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kolom-pratinjau {
+    --pratinjau-tinggi: min(70vh, calc(100dvh - var(--header-tinggi) - 160px));
+  }
+}
+
+/* Kepala kolom pratinjau (label + tutup) — tampil pada semua tata letak. */
+.kolom-pratinjau__kepala {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+/* Tombol tutup hanya relevan pada lembar bawah ponsel. */
+.kolom-pratinjau__kepala .tutup-pratinjau {
+  display: none;
+}
+
+/* Tombol "Pratinjau" (ikon mata) hanya di ponsel (AA5).
+   Spesifisitas ganda (.ikon-btn-wadah juga menyetel display) agar menang
+   berapa pun urutan pemuatan CSS. */
+.pratinjau-buka-hp.ikon-btn-wadah {
+  display: none;
+}
+
+/* Ponsel (<768px): pratinjau dibuka lewat tombol "Pratinjau" (ikon mata)
+   sebagai lembar bawah layar penuh dengan skala otomatis. */
+@media (max-width: 767.98px) {
+  .kolom-pratinjau {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 92dvh;
+    padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -8px 30px rgba(16, 24, 40, 0.28);
+    transform: translateY(102%);
+    transition: transform 0.22s ease;
+    --pratinjau-tinggi: calc(92dvh - 170px);
+  }
+
+  .kolom-pratinjau--buka {
+    transform: translateY(0);
+  }
+
+  /* Pegangan lembar bawah. */
+  .kolom-pratinjau::before {
+    content: '';
+    align-self: center;
+    width: 42px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--border);
+    flex: none;
+  }
+
+  .kolom-pratinjau__kepala {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex: none;
+  }
+
+  .kolom-pratinjau > .teks-redup:last-child {
+    flex: none;
+    margin: 0;
+  }
+
+  .kolom-pratinjau__kepala {
+    margin-bottom: 0;
+  }
+
+  .kolom-pratinjau__kepala .tutup-pratinjau {
+    display: inline-flex;
+    flex: none;
+  }
+
+  .pratinjau-buka-hp.ikon-btn-wadah {
+    display: inline-flex;
+  }
+}
+
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.editor-panel h4 {
+  margin: 4px 0 0;
+}
+
+.editor-blok {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+
+.editor-blok label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.editor-baris {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editor-baris > span:first-child {
+  min-width: 108px;
+  color: var(--teks-redup);
+  font-size: 13px;
+}
+
+.editor-baris input[type='number'],
+.editor-baris input[type='color'],
+.editor-baris input[type='text'],
+.editor-baris select {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+}
+
+.kolom-urut {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kolom-urut__baris {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-size: 13px;
+}
+
+.kolom-urut__baris span {
+  flex: 1;
+}
+
+.kolom-urut__baris--redup {
+  opacity: 0.65;
+}
+
+/* BAGIAN K4 — baris pengaturan kolom: nama ganti, lebar (%/mm), rata. */
+.kolom-urut__baris--kepala {
+  background: #f1f5f9;
+  font-weight: 600;
+}
+
+.kolom-urut__baris--atur {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.kolom-urut__nama {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kolom-urut__nama > span {
+  flex: 1;
+  font-weight: 600;
+}
+
+.kolom-urut__field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--teks-redup);
+}
+
+.kolom-urut__field > span {
+  width: 44px;
+  flex: none;
+}
+
+.kolom-urut__field input,
+.kolom-urut__field select {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  color: var(--teks);
+}
+
+.kolom-urut__field input[type='number'] {
+  flex: 0 0 72px;
+}
+
+.kolom-urut__peringatan {
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: 12px;
+}
+
+/* --- Faktur dengan retur: badge + baris pengurang retur ------------------- */
+
+.faktur__retur-badge {
+  display: inline-block;
+  margin: 6px 0 0 auto;
+  padding: 2px 8px;
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.66em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.faktur__ringkas-retur td {
+  color: #b45309;
+}
+
+@media print {
+  .faktur__retur-badge {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

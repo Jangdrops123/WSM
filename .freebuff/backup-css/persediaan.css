@@ -1,0 +1,429 @@
+/* ============================================================================
+   MODUL PERSEDIAAN SUB — Item Masuk / Item Keluar
+   Hanya memakai variabel tema (terang/gelap); gaya modul lain tidak disentuh.
+   Input barang memakai kelas .pos-cari / .pos-saran / .pos-sel-input dari
+   pos.css — metode input IDENTIK dengan Kasir Tanpa Foto (Mode Cepat).
+   ========================================================================== */
+
+.sub-halaman {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+/* --- Header form ---------------------------------------------------------- */
+
+.sub-kepala {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px 12px;
+  align-items: end;
+}
+
+.sub-kepala .bidang {
+  margin: 0;
+}
+
+.sub-kepala .sub-keterangan {
+  grid-column: 1 / -1;
+}
+
+.sub-nomor input {
+  background: var(--primer-lembut);
+  border-style: dashed;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.sub-nomor input[readonly] {
+  cursor: default;
+}
+
+/* --- Baris cari + ringkas + tombol aksi ----------------------------------- */
+
+.sub-baris {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sub-cari {
+  flex: 1;
+  min-width: 260px;
+  max-width: 560px;
+}
+
+.sub-ringkas {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--teks-redup);
+  white-space: nowrap;
+}
+
+.sub-ringkas strong {
+  color: var(--teks);
+  font-variant-numeric: tabular-nums;
+}
+
+.sub-flag {
+  font-size: 11.5px;
+  color: var(--waspada);
+  border: 1px dashed var(--waspada);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.sub-aksi {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Tombol ikon — teks muncul saat hover / fokus. */
+.tombol-ikon-teks {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 9px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--teks);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tombol-ikon-teks > span {
+  max-width: 0;
+  opacity: 0;
+  margin-left: 0;
+  overflow: hidden;
+  transition:
+    max-width 0.18s ease,
+    opacity 0.18s ease,
+    margin-left 0.18s ease;
+}
+
+.tombol-ikon-teks:hover > span,
+.tombol-ikon-teks:focus-visible > span {
+  max-width: 150px;
+  opacity: 1;
+  margin-left: 8px;
+}
+
+.tombol-ikon-teks:focus-visible {
+  outline: none;
+  border-color: var(--primer);
+  box-shadow: 0 0 0 3px var(--primer-lembut);
+}
+
+.tombol-ikon-teks:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.tombol-ikon-teks--primer {
+  background: var(--primer);
+  border-color: var(--primer);
+  color: #fff;
+}
+
+.tombol-ikon-teks--primer:hover {
+  background: var(--primer-teks);
+  border-color: var(--primer-teks);
+}
+
+.tombol-ikon-teks--bahaya {
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.tombol-ikon-teks--bahaya:hover {
+  background: #fef2f2;
+}
+
+:is(.tombol-ikon-teks--primer, .tombol-ikon-teks--bahaya):focus-visible {
+  box-shadow: 0 0 0 3px var(--primer-lembut);
+}
+
+/* --- Tabel item ----------------------------------------------------------- */
+
+.sub-tabel-bungkus {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  overflow: auto;
+  max-height: 54vh;
+}
+
+.sub-tabel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.sub-tabel thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg);
+  color: var(--teks-redup);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.sub-tabel th.num,
+.sub-tabel td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.sub-tabel td {
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.sub-tabel tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.sub-tabel tbody tr:hover td {
+  background: var(--primer-lembut);
+}
+
+/* Sel yang bisa difokus keyboard (Panah ↑/↓ antar baris, Tab antar kolom). */
+.sub-tabel td[tabindex]:focus {
+  outline: 2px solid var(--primer);
+  outline-offset: -2px;
+  background: var(--primer-lembut);
+}
+
+.sub-td-kode {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--teks-redup);
+  white-space: nowrap;
+}
+
+.sub-td-nama {
+  font-weight: 600;
+  min-width: 180px;
+  max-width: 340px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sub-td-redup {
+  color: var(--teks-redup);
+}
+
+.sub-td-sel {
+  width: 96px;
+  padding-right: 6px !important;
+}
+
+.sub-td-aksi {
+  width: 42px;
+  text-align: center;
+}
+
+.sub-tabel td.sub-minus {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.sub-tabel td.sub-lebih {
+  color: #dc2626;
+  font-weight: 700;
+  background: #fef2f2;
+}
+
+.sub-kosong {
+  padding: 30px 18px !important;
+  text-align: center;
+  color: var(--teks-redup);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.sub-kosong b {
+  color: var(--teks);
+}
+
+/* --- Petunjuk keyboard ---------------------------------------------------- */
+
+.sub-petunjuk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--teks-redup);
+}
+
+.sub-petunjuk span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sub-petunjuk kbd {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 11px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 1px 5px;
+  color: var(--teks);
+}
+
+/* --- Kartu Riwayat -------------------------------------------------------- */
+
+.sub-riwayat__alat {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.sub-riwayat__alat .tombol {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sub-td-centang {
+  width: 34px;
+  text-align: center;
+}
+
+.sub-td-centang input {
+  cursor: pointer;
+}
+
+.sub-td-nomor {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sub-ket {
+  color: var(--teks-redup);
+  font-size: 12px;
+}
+
+.sub-td-aksi-riwayat {
+  width: 92px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.sub-hal-aksi {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 12.5px;
+  color: var(--teks-redup);
+}
+
+.sub-hal-aksi span {
+  font-variant-numeric: tabular-nums;
+}
+
+.sub-kosong-riwayat {
+  padding: 26px !important;
+  text-align: center;
+  color: var(--teks-redup);
+}
+
+/* --- Modal detail --------------------------------------------------------- */
+
+.sub-detail__kop {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px 16px;
+  margin-bottom: 12px;
+}
+
+.sub-detail__kop > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sub-detail__kop span {
+  font-size: 11px;
+  color: var(--teks-redup);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.sub-detail__kop strong {
+  font-size: 13.5px;
+  color: var(--teks);
+}
+
+.sub-daftar-error {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 260px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.sub-daftar-error > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sub-daftar-error b {
+  color: #dc2626;
+  font-size: 12px;
+}
+
+.sub-daftar-error span {
+  color: var(--teks-redup);
+  font-size: 12.5px;
+}
+
+/* --- Responsif ------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .sub-kepala {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sub-cari {
+    max-width: none;
+  }
+
+  .sub-aksi {
+    margin-left: 0;
+  }
+
+  .sub-tabel-bungkus {
+    max-height: none;
+  }
+}

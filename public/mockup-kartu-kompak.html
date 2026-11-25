@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contoh Visual — Kartu Kompak (sementara)</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: #f4f1ea; color: #2b2b2b; padding: 18px; }
+  h1 { font-size: 19px; margin: 0 0 4px; }
+  .sub { font-size: 13px; color: #8a8578; margin-bottom: 16px; }
+  .kontrol { background: #fff; border: 1px solid #e7e1d3; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .kontrol .grup { display: flex; gap: 8px; align-items: center; font-size: 13px; }
+  .kontrol button.pilih { border: 1px solid #ddd6c4; background: #fff; border-radius: 9px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .kontrol button.pilih.on { background: #1e7a34; border-color: #1e7a34; color: #fff; }
+  .kontrol output { font-variant-numeric: tabular-nums; font-weight: 700; min-width: 64px; display: inline-block; }
+  input[type=range] { width: 220px; accent-color: #1e7a34; }
+
+  /* ===== replika kartu "Saldo Stok" ===== */
+  .demo-kartu { background: #fff; border: 1px solid #e7e1d3; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+  .demo-kepala { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .demo-kepala h2 { margin: 0; }
+  .demo-kepala p { margin: 2px 0 0; color: #8a8578; }
+  .ringkas { display: inline-block; border: 1px solid #e7e1d3; border-radius: 9px; padding: 6px 12px; font-size: 12.5px; background: #faf8f2; margin-left: 8px; }
+  .demo-alat { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .demo-alat input[type=search] { border: 1px solid #ddd6c4; border-radius: 9px; padding: 0 12px; }
+  .demo-alat select { border: 1px solid #ddd6c4; border-radius: 9px; padding: 0 8px; background: #fff; }
+  .demo-tabel { width: 100%; border-collapse: collapse; }
+  .demo-tabel th { text-align: left; text-transform: uppercase; letter-spacing: .03em; background: #faf8f2; color: #6d6759; }
+  .demo-tabel td, .demo-tabel th { border-bottom: 1px solid #f0ebe0; }
+  .lencana { display: inline-block; background: #e6f4ea; color: #1e7a34; border-radius: 20px; padding: 2px 12px; font-size: 12px; font-weight: 600; }
+  .tombol-kecil { border: 1px solid #ddd6c4; background: #fff; border-radius: 8px; padding: 5px 12px; font-size: 12.5px; cursor: default; }
+
+  /* ===== MODE SEKARANG: penuh & lega ===== */
+  body[data-mode="sekarang"] .demo-kartu { max-width: none; margin: 0; padding: 22px 24px; }
+  body[data-mode="sekarang"] .demo-kepala h2 { font-size: 21px; }
+  body[data-mode="sekarang"] .demo-kepala p { font-size: 13.5px; }
+  body[data-mode="sekarang"] .demo-kepala { margin-bottom: 18px; }
+  body[data-mode="sekarang"] .demo-alat { margin-bottom: 16px; }
+  body[data-mode="sekarang"] .demo-alat input[type=search] { height: 40px; width: 340px; font-size: 14px; }
+  body[data-mode="sekarang"] .demo-alat select { height: 40px; font-size: 14px; }
+  body[data-mode="sekarang"] .demo-tabel { font-size: 14px; }
+  body[data-mode="sekarang"] .demo-tabel th { padding: 12px 16px; font-size: 12px; }
+  body[data-mode="sekarang"] .demo-tabel td { padding: 13px 16px; }
+
+  /* ===== MODE USULAN: kompak & tidak terlalu lebar ===== */
+  body[data-mode="usulan"] .demo-kartu { max-width: var(--lebar, 1120px); margin: 0 auto; padding: 14px 16px; border-radius: 12px; }
+  body[data-mode="usulan"] .demo-kepala h2 { font-size: 17px; }
+  body[data-mode="usulan"] .demo-kepala p { font-size: 12px; }
+  body[data-mode="usulan"] .demo-kepala { margin-bottom: 12px; }
+  body[data-mode="usulan"] .ringkas { font-size: 12px; padding: 5px 10px; }
+  body[data-mode="usulan"] .demo-alat { margin-bottom: 10px; }
+  body[data-mode="usulan"] .demo-alat input[type=search] { height: 34px; width: 260px; font-size: 13px; }
+  body[data-mode="usulan"] .demo-alat select { height: 34px; font-size: 13px; }
+  body[data-mode="usulan"] .demo-alat label { font-size: 13px; }
+  body[data-mode="usulan"] .demo-tabel { font-size: 13px; }
+  body[data-mode="usulan"] .demo-tabel th { padding: 8px 10px; font-size: 11px; }
+  body[data-mode="usulan"] .demo-tabel td { padding: 7px 10px; }
+
+  .beda { background: #fff; border: 1px solid #e7e1d3; border-radius: 12px; padding: 14px 16px; margin-top: 16px; font-size: 13px; }
+  .beda table { border-collapse: collapse; width: 100%; max-width: 640px; }
+  .beda td { border-bottom: 1px solid #f0ebe0; padding: 6px 8px; }
+  .beda td:first-child { color: #6d6759; width: 220px; }
+  .beda b { color: #1e7a34; }
+</style>
+</head>
+<body data-mode="usulan">
+  <h1>Contoh Visual — Kartu Kompak (tidak terlalu lebar)</h1>
+  <div class="sub">Mockup sementara. Belum ada kode aplikasi yang diubah. Geser “Lebar kartu” untuk mencoba.</div>
+
+  <div class="kontrol">
+    <div class="grup">
+      <button class="pilih" id="btnSekarang" onclick="mode('sekarang')">Sekarang (penuh & lega)</button>
+      <button class="pilih on" id="btnUsulan" onclick="mode('usulan')">Usulan (kompak)</button>
+    </div>
+    <div class="grup">
+      <label for="lebar">Lebar kartu: <output id="nilaiLebar">1120px</output></label>
+      <input type="range" id="lebar" min="860" max="1600" step="20" value="1120" oninput="aturLebar(this.value)" />
+    </div>
+  </div>
+
+  <div class="demo-kartu">
+    <div class="demo-kepala">
+      <div>
+        <h2>Saldo Stok</h2>
+        <p>Per produk — per gudang. Nilai memakai rata-rata bergerak.</p>
+      </div>
+      <div>
+        <span class="ringkas">Di bawah minimum: <b>0</b></span>
+        <span class="ringkas">Nilai persediaan: <b>Rp 7.014.553</b></span>
+      </div>
+    </div>
+    <div class="demo-alat">
+      <input type="search" placeholder="Cari SKU, barcode, atau nama produk…" />
+      <select><option>Semua gudang</option></select>
+      <select><option>Semua kategori</option></select>
+      <label><input type="checkbox" /> Di bawah minimum saja</label>
+    </div>
+    <table class="demo-tabel">
+      <thead><tr><th>SKU</th><th>Produk</th><th>Kategori</th><th>Gudang</th><th>Stok</th><th>Nilai (rata-rata)</th><th>Status</th><th>Aksi</th></tr></thead>
+      <tbody>
+        <tr><td>123132242</td><td>Haechan Pink 39</td><td>Sepatu</td><td>GD-1 — Gudang Utama</td><td>25</td><td>Rp 850.000</td><td><span class="lencana">Aman</span></td><td><span class="tombol-kecil">Kartu Stok</span></td></tr>
+        <tr><td>KAOS-003</td><td>Kaos Polos Navy</td><td>Kaos</td><td>GD-1 — Gudang Utama</td><td>1</td><td>Rp 24.000</td><td><span class="lencana">Aman</span></td><td><span class="tombol-kecil">Kartu Stok</span></td></tr>
+        <tr><td>123132370</td><td>Pores Hitam 39</td><td>Sepatu</td><td>GD-1 — Gudang Utama</td><td>14</td><td>Rp 343.000</td><td><span class="lencana">Aman</span></td><td><span class="tombol-kecil">Kartu Stok</span></td></tr>
+        <tr><td>UJI-1</td><td>Produk Uji</td><td>—</td><td>GD-1 — Gudang Utama</td><td>96</td><td>Rp 881.053</td><td><span class="lencana">Aman</span></td><td><span class="tombol-kecil">Kartu Stok</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="beda">
+    <b>Yang diubah pada mode Usulan</b>
+    <table>
+      <tr><td>Lebar kartu</td><td>penuh (100%) → <b>maks 1120px, rata tengah</b> (bisa digeser 860–1600)</td></tr>
+      <tr><td>Padding kartu</td><td>22–24px → <b>14–16px</b></td></tr>
+      <tr><td>Judul + deskripsi</td><td>21px / 13,5px → <b>17px / 12px</b>, jarak bawah 18px → <b>12px</b></td></tr>
+      <tr><td>Toolbar</td><td>input 40px → <b>34px</b>, kolom cari 340px → <b>260px</b>, font 14 → <b>13</b></td></tr>
+      <tr><td>Tabel</td><td>font 14 → <b>13</b>, padding sel 12–13px → <b>7–8px</b></td></tr>
+    </table>
+    <p style="margin:10px 0 0">Rencana penerapan: batasi <code>.kartu--daftar</code> + rapatkan padding toolbar/tabel di <code>crud.css</code> — berlaku ke <b>semua kartu daftar</b> (Produk, Saldo Stok, Opname, Laporan, dst), bukan hanya halaman ini.</p>
+  </div>
+
+<script>
+  function mode(m) {
+    document.body.dataset.mode = m;
+    document.getElementById('btnSekarang').classList.toggle('on', m === 'sekarang');
+    document.getElementById('btnUsulan').classList.toggle('on', m === 'usulan');
+  }
+  function aturLebar(v) {
+    document.body.style.setProperty('--lebar', v + 'px');
+    document.getElementById('nilaiLebar').textContent = v + 'px';
+  }
+</script>
+</body>
+</html>

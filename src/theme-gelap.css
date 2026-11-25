@@ -1,0 +1,678 @@
+/* ==========================================================================
+   TEMA GELAP — penyempurnaan token
+   --------------------------------------------------------------------------
+   Murni tampilan — tidak ada logika/posisi/fitur yang berubah.
+   File ini dimuat TERAKHIR (main.tsx) sehingga menimpa warna terang lama
+   di crud.css & CSS modul tanpa menyentuh file tersebut.
+   Permukaan: padat, bertingkat (bukan kaca/blur). Kedalaman datang dari
+   tangga permukaan + garis rambut, bukan bayangan berwarna atau glow.
+   Aksen: hijau toko dari token --accent/--primer.
+   Yang SENGAJA tetap putih: kertas cetak (.faktur, .opname-cetak-wadah,
+   pratinjau struk) — hasil cetak harus terbaca hitam di atas putih.
+   ========================================================================== */
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  accent-color: var(--accent);
+}
+
+/* ------------------------------Scrollbar tipis--------------------------- */
+
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 0.375rem;
+  height: 0.375rem;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 0.1875rem;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="dark"] * {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  scrollbar-width: thin;
+}
+
+/* ------------------------------Permukaan--------------------------------- */
+/* Panels take the surface step and a hairline; no blur, no translucency. */
+[data-theme="dark"] .kartu,
+[data-theme="dark"] .topbar,
+[data-theme="dark"] .modal,
+[data-theme="dark"] .toast,
+[data-theme="dark"] .kartu-ringkas,
+[data-theme="dark"] .konversi-panel,
+[data-theme="dark"] .detail-modal,
+[data-theme="dark"] .baris-berkas,
+[data-theme="dark"] .filter-bar,
+[data-theme="dark"] .laporan-tabel,
+[data-theme="dark"] .laporan-kartu__isi,
+[data-theme="dark"] .laporan-kartu-link,
+[data-theme="dark"] .laporan-aksi__isi {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+/* Sidebar tetap memakai permukaan tergelapnya sendiri (--sidebar-bg). */
+[data-theme="dark"] .sidebar {
+  background: var(--sidebar-bg);
+  border-color: var(--sidebar-border);
+}
+
+[data-theme="dark"] .sidebar {
+  border-right: 1px solid var(--sidebar-border);
+  box-shadow: none;
+}
+
+/* Mode sidebar terang: kaca gelap di atas tidak berlaku — ikuti token. */
+[data-theme="dark"][data-sidebar="terang"] .sidebar {
+  background: var(--sidebar-bg);
+  border-color: var(--sidebar-border);
+}
+
+/* Topbar menempel di atas konten: pemisahnya garis rambut, bukan bayangan. */
+[data-theme="dark"] .topbar {
+  box-shadow: none;
+}
+
+/* Grup menu sidebar: judul lebih redup, anak pill saat aktif. */
+[data-theme="dark"] .nav-grup__judul {
+  color: var(--sidebar-teks);
+  border-radius: 0.75rem;
+}
+
+[data-theme="dark"] .nav-grup__judul:hover {
+  background: var(--sidebar-hover);
+}
+
+[data-theme="dark"] .nav-grup__judul--aktif {
+  color: var(--sidebar-active-teks);
+}
+
+[data-theme="dark"] .nav-item,
+[data-theme="dark"] .nav-item--anak {
+  border-radius: 0.75rem;
+}
+
+[data-theme="dark"] .nav-item--anak.nav-item--aktif {
+  background: var(--sidebar-aktif);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* -------------------------------Tabel------------------------------------ */
+
+[data-theme="dark"] .tabel {
+  background: transparent;
+}
+
+/* Aturan sel/hover/aksi/kartu-terpilih/foto dihapus dari kurasi — kini
+   memakai token (--surface-2, --row-hover, --sticky-*, --row-selected,
+   --accent) yang nilainya sudah benar di kedua tema. */
+
+
+[data-theme="dark"] .galeri-utama {
+  background: var(--surface-2);
+}
+
+[data-theme="dark"] .peringatan-merah {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: var(--danger-border);
+}
+
+[data-theme="dark"] .tabel-kosong {
+  color: var(--teks-redup);
+}
+
+[data-theme="dark"] .tabel-bungkus {
+  border-color: var(--border);
+  background: var(--surface-2);
+}
+
+/* -------------------------------Masukan---------------------------------- */
+
+[data-theme="dark"] .input-cari,
+[data-theme="dark"] .input-pilih,
+[data-theme="dark"] .input-pilih--kecil,
+[data-theme="dark"] .bidang input,
+[data-theme="dark"] .bidang select,
+[data-theme="dark"] .bidang textarea,
+[data-theme="dark"] .baris-item select,
+[data-theme="dark"] .baris-berkas select,
+[data-theme="dark"] .baris-item input,
+[data-theme="dark"] .baris-berkas input,
+[data-theme="dark"] .filter-bar__kotak select,
+[data-theme="dark"] .filter-bar__kotak input,
+[data-theme="dark"] .laporan-cari input,
+[data-theme="dark"] .tabel select,
+[data-theme="dark"] .tabel input {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .input-cari:focus,
+[data-theme="dark"] .input-pilih:focus,
+[data-theme="dark"] .bidang input:focus,
+[data-theme="dark"] .bidang select:focus,
+[data-theme="dark"] .bidang textarea:focus,
+[data-theme="dark"] .filter-bar__kotak select:focus,
+[data-theme="dark"] .filter-bar__kotak input:focus,
+[data-theme="dark"] .laporan-cari input:focus {
+  outline: none;
+  border-color: var(--primer);
+  background: var(--input-bg);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+[data-theme="dark"] .input-cari::placeholder,
+[data-theme="dark"] .bidang input::placeholder,
+[data-theme="dark"] textarea::placeholder,
+[data-theme="dark"] input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+/* -------------------------------Tombol----------------------------------- */
+
+[data-theme="dark"] .tombol--netral {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .tombol--netral:hover {
+  background: var(--row-hover-solid);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .tombol--bahaya {
+  background: var(--danger-soft);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+[data-theme="dark"] .tombol--bahaya:hover {
+  background: var(--danger-soft);
+  border-color: var(--danger-border-hover);
+}
+
+/* Tombol generik (tanpa varian): permukaan naik + garis rambut. */
+[data-theme="dark"] .tombol:not(.tombol--primer):not(.tombol--netral):not(.tombol--bahaya):not(.tombol--sukses) {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .tombol:not(.tombol--primer):not(.tombol--netral):not(.tombol--bahaya):not(.tombol--sukses):hover {
+  background: var(--row-hover-solid);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .ikon-btn {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .ikon-btn--netral {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .ikon-btn--netral:hover:not(:disabled) {
+  background: var(--row-hover-solid);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .ikon-btn--sukses {
+  background: var(--success-soft);
+  border-color: var(--success-border);
+  color: var(--success);
+}
+
+[data-theme="dark"] .ikon-btn--sukses:hover:not(:disabled) {
+  background: var(--success-soft);
+  border-color: var(--success-border-hover);
+  color: var(--success);
+}
+
+[data-theme="dark"] .ikon-btn--bahaya {
+  background: var(--danger-soft);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+[data-theme="dark"] .ikon-btn--bahaya:hover:not(:disabled) {
+  background: var(--danger-soft);
+  border-color: var(--danger-border-hover);
+  color: var(--danger);
+}
+
+[data-theme="dark"] .ikon-btn--primer {
+  background: var(--primer);
+  border-color: transparent;
+  color: #fff;
+}
+
+[data-theme="dark"] .ikon-btn--primer:hover:not(:disabled) {
+  background: var(--accent-hover);
+  color: #fff;
+}
+
+[data-theme="dark"] .icon-tombol {
+  border-color: var(--border);
+  color: var(--teks-redup);
+}
+
+[data-theme="dark"] .icon-tombol:hover {
+  background: var(--row-hover-solid);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .ikon-grup {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .tooltip-tip::after {
+  background: var(--tooltip-bg);
+  border-color: var(--border);
+  color: var(--tooltip-teks);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+
+/* -------------------------------Lencana---------------------------------- */
+
+[data-theme="dark"] .lencana {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+[data-theme="dark"] .lencana--aktif {
+  background: var(--success-soft);
+  color: var(--success);
+  border-color: var(--success-border);
+}
+
+[data-theme="dark"] .lencana--mati {
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .lencana--netral {
+  background: var(--info-soft);
+  color: var(--info);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .lencana--peringatan {
+  background: var(--warning-soft);
+  color: var(--warning);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .lencana--bahaya {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: var(--danger-border);
+}
+
+[data-theme="dark"] .teks-sukses {
+  color: var(--success);
+}
+
+[data-theme="dark"] .teks-galat {
+  color: var(--danger);
+}
+
+/* -------------------------------Modal & toast---------------------------- */
+
+[data-theme="dark"] .modal-overlay {
+  background: rgba(8, 10, 8, 0.72);
+}
+
+[data-theme="dark"] .modal,
+[data-theme="dark"] .detail-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .modal__kepala {
+  border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] .modal__kaki {
+  border-top-color: var(--border);
+}
+
+[data-theme="dark"] .toast {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+}
+
+/* -----------------------Kartu ringkas & panel lain------------------------ */
+
+[data-theme="dark"] .kartu-ringkas {
+  border: 1px solid var(--border);
+}
+
+[data-theme="dark"] .kartu-ringkas--bahaya {
+  background: var(--danger-soft);
+  border-color: var(--danger-border);
+}
+
+[data-theme="dark"] .daftar-error,
+[data-theme="dark"] .sub-daftar-error {
+  background: var(--danger-soft);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+[data-theme="dark"] .pita--galat {
+  background: var(--danger-soft) !important;
+  border: 1px solid var(--danger-border) !important;
+  color: var(--danger) !important;
+}
+
+[data-theme="dark"] .bar-massal {
+  /* Latar ikut token --bar-bg (padat, bukan kaca) — hanya border atas
+     dan bayangan disesuaikan agar tidak tembus pandang (Q3). */
+  border-top-color: var(--border);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .galeri-thumbnail__item {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+/* =========================== MODUL: PENJUALAN / POS ====================== */
+
+[data-theme="dark"] .pos-baris {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .pos-baris__kontrol button,
+[data-theme="dark"] .pos-tabel-mini button,
+[data-theme="dark"] .pos-bayar-cepat button {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .pos-baris__kontrol button:hover,
+[data-theme="dark"] .pos-tabel-mini button:hover,
+[data-theme="dark"] .pos-bayar-cepat button:hover {
+  background: var(--row-hover-solid);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .pos-sel-input:hover,
+[data-theme="dark"] .pos-sel-input:focus,
+[data-theme="dark"] .pos-ringkas .r input,
+[data-theme="dark"] .pos-dialog textarea {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .pos-split__menu {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+/* Tombol & panel POS: header, ringkasan bayar, tabel cepat. */
+[data-theme="dark"] .pos-kepala .tombol {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .pos-kepala .tombol:hover {
+  background: var(--row-hover-solid);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .pos-kepala .ikon-btn--netral {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .pos-ringkas {
+  background: var(--surface);
+  border-top-color: var(--border);
+}
+
+[data-theme="dark"] .pos-tabel-cepat thead th {
+  background: var(--surface-2);
+  color: var(--teks-redup);
+  border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] .pos-tabel-cepat tbody tr:hover td {
+  background: var(--row-hover);
+}
+
+[data-theme="dark"] .pos-bantuan__panel dt,
+[data-theme="dark"] .pos-hasil-tutup {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+/* =========================== MODUL: PEMBELIAN ============================ */
+
+[data-theme="dark"] .scan-input,
+[data-theme="dark"] .cari-barang__input,
+[data-theme="dark"] .tabel--item-beli input,
+[data-theme="dark"] .chat-input--baris textarea {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .cari-barang__input:focus,
+[data-theme="dark"] .scan-input:focus {
+  border-color: var(--primer);
+  background: var(--input-bg);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+[data-theme="dark"] .cari-barang__dropdown,
+[data-theme="dark"] .cari-barang__matriks {
+  background: var(--surface-2);
+  border-color: var(--border);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .chat-pesan__isi {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .chat-contoh__tombol {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .chip-size,
+[data-theme="dark"] .scan-box-baris select,
+[data-theme="dark"] .diskon-kontrol select {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .tabel--keranjang tbody tr {
+  background: var(--surface-2);
+}
+
+/* =========================== MODUL: OPNAME =============================== */
+
+[data-theme="dark"] .opname-tab__tombol {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .opname-tab__tombol:hover {
+  border-color: var(--accent);
+  color: var(--teks);
+}
+
+[data-theme="dark"] .opname-tab__tombol--aktif {
+  background: var(--primer);
+  border-color: var(--primer);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* Input scan & STOK FISIK kini memakai token (--surface / --input-*) yang
+   nilainya sudah benar di tema gelap — tanpa warna tetap. */
+
+/* =========================== MODUL: FAKTUR =============================== */
+
+[data-theme="dark"] .faktur-toolbar,
+[data-theme="dark"] .editor-panel {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+/* .faktur (kertas faktur A4) sengaja TIDAK diubah — tetap putih. */
+
+/* =========================== MODUL: PENGATURAN =========================== */
+/* Z1 — .pengaturan-nav (ribon modul Akuntansi) dihapus; gaya ikut dihapus. */
+
+/* =========================== MODUL: LAPORAN ============================== */
+
+[data-theme="dark"] .grafik-batang__batang {
+  opacity: 0.92;
+}
+
+[data-theme="dark"] .laporan-kartu-link:hover {
+  border-color: var(--accent);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .laporan-chip {
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .laporan-chip--jadwal {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+/* ======================Peringatan & kesalahan (tint)===================== */
+/* Kotak kuning/merah muda lama → translusen gelap agar menyatu. */
+
+[data-theme="dark"] .baris-catatan > td,
+[data-theme="dark"] .baris-waspadai > td,
+[data-theme="dark"] .baris-undo,
+[data-theme="dark"] .chat-pemasok--waspadai,
+[data-theme="dark"] tr.chat-grup--waspadai > td,
+[data-theme="dark"] .pt-kotak--waspada,
+[data-theme="dark"] .saran-pilih,
+[data-theme="dark"] .scan-box-chip--beda,
+[data-theme="dark"] .kolom-urut__peringatan,
+[data-theme="dark"] .chat-pratinjau__pemasok,
+[data-theme="dark"] .chat-grup__alasan,
+[data-theme="dark"] .chat-perhatian,
+[data-theme="dark"] .chat-pesan-baris > td {
+  background: var(--warning-soft) !important;
+  color: var(--warning);
+}
+
+[data-theme="dark"] .baris-galat > td,
+[data-theme="dark"] .pt-kotak--bahaya,
+[data-theme="dark"] .aturan-ringkas--salah,
+[data-theme="dark"] .chat-pratinjau__cek--salah {
+  background: var(--danger-soft) !important;
+  color: var(--danger);
+}
+
+[data-theme="dark"] .pos-sel-hapus:hover,
+[data-theme="dark"] .tombol-ikon-teks--bahaya:hover {
+  background: var(--danger-soft) !important;
+}
+
+/* =========================== CETAK: tetap putih ========================== */
+/* Pratinjau struk & berita acara adalah "kertas" — jangan digelapkan. */
+
+[data-theme="dark"] .struk-pratinjau,
+[data-theme="dark"] .pos-struk-pratinjau,
+[data-theme="dark"] .opname-cetak-wadah,
+[data-theme="dark"] .faktur {
+  background: #fff !important;
+}
+
+/* Saat mencetak langsung dari aplikasi (Ctrl+P), kertas harus putih. */
+@media print {
+  body {
+    background: #fff !important;
+    color: #111827 !important;
+  }
+
+  /* Lembar cetak generik: teks gelap di atas putih, apa pun komponennya.
+     (Alur cetak terpisah — struk, opname, faktur, ekspor laporan — memakai
+     dokumennya sendiri dan tetap hitam di atas putih.) */
+  :where(body *) {
+    color: #111827 !important;
+    background: #fff !important;
+    border-color: #9ca3af !important;
+  }
+
+  .sidebar,
+  .topbar,
+  .filter-bar,
+  .laporan-aksi,
+  .laporan-tabel__alat,
+  .laporan-tabel__kaki,
+  .modal-overlay {
+    display: none !important;
+  }
+}
+
+/* ================= BAGIAN OTOMATIS ================================================
+   Dibuat oleh scripts/gen-tema.mjs — jangan diedit manual.
+   Override warna terang sisa dari CSS modul. Jalankan ulang:
+   node scripts/gen-tema.mjs
+   ================================================ */
+
+
+@media (max-width: 767.98px) {
+  .ip-kop {
+    background: #131c2e;
+    color: #7f98d1;
+  }
+
+  .ip-kop__teks small {
+    color: #9aa6b6;
+  }
+
+  .kolom-urut__baris--kepala {
+    background: #172135;
+  }
+}

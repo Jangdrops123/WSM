@@ -1,0 +1,13 @@
+import ExcelJS from 'exceljs';
+const KOLOM = ['kode_item','nama_produk','sku','kategori','merek','satuan','profil_size','barcode','harga_beli','harga_jual','status','nama_file_foto'];
+const res = await fetch('http://127.0.0.1:3001/api/master/produk/ekspor');
+const wb = new ExcelJS.Workbook();
+await (wb.xlsx.load as any)(await res.arrayBuffer());
+const ws = wb.worksheets[0];
+const header = ws.getRow(1).values.slice(1).map((v) => String(v));
+console.log('header :', JSON.stringify(header));
+console.log('KOLOM  :', JSON.stringify(KOLOM));
+console.log('baris  :', ws.rowCount - 1);
+const res2 = await fetch('http://127.0.0.1:3001/api/master/produk?per=100');
+const daftar = await res2.json() as any;
+console.log('daftar :', daftar.data?.length, 'total', daftar.total);
